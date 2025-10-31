@@ -1,16 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:easy_localization/easy_localization.dart' hide TextDirection;
+import 'package:easy_localization/easy_localization.dart';
 import '../../../services/teacher_service.dart';
-
-
+import 'dart:ui' as ui;
 
 class DashboardSection extends StatefulWidget {
-
-
-// TextDirection constants to work around analyzer issue
-
-
   final Map<String, dynamic> teacher;
 
   const DashboardSection({super.key, required this.teacher});
@@ -23,15 +17,6 @@ class _DashboardSectionState extends State<DashboardSection> {
   final TeacherService _teacherService = TeacherService();
   bool _isLoading = true;
   List<Map<String, dynamic>> _classes = [];
-  int _totalStudents = 0;
-  int _presentToday = 0;
-  int _pendingHomework = 0;
-  int _unreadMessages = 0;
-
-  bool _isRTL() {
-    final locale = context.locale;
-    return ['ar', 'ckb', 'ku', 'bhn', 'arc', 'bad', 'bdi', 'sdh', 'kmr'].contains(locale.languageCode);
-  }
 
   @override
   void initState() {
@@ -39,48 +24,87 @@ class _DashboardSectionState extends State<DashboardSection> {
     _loadDashboardData();
   }
 
+  bool _isRTL() {
+    final locale = context.locale;
+    return ['ar', 'ckb', 'ku', 'bhn', 'arc', 'bad', 'bdi', 'sdh', 'kmr'].contains(locale.languageCode);
+  }
+
+  String _getLocalizedText(String key) {
+    final locale = context.locale.languageCode;
+    final Map<String, Map<String, String>> translations = {
+      'ar': {
+        'overview': 'نظرة عامة',
+        'total_students': 'إجمالي الطلاب',
+        'present_today': 'الحضور اليوم',
+        'pending_homework': 'الواجبات المعلقة',
+        'unread_messages': 'الرسائل غير المقروءة',
+        'total_grades': 'إجمالي الدرجات',
+        'quick_actions': 'إجراءات سريعة',
+        'take_attendance': 'تسجيل الحضور',
+        'create_homework': 'إنشاء واجب',
+        'post_announcement': 'نشر إعلان',
+        'add_grade': 'إضافة درجة',
+        'my_classes': 'فصولي',
+        'no_classes': 'لا توجد فصول',
+        'students': 'طلاب',
+        'view_details': 'عرض التفاصيل',
+      },
+      'ku': {
+        'overview': 'پێداچوونەوە',
+        'total_students': 'کۆی قاریان',
+        'present_today': 'ئامادەی ئەمڕۆ',
+        'pending_homework': 'خەتباری مەودا',
+        'unread_messages': 'پەیامەخوێنراوەکان',
+        'total_grades': 'کۆی نمرە',
+        'quick_actions': 'کردەوەی خێرا',
+        'take_attendance': 'بینینی دێرین',
+        'create_homework': 'دروستکردنی خەتبار',
+        'post_announcement': 'بڵاکردنەوە',
+        'add_grade': 'زیادکردنی نمرە',
+        'my_classes': 'پۆلەکانم',
+        'no_classes': 'پۆل نییە',
+        'students': 'قاریان',
+        'view_details': 'بینینی وردەکاری',
+      },
+    };
+
+    if (translations[locale]?[key] != null) {
+      return translations[locale]![key]!;
+    }
+
+    final Map<String, String> english = {
+      'overview': 'Overview',
+      'total_students': 'Total Students',
+      'present_today': 'Present Today',
+      'pending_homework': 'Pending Homework',
+      'unread_messages': 'Unread Messages',
+      'total_grades': 'Total Grades',
+      'quick_actions': 'Quick Actions',
+      'take_attendance': 'Take Attendance',
+      'create_homework': 'Create Homework',
+      'post_announcement': 'Post Announcement',
+      'add_grade': 'Add Grade',
+      'my_classes': 'My Classes',
+      'no_classes': 'No Classes',
+      'students': 'Students',
+      'view_details': 'View Details',
+    };
+    return english[key] ?? key;
+  }
+
   Future<void> _loadDashboardData() async {
+    if (!mounted) return;
     setState(() => _isLoading = true);
-    
+
     try {
-      // Get teacher's classes
       final classes = await _teacherService.getTeacherClasses(widget.teacher['id']);
-      
-      // Count total students
-      int totalStudents = 0;
-      for (var classData in classes) {
-        final students = await _teacherService.getStudentsByClass(classData['id']);
-        totalStudents += students.length;
-      }
-      
-      // Get today's attendance
-      final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
-      final attendance = await _teacherService.getAttendanceByDate(today);
-      final presentToday = attendance.where((a) => a['status'] == 'present').length;
-      
-      // Get pending homework count
-      final homework = await _teacherService.getTeacherHomework(widget.teacher['id']);
-      final pendingHomework = homework.where((h) {
-        final dueDate = DateTime.parse(h['dueDate']);
-        return dueDate.isAfter(DateTime.now());
-      }).length;
-      
-      // Get unread messages
-      final messages = await _teacherService.getTeacherMessages(widget.teacher['id']);
-      final unreadMessages = messages.where((m) => 
-        m['receiverId'] == widget.teacher['id'] && !(m['isRead'] ?? false)
-      ).length;
-      
+      if (!mounted) return;
       setState(() {
         _classes = classes;
-        _totalStudents = totalStudents;
-        _presentToday = presentToday;
-        _pendingHomework = pendingHomework;
-        _unreadMessages = unreadMessages;
         _isLoading = false;
       });
     } catch (e) {
-
+      if (!mounted) return;
       setState(() => _isLoading = false);
     }
   }
@@ -89,168 +113,92 @@ class _DashboardSectionState extends State<DashboardSection> {
   Widget build(BuildContext context) {
     final isRTL = _isRTL();
 
-    if (_isLoading) {
-      return Center(
-        child: Directionality(
-          textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
-          child: const CircularProgressIndicator(),
-        ),
-      );
-    }
-
     return Directionality(
-      textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
-      child: RefreshIndicator(
-        onRefresh: _loadDashboardData,
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildWelcomeCard(),
-              const SizedBox(height: 16),
-              _buildStatsGrid(),
-              const SizedBox(height: 20),
-              _buildQuickActions(),
-              const SizedBox(height: 20),
-              _buildMyClasses(),
-            ],
-          ),
-        ),
+      textDirection: isRTL ? ui.TextDirection.rtl : ui.TextDirection.ltr,
+      child: Scaffold(
+        backgroundColor: const Color(0xFF0D47A1),
+        body: _isLoading
+            ? const Center(child: CircularProgressIndicator(color: Colors.white))
+            : RefreshIndicator(
+                onRefresh: _loadDashboardData,
+                child: CustomScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  slivers: [
+                    SliverToBoxAdapter(
+                      child: _buildHeader(),
+                    ),
+                    SliverToBoxAdapter(
+                      child: _buildQuickActions(),
+                    ),
+                    SliverToBoxAdapter(
+                      child: _buildClassesList(),
+                    ),
+                    const SliverToBoxAdapter(
+                      child: SizedBox(height: 20),
+                    ),
+                  ],
+                ),
+              ),
       ),
     );
   }
 
-  Widget _buildWelcomeCard() {
+  Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF007AFF), Color(0xFF0051D5)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-      ),
+      padding: const EdgeInsets.fromLTRB(20, 60, 20, 30),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'teacher.welcome_back'.tr(),
-            style: const TextStyle(
-              color: Colors.white70,
-              fontSize: 14,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            widget.teacher['name'],
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            widget.teacher['subject'] ?? '',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatsGrid() {
-    return GridView.count(
-      crossAxisCount: 2,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      mainAxisSpacing: 12,
-      crossAxisSpacing: 12,
-      childAspectRatio: 1.5,
-      children: [
-        _buildStatCard(
-          'teacher.total_students'.tr(),
-          _totalStudents.toString(),
-          CupertinoIcons.person_2,
-          const Color(0xFF007AFF),
-        ),
-        _buildStatCard(
-          'teacher.present_today'.tr(),
-          _presentToday.toString(),
-          CupertinoIcons.checkmark_circle,
-          const Color(0xFF34C759),
-        ),
-        _buildStatCard(
-          'teacher.pending_homework'.tr(),
-          _pendingHomework.toString(),
-          CupertinoIcons.doc_text,
-          const Color(0xFFFF9500),
-        ),
-        _buildStatCard(
-          'teacher.unread_messages'.tr(),
-          _unreadMessages.toString(),
-          CupertinoIcons.chat_bubble,
-          const Color(0xFFFF3B30),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildStatCard(String title, String value, IconData icon, Color color) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
-                child: Text(
-                  title,
-                  style: const TextStyle(
-                    color: Colors.grey,
-                    fontSize: 12,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      _getLocalizedText('overview'),
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.8),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      widget.teacher['name'] ?? 'Teacher',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 28,
+                        fontWeight: FontWeight.w700,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      widget.teacher['subject'] ?? '',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.9),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(16),
                 ),
-                child: Icon(icon, color: color, size: 20),
+                child: const Icon(
+                  CupertinoIcons.home,
+                  color: Colors.white,
+                  size: 32,
+                ),
               ),
             ],
-          ),
-          Text(
-            value,
-            style: TextStyle(
-              color: color,
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-            ),
           ),
         ],
       ),
@@ -258,69 +206,65 @@ class _DashboardSectionState extends State<DashboardSection> {
   }
 
   Widget _buildQuickActions() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'teacher.quick_actions'.tr(),
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
+    return Container(
+      margin: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            _getLocalizedText('quick_actions'),
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+            ),
           ),
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: _buildActionButton(
-                'teacher.take_attendance'.tr(),
-                CupertinoIcons.checkmark_square,
-                const Color(0xFF007AFF),
-                () {
-                  // Navigate to attendance section
-                },
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: _buildActionButton(
+                  _getLocalizedText('take_attendance'),
+                  CupertinoIcons.checkmark_square,
+                  const Color(0xFF007AFF),
+                  () => _navigateTo('attendance'),
+                ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildActionButton(
-                'teacher.create_homework'.tr(),
-                CupertinoIcons.doc_text,
-                const Color(0xFF34C759),
-                () {
-                  // Navigate to homework section
-                },
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildActionButton(
+                  _getLocalizedText('create_homework'),
+                  CupertinoIcons.doc_text,
+                  const Color(0xFF34C759),
+                  () => _navigateTo('homework'),
+                ),
               ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: _buildActionButton(
-                'teacher.post_announcement'.tr(),
-                CupertinoIcons.bell,
-                const Color(0xFFFF9500),
-                () {
-                  // Navigate to announcements section
-                },
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _buildActionButton(
+                  _getLocalizedText('post_announcement'),
+                  CupertinoIcons.bell,
+                  const Color(0xFFFF9500),
+                  () => _navigateTo('announcements'),
+                ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildActionButton(
-                'teacher.add_grade'.tr(),
-                CupertinoIcons.chart_bar_square,
-                const Color(0xFFFF3B30),
-                () {
-                  // Navigate to grades section
-                },
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildActionButton(
+                  _getLocalizedText('add_grade'),
+                  CupertinoIcons.chart_bar_square,
+                  const Color(0xFFFF3B30),
+                  () => _navigateTo('grades'),
+                ),
               ),
-            ),
-          ],
-        ),
-      ],
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -328,15 +272,15 @@ class _DashboardSectionState extends State<DashboardSection> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 2),
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
             ),
           ],
         ),
@@ -345,18 +289,19 @@ class _DashboardSectionState extends State<DashboardSection> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
+                color: color.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(icon, color: color, size: 24),
+              child: Icon(icon, color: color, size: 28),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             Text(
               title,
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontSize: 12,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF0D47A1),
               ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
@@ -367,101 +312,155 @@ class _DashboardSectionState extends State<DashboardSection> {
     );
   }
 
-  Widget _buildMyClasses() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'teacher.my_classes'.tr(),
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 12),
-        if (_classes.isEmpty)
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
+  Widget _buildClassesList() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            _getLocalizedText('my_classes'),
+            style: const TextStyle(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
             ),
-            child: Center(
-              child: Text(
-                'teacher.no_classes'.tr(),
-                style: const TextStyle(color: Colors.grey),
+          ),
+          const SizedBox(height: 16),
+          if (_classes.isEmpty)
+            Container(
+              padding: const EdgeInsets.all(40),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Center(
+                child: Column(
+                  children: [
+                    Icon(
+                      CupertinoIcons.book,
+                      size: 48,
+                      color: Colors.grey[400],
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      _getLocalizedText('no_classes'),
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          else
+            ..._classes.map((classData) => _buildClassCard(classData)).toList(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildClassCard(Map<String, dynamic> classData) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFF007AFF), Color(0xFF0051D5)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: const Icon(
+              CupertinoIcons.book_fill,
+              color: Colors.white,
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  classData['name'] ?? 'Unknown Class',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF0D47A1),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Icon(
+                      CupertinoIcons.person_2,
+                      size: 14,
+                      color: Colors.grey[600],
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${classData['studentCount'] ?? 0} ${_getLocalizedText('students')}',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: const Color(0xFF0D47A1).withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              _getLocalizedText('view_details'),
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF0D47A1),
               ),
             ),
-          )
-        else
-          ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: _classes.length,
-            itemBuilder: (context, index) {
-              final classData = _classes[index];
-              return Container(
-                margin: const EdgeInsets.only(bottom: 12),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF007AFF).withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Icon(
-                        CupertinoIcons.book,
-                        color: Color(0xFF007AFF),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            classData['name'] ?? '',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            widget.teacher['subject'] ?? '',
-                            style: const TextStyle(
-                              color: Colors.grey,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Icon(
-                      CupertinoIcons.chevron_right,
-                      color: Colors.grey,
-                      size: 20,
-                    ),
-                  ],
-                ),
-              );
-            },
           ),
-      ],
+        ],
+      ),
     );
+  }
+
+  void _navigateTo(String section) {
+    // This is a placeholder - in a real app you'd navigate to the section
+    // For now, just show a snackbar
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Navigate to: $section'),
+        backgroundColor: const Color(0xFF007AFF),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }

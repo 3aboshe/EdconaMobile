@@ -14,9 +14,30 @@ class MessageService {
         'offset': offset,
       };
 
+      // Use conversation endpoint when both sender and receiver are specified
+      if (senderId != null && receiverId != null) {
+        final response = await ApiService.dio.get(
+          '/api/messages/conversation/$senderId/$receiverId',
+        );
+
+        if (response.statusCode == 200) {
+          // Map the API response to our expected format
+          final messages = List<Map<String, dynamic>>.from(response.data);
+          return messages.map((msg) => {
+            'id': msg['id'],
+            'senderId': msg['senderId'],
+            'receiverId': msg['receiverId'],
+            'message': msg['content'], // API uses 'content' instead of 'message'
+            'timestamp': msg['timestamp'],
+            'read': msg['isRead'] ?? false, // API uses 'isRead' instead of 'read'
+            'type': msg['type'] ?? 'TEXT',
+            'attachments': msg['attachments'] ?? [],
+          }).toList();
+        }
+      }
+
+      // Fallback to regular messages endpoint for other cases
       if (userId != null) queryParams['userId'] = userId;
-      if (senderId != null) queryParams['senderId'] = senderId;
-      if (receiverId != null) queryParams['receiverId'] = receiverId;
 
       final response = await ApiService.dio.get(
         '/api/messages',

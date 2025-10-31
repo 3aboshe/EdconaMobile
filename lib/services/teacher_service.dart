@@ -337,4 +337,70 @@ class TeacherService {
       return [];
     }
   }
+
+  // Create exam
+  Future<Map<String, dynamic>> createExam(Map<String, dynamic> examData) async {
+    try {
+      final response = await ApiService.dio.post('/api/exams', data: examData);
+      if (response.statusCode == 201) {
+        return {'success': true, 'exam': response.data};
+      }
+      return {'success': false, 'message': 'Failed to create exam'};
+    } catch (e) {
+      return {'success': false, 'message': 'Error: $e'};
+    }
+  }
+
+  // Assign grade to student
+  Future<Map<String, dynamic>> assignGrade(String studentId, String teacherId, String examTitle, double score, double maxScore, String classId) async {
+    try {
+      final response = await ApiService.dio.post('/api/grades', data: {
+        'studentId': studentId,
+        'teacherId': teacherId,
+        'examTitle': examTitle,
+        'marksObtained': score,
+        'maxMarks': maxScore,
+        'classId': classId,
+      });
+      if (response.statusCode == 201) {
+        return {'success': true, 'grade': response.data};
+      }
+      return {'success': false, 'message': 'Failed to assign grade'};
+    } catch (e) {
+      return {'success': false, 'message': 'Error: $e'};
+    }
+  }
+
+  // Grade homework
+  Future<Map<String, dynamic>> gradeHomework(String studentId, String homeworkId, double grade, String feedback) async {
+    try {
+      final response = await ApiService.dio.post('/api/homework/$homeworkId/grade', data: {
+        'studentId': studentId,
+        'grade': grade,
+        'feedback': feedback,
+      });
+      if (response.statusCode == 200) {
+        return {'success': true, 'message': 'Homework graded successfully'};
+      }
+      return {'success': false, 'message': 'Failed to grade homework'};
+    } catch (e) {
+      return {'success': false, 'message': 'Error: $e'};
+    }
+  }
+
+  // Update homework submission status
+  Future<Map<String, dynamic>> updateHomeworkSubmission(String studentId, String homeworkId, String status) async {
+    try {
+      final response = await ApiService.dio.put('/api/homework/$homeworkId/submission', data: {
+        'studentId': studentId,
+        'status': status,
+      });
+      if (response.statusCode == 200) {
+        return {'success': true, 'message': 'Submission status updated'};
+      }
+      return {'success': false, 'message': 'Failed to update submission'};
+    } catch (e) {
+      return {'success': false, 'message': 'Error: $e'};
+    }
+  }
 }
