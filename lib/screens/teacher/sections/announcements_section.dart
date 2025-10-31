@@ -107,7 +107,8 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
             ElevatedButton(
               onPressed: () async {
                 if (titleController.text.isEmpty || contentController.text.isEmpty) return;
-                
+
+                final currentContext = context;
                 final result = await _teacherService.createAnnouncement({
                   'title': titleController.text,
                   'content': contentController.text,
@@ -116,11 +117,12 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
                   'priority': priority,
                   'classIds': [],
                 });
-                
-                if (mounted) {
-                  Navigator.pop(context);
-                  if (result['success']) {
-                    ScaffoldMessenger.of(context).showSnackBar(
+
+                if (!mounted) return;
+                Navigator.pop(currentContext);
+                if (result['success']) {
+                  if (mounted) {
+                    ScaffoldMessenger.of(currentContext).showSnackBar(
                       SnackBar(
                         content: Text('teacher.announcement_posted'.tr()),
                         backgroundColor: Colors.green,

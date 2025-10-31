@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "Bash(flutter analyze lib/screens/parent/parent_dashboard.dart lib/screens/teacher/teacher_dashboard.dart)",
-      "Bash(flutter analyze lib/screens/login_screen.dart lib/screens/parent/parent_dashboard.dart lib/screens/teacher/teacher_dashboard.dart)"
+      "Bash(flutter analyze lib/screens/login_screen.dart lib/screens/parent/parent_dashboard.dart lib/screens/teacher/teacher_dashboard.dart)",
+      "Bash(flutter analyze)",
+      "Bash(flutter clean)",
+      "Bash(flutter pub get)",
+      "Bash(cat -n /Users/abdalrahmanmajed/Desktop/edconamobile/lib/screens/teacher/teacher_dashboard.dart)"
     ],
     "deny": [],
     "ask": []

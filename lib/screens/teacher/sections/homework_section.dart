@@ -107,7 +107,8 @@ class _HomeworkSectionState extends State<HomeworkSection> {
           ElevatedButton(
             onPressed: () async {
               if (titleController.text.isEmpty) return;
-              
+
+              final currentContext = context;
               final result = await _teacherService.createHomework({
                 'title': titleController.text,
                 'subject': subjectController.text,
@@ -116,11 +117,12 @@ class _HomeworkSectionState extends State<HomeworkSection> {
                 'teacherId': widget.teacher['id'],
                 'classIds': [], // Add class selection if needed
               });
-              
-              if (mounted) {
-                Navigator.pop(context);
-                if (result['success']) {
-                  ScaffoldMessenger.of(context).showSnackBar(
+
+              if (!mounted) return;
+              Navigator.pop(currentContext);
+              if (result['success']) {
+                if (mounted) {
+                  ScaffoldMessenger.of(currentContext).showSnackBar(
                     SnackBar(
                       content: Text('teacher.homework_created'.tr()),
                       backgroundColor: Colors.green,

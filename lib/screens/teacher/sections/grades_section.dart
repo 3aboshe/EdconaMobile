@@ -153,7 +153,8 @@ class _GradesSectionState extends State<GradesSection> {
             ElevatedButton(
               onPressed: () async {
                 if (marksController.text.isEmpty || assignmentController.text.isEmpty) return;
-                
+
+                final currentContext = context;
                 final result = await _teacherService.addGrade({
                   'studentId': student['id'],
                   'subject': widget.teacher['subject'],
@@ -163,11 +164,12 @@ class _GradesSectionState extends State<GradesSection> {
                   'type': examType,
                   'date': DateTime.now().toIso8601String(),
                 });
-                
-                if (mounted) {
-                  Navigator.pop(context);
-                  if (result['success']) {
-                    ScaffoldMessenger.of(context).showSnackBar(
+
+                if (!mounted) return;
+                Navigator.pop(currentContext);
+                if (result['success']) {
+                  if (mounted) {
+                    ScaffoldMessenger.of(currentContext).showSnackBar(
                       SnackBar(
                         content: Text('teacher.grade_added'.tr()),
                         backgroundColor: Colors.green,
