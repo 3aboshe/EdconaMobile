@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../../services/parent_service.dart';
 import '../../../services/message_service.dart';
 
