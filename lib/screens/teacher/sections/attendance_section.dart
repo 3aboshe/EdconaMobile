@@ -1,0 +1,434 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:easy_localization/easy_localization.dart';
+import '../../../services/teacher_service.dart';
+
+class AttendanceSection extends StatefulWidget {
+  final Map<String, dynamic> teacher;
+
+  const AttendanceSection({super.key, required this.teacher});
+
+  @override
+  State<AttendanceSection> createState() => _AttendanceSectionState();
+}
+
+class _AttendanceSectionState extends State<AttendanceSection> {
+  final TeacherService _teacherService = TeacherService();
+  bool _isLoading = true;
+  List<Map<String, dynamic>> _classes = [];
+  String? _selectedClassId;
+  List<Map<String, dynamic>> _students = [];
+  Map<String, String> _attendanceStatus = {}; // studentId -> status
+  DateTime _selectedDate = DateTime.now();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadClasses();
+  }
+
+  Future<void> _loadClasses() async {
+    setState(() => _isLoading = true);
+    
+    try {
+      final classes = await _teacherService.getTeacherClasses(widget.teacher['id']);
+      setState(() {
+        _classes = classes;
+        if (classes.isNotEmpty) {
+          _selectedClassId = classes[0]['id'];
+          _loadStudents();
+        } else {
+          _isLoading = false;
+        }
+      });
+    } catch (e) {
+      print('Error loading classes: $e');
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _loadStudents() async {
+    if (_selectedClassId == null) return;
+    
+    setState(() => _isLoading = true);
+    
+    try {
+      final students = await _teacherService.getStudentsByClass(_selectedClassId!);
+      
+      // Load existing attendance for selected date
+      final dateStr = DateFormat('yyyy-MM-dd').format(_selectedDate);
+      final attendance = await _teacherService.getAttendanceByDate(dateStr);
+      
+      Map<String, String> statusMap = {};
+      for (var record in attendance) {
+        if (students.any((s) => s['id'] == record['studentId'])) {
+          statusMap[record['studentId']] = record['status'];
+        }
+      }
+      
+      setState(() {
+        _students = students;
+        _attendanceStatus = statusMap;
+        _isLoading = false;
+      });
+    } catch (e) {
+      print('Error loading students: $e');
+      setState(() => _isLoading = false);
+    }
+  }
+
+  void _markAllPresent() {
+    setState(() {
+      for (var student in _students) {
+        _attendanceStatus[student['id']] = 'present';
+      }
+    });
+  }
+
+  void _markAllAbsent() {
+    setState(() {
+      for (var student in _students) {
+        _attendanceStatus[student['id']] = 'absent';
+      }
+    });
+  }
+
+  Future<void> _saveAttendance() async {
+    if (_students.isEmpty) return;
+    
+    final dateStr = DateFormat('yyyy-MM-dd').format(_selectedDate);
+    List<Map<String, dynamic>> records = [];
+    
+    for (var student in _students) {
+      final status = _attendanceStatus[student['id']] ?? 'absent';
+      records.add({
+        'date': dateStr,
+        'studentId': student['id'],
+        'status': status,
+      });
+    }
+    
+    final result = await _teacherService.saveAttendance(records);
+    
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            result['success'] 
+                ? 'teacher.attendance_saved'.tr() 
+                : result['message']
+          ),
+          backgroundColor: result['success'] ? Colors.green : Colors.red,
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        _buildHeader(),
+        Expanded(
+          child: _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : _students.isEmpty
+                  ? _buildEmptyState()
+                  : _buildStudentsList(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHeader() {
+    return Container(
+      color: Colors.white,
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          // Class selector
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF2F2F7),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: DropdownButton<String>(
+              value: _selectedClassId,
+              isExpanded: true,
+              underline: const SizedBox(),
+              hint: Text('teacher.select_class'.tr()),
+              items: _classes.map((classData) {
+                return DropdownMenuItem<String>(
+                  value: classData['id'],
+                  child: Text(classData['name']),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  _selectedClassId = value;
+                  _loadStudents();
+                });
+              },
+            ),
+          ),
+          const SizedBox(height: 12),
+          // Date selector
+          GestureDetector(
+            onTap: () async {
+              final date = await showDatePicker(
+                context: context,
+                initialDate: _selectedDate,
+                firstDate: DateTime(2020),
+                lastDate: DateTime.now().add(const Duration(days: 365)),
+              );
+              if (date != null) {
+                setState(() {
+                  _selectedDate = date;
+                  _loadStudents();
+                });
+              }
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF2F2F7),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    DateFormat('EEEE, MMMM d, yyyy').format(_selectedDate),
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                  const Icon(CupertinoIcons.calendar, size: 20),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          // Quick action buttons
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: _markAllPresent,
+                  icon: const Icon(CupertinoIcons.checkmark_circle, size: 18),
+                  label: Text('teacher.mark_all_present'.tr()),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF34C759),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: _markAllAbsent,
+                  icon: const Icon(CupertinoIcons.xmark_circle, size: 18),
+                  label: Text('teacher.mark_all_absent'.tr()),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFFF3B30),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            CupertinoIcons.person_2,
+            size: 64,
+            color: Colors.grey[300],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'teacher.no_students'.tr(),
+            style: const TextStyle(
+              color: Colors.grey,
+              fontSize: 16,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStudentsList() {
+    return Column(
+      children: [
+        Expanded(
+          child: ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: _students.length,
+            itemBuilder: (context, index) {
+              final student = _students[index];
+              final status = _attendanceStatus[student['id']] ?? 'absent';
+              
+              return Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 24,
+                      backgroundColor: const Color(0xFF007AFF).withOpacity(0.1),
+                      child: Text(
+                        student['name'][0].toUpperCase(),
+                        style: const TextStyle(
+                          color: Color(0xFF007AFF),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            student['name'],
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          Text(
+                            student['id'],
+                            style: const TextStyle(
+                              color: Colors.grey,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        _buildStatusButton(
+                          'teacher.present'.tr(),
+                          'present',
+                          status == 'present',
+                          const Color(0xFF34C759),
+                          () {
+                            setState(() {
+                              _attendanceStatus[student['id']] = 'present';
+                            });
+                          },
+                        ),
+                        const SizedBox(width: 8),
+                        _buildStatusButton(
+                          'teacher.absent'.tr(),
+                          'absent',
+                          status == 'absent',
+                          const Color(0xFFFF3B30),
+                          () {
+                            setState(() {
+                              _attendanceStatus[student['id']] = 'absent';
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: const Offset(0, -2),
+              ),
+            ],
+          ),
+          child: SafeArea(
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _saveAttendance,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF007AFF),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: Text(
+                  'teacher.save_attendance'.tr(),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStatusButton(
+    String label,
+    String value,
+    bool isSelected,
+    Color color,
+    VoidCallback onTap,
+  ) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: isSelected ? color : color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? Colors.white : color,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+  }
+}

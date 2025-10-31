@@ -1,0 +1,241 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id
+  name      String
+  role      UserRole
+  email     String?
+  avatar    String   @default("")
+  
+  // Student-specific fields
+  classId   String?
+  parentId  String?
+  
+  // Parent-specific fields  
+  childrenIds String[]
+  
+  // Teacher-specific fields
+  subject   String?
+  classIds  String[]
+  messagingAvailability Json?
+  
+  createdAt DateTime @default(now())
+  
+  // Relations
+  class     Class?   @relation("StudentClass", fields: [classId], references: [id])
+  parent    User?    @relation("ParentChild", fields: [parentId], references: [id])
+  children  User[]   @relation("ParentChild")
+  
+  // Teacher relations
+  homework      Homework[]
+  announcements Announcement[]
+  
+  // Student relations
+  grades        Grade[]      @relation("StudentGrades")
+  attendance    Attendance[]
+  sentMessages     Message[] @relation("MessageSender")
+  receivedMessages Message[] @relation("MessageReceiver")
+  submittedHomework Homework[] @relation("HomeworkSubmissions")
+  
+  @@map("users")
+}
+
+model Class {
+  id        String @id
+  name      String
+  subjectIds String[]
+  students  User[] @relation("StudentClass")
+  
+  @@map("classes")
+}
+
+model Subject {
+  id   String @id
+  name String
+  
+  @@map("subjects")
+}
+
+model Grade {
+  id           String    @id @default(cuid())
+  studentId    String
+  subject      String
+  assignment   String
+  marksObtained Int
+  maxMarks     Int
+  date         DateTime  @default(now())
+  type         GradeType @default(QUIZ)
+  
+  // Relations
+  student      User      @relation("StudentGrades", fields: [studentId], references: [id])
+  
+  @@map("grades")
+}
+
+model Homework {
+  id           String   @id
+  title        String
+  subject      String
+  dueDate      String
+  assignedDate String
+  teacherId    String
+  classIds     String[] @default([])
+  submitted    String[] @default([])
+  createdAt    DateTime @default(now())
+  
+  // Relations
+  teacher      User     @relation(fields: [teacherId], references: [id])
+  submittedBy  User[]   @relation("HomeworkSubmissions")
+  
+  @@map("homework")
+}
+
+model Announcement {
+  id        String             @id
+  title     String
+  content   String
+  date      String
+  teacherId String
+  classIds  String[]           @default([])
+  priority  AnnouncementPriority @default(MEDIUM)
+  createdAt DateTime           @default(now())
+
+  // Relations
+  teacher   User               @relation(fields: [teacherId], references: [id])
+
+  @@map("announcements")
+}
+
+model Attendance {
+  id        String           @id @default(cuid())
+  date      String
+  studentId String
+  status    AttendanceStatus
+  createdAt DateTime         @default(now())
+  
+  // Relations
+  student   User             @relation(fields: [studentId], references: [id])
+  
+  @@map("attendance")
+}
+
+model Message {
+  id         String      @id
+  senderId   String
+  receiverId String
+  timestamp  String
+  isRead     Boolean     @default(false)
+  type       MessageType @default(TEXT)
+  content    String?
+  audioSrc   String?
+  attachments Json?      // Store file metadata and URLs
+  createdAt  DateTime    @default(now())
+  
+  // Relations
+  sender     User        @relation("MessageSender", fields: [senderId], references: [id])
+  receiver   User        @relation("MessageReceiver", fields: [receiverId], references: [id])
+  
+  @@map("messages")
+}
+
+// Enums
+enum UserRole {
+  STUDENT
+  TEACHER
+  PARENT
+  ADMIN
+}
+
+enum GradeType {
+  QUIZ
+  TEST
+  HOMEWORK
+  PROJECT
+  EXAM
+}
+
+enum AnnouncementPriority {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+}
+
+enum MessageType {
+  TEXT
+  VOICE
+  FILE
+}
+
+// Automation tables for Phase 1
+model AutomationSuggestion {
+  id             Int      @id @default(autoincrement())
+  entityType     String
+  entityId       String?
+  suggestionType String
+  suggestionData Json
+  confidenceScore Float   @default(0.0)
+  accepted       Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  appliedAt      DateTime?
+
+  @@map("automation_suggestions")
+}
+
+model WorkflowExecution {
+  id              Int      @id @default(autoincrement())
+  workflowType    String
+  triggerData     Json
+  executionStatus String   @default("pending")
+  stepsCompleted  Json     @default("[]")
+  resultData      Json?
+  errorMessage    String?
+  startedAt       DateTime @default(now())
+  completedAt     DateTime?
+
+  @@map("workflow_executions")
+}
+
+model LearnedPattern {
+  id             Int      @id @default(autoincrement())
+  patternType    String
+  patternData    Json
+  successCount   Int      @default(0)
+  failureCount   Int      @default(0)
+  confidenceScore Float   @default(0.0)
+  lastApplied    DateTime?
+  createdAt      DateTime @default(now())
+
+  @@map("learned_patterns")
+}
+
+model BulkOperation {
+  id                Int      @id @default(autoincrement())
+  operationType     String
+  entityType        String
+  totalRecords      Int      @default(0)
+  successfulRecords Int      @default(0)
+  failedRecords     Int      @default(0)
+  operationData     Json?
+  status            String   @default("pending")
+  createdBy         String?
+  createdAt         DateTime @default(now())
+  completedAt       DateTime?
+
+  @@map("bulk_operations")
+}
