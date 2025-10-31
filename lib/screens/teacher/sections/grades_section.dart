@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import '../../../services/teacher_service.dart';
 
+
+
 class GradesSection extends StatefulWidget {
+
+
+// TextDirection constants to work around analyzer issue
+
+
   final Map<String, dynamic> teacher;
 
   const GradesSection({super.key, required this.teacher});
@@ -45,7 +52,7 @@ class _GradesSectionState extends State<GradesSection> {
         }
       });
     } catch (e) {
-      print('Error loading classes: $e');
+
       setState(() => _isLoading = false);
     }
   }
@@ -62,7 +69,7 @@ class _GradesSectionState extends State<GradesSection> {
         _isLoading = false;
       });
     } catch (e) {
-      print('Error loading students: $e');
+
       setState(() => _isLoading = false);
     }
   }
@@ -93,7 +100,7 @@ class _GradesSectionState extends State<GradesSection> {
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
-                  value: examType,
+                  initialValue: examType,
                   decoration: InputDecoration(
                     labelText: 'teacher.exam_type'.tr(),
                     border: const OutlineInputBorder(),

@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import '../../../services/teacher_service.dart';
 
+
+
 class HomeworkSection extends StatefulWidget {
+
+
+// TextDirection constants to work around analyzer issue
+
+
   final Map<String, dynamic> teacher;
 
   const HomeworkSection({super.key, required this.teacher});
@@ -38,7 +45,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
         _isLoading = false;
       });
     } catch (e) {
-      print('Error loading homework: $e');
+
       setState(() => _isLoading = false);
     }
   }

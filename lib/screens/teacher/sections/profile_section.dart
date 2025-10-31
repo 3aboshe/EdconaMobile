@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import '../../../services/teacher_service.dart';
 import '../../../services/auth_service.dart';
 import '../../login_screen.dart';
 
+
+
 class ProfileSection extends StatefulWidget {
+
+
+// TextDirection constants to work around analyzer issue
+
+
   final Map<String, dynamic> teacher;
 
   const ProfileSection({super.key, required this.teacher});

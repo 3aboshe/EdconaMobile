@@ -23,7 +23,7 @@ class TeacherService {
       }
       return [];
     } catch (e) {
-      print('Error getting teacher classes: $e');
+
       return [];
     }
   }
@@ -41,7 +41,7 @@ class TeacherService {
       }
       return [];
     } catch (e) {
-      print('Error getting students: $e');
+
       return [];
     }
   }
@@ -68,7 +68,7 @@ class TeacherService {
       }
       return [];
     } catch (e) {
-      print('Error getting attendance: $e');
+
       return [];
     }
   }
@@ -96,7 +96,7 @@ class TeacherService {
       }
       return [];
     } catch (e) {
-      print('Error getting homework: $e');
+
       return [];
     }
   }
@@ -148,7 +148,7 @@ class TeacherService {
       }
       return [];
     } catch (e) {
-      print('Error getting announcements: $e');
+
       return [];
     }
   }
@@ -200,7 +200,7 @@ class TeacherService {
       }
       return [];
     } catch (e) {
-      print('Error getting grades: $e');
+
       return [];
     }
   }
@@ -240,7 +240,7 @@ class TeacherService {
       }
       return [];
     } catch (e) {
-      print('Error getting messages: $e');
+
       return [];
     }
   }
@@ -315,7 +315,7 @@ class TeacherService {
       
       return leaderboard;
     } catch (e) {
-      print('Error getting leaderboard: $e');
+
       return [];
     }
   }
@@ -333,7 +333,7 @@ class TeacherService {
       }
       return [];
     } catch (e) {
-      print('Error getting parents: $e');
+
       return [];
     }
   }

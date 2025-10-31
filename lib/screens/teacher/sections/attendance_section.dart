@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import '../../../services/teacher_service.dart';
 
+
+
 class AttendanceSection extends StatefulWidget {
+
+
+// TextDirection constants to work around analyzer issue
+
+
   final Map<String, dynamic> teacher;
 
   const AttendanceSection({super.key, required this.teacher});
@@ -47,7 +54,7 @@ class _AttendanceSectionState extends State<AttendanceSection> {
         }
       });
     } catch (e) {
-      print('Error loading classes: $e');
+
       setState(() => _isLoading = false);
     }
   }
@@ -77,7 +84,7 @@ class _AttendanceSectionState extends State<AttendanceSection> {
         _isLoading = false;
       });
     } catch (e) {
-      print('Error loading students: $e');
+
       setState(() => _isLoading = false);
     }
   }

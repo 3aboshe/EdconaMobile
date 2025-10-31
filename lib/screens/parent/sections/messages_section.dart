@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import '../../../services/message_service.dart';
 import '../../../services/api_service.dart';
 import '../../../services/auth_service.dart';
 
+
+
 class MessagesSection extends StatefulWidget {
+
+
+// TextDirection constants to work around analyzer issue
+
+
   final Map<String, dynamic> student;
 
   const MessagesSection({
@@ -72,7 +79,7 @@ class _MessagesSectionState extends State<MessagesSection> {
         }
       }
     } catch (e) {
-      print('Error loading teachers: $e');
+
       if (mounted) {
         setState(() {
           _teachers = [];

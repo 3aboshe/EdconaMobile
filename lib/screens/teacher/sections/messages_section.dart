@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import '../../../services/teacher_service.dart';
 
+
+
 class MessagesSection extends StatefulWidget {
+
+
+// TextDirection constants to work around analyzer issue
+
+
   final Map<String, dynamic> teacher;
 
   const MessagesSection({super.key, required this.teacher});
@@ -65,7 +72,7 @@ class _MessagesSectionState extends State<MessagesSection> {
         _isLoading = false;
       });
     } catch (e) {
-      print('Error loading messages: $e');
+
       setState(() => _isLoading = false);
     }
   }

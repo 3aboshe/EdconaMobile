@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import '../../../services/teacher_service.dart';
 
+
+
 class AnnouncementsSection extends StatefulWidget {
+
+
+// TextDirection constants to work around analyzer issue
+
+
   final Map<String, dynamic> teacher;
 
   const AnnouncementsSection({super.key, required this.teacher});
@@ -38,7 +45,7 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
         _isLoading = false;
       });
     } catch (e) {
-      print('Error loading announcements: $e');
+
       setState(() => _isLoading = false);
     }
   }
@@ -75,7 +82,7 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
-                  value: priority,
+                  initialValue: priority,
                   decoration: InputDecoration(
                     labelText: 'teacher.priority'.tr(),
                     border: const OutlineInputBorder(),

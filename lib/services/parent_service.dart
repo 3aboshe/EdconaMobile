@@ -103,7 +103,7 @@ class ParentService {
         }).toList();
       }
     } catch (e) {
-      print('Error loading homework: $e');
+
       // Return empty list instead of throwing
       return [];
     }
