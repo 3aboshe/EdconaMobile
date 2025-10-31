@@ -15,8 +15,12 @@ class MessagesSection extends StatefulWidget {
 class _MessagesSectionState extends State<MessagesSection> {
   final TeacherService _teacherService = TeacherService();
   bool _isLoading = true;
-  List<Map<String, dynamic>> _messages = [];
   Map<String, Map<String, dynamic>> _conversations = {};
+
+  bool _isRTL() {
+    final locale = context.locale;
+    return ['ar', 'ckb', 'ku', 'bhn', 'arc', 'bad', 'bdi', 'sdh', 'kmr'].contains(locale.languageCode);
+  }
 
   @override
   void initState() {
@@ -55,9 +59,8 @@ class _MessagesSectionState extends State<MessagesSection> {
           conversations[otherUserId]!['unreadCount']++;
         }
       }
-      
+
       setState(() {
-        _messages = messages;
         _conversations = conversations;
         _isLoading = false;
       });
@@ -71,28 +74,37 @@ class _MessagesSectionState extends State<MessagesSection> {
   Widget build(BuildContext context) {
     final availability = widget.teacher['messagingAvailability'];
     final isAvailable = _checkAvailability(availability);
-    
-    return Column(
-      children: [
-        _buildAvailabilityBanner(isAvailable, availability),
-        Expanded(
-          child: _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : _conversations.isEmpty
-                  ? _buildEmptyState()
-                  : RefreshIndicator(
-                      onRefresh: _loadMessages,
-                      child: ListView.builder(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: _conversations.length,
-                        itemBuilder: (context, index) {
-                          final conversation = _conversations.values.toList()[index];
-                          return _buildConversationCard(conversation);
-                        },
-                      ),
+    final isRTL = _isRTL();
+
+    return Directionality(
+      textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
+      child: Column(
+        children: [
+          _buildAvailabilityBanner(isAvailable, availability),
+          Expanded(
+            child: _isLoading
+                ? Center(
+                    child: Directionality(
+                      textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
+                      child: const CircularProgressIndicator(),
                     ),
-        ),
-      ],
+                  )
+                : _conversations.isEmpty
+                    ? _buildEmptyState()
+                    : RefreshIndicator(
+                        onRefresh: _loadMessages,
+                        child: ListView.builder(
+                          padding: const EdgeInsets.all(16),
+                          itemCount: _conversations.length,
+                          itemBuilder: (context, index) {
+                            final conversation = _conversations.values.toList()[index];
+                            return _buildConversationCard(conversation);
+                          },
+                        ),
+                      ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -190,7 +202,7 @@ class _MessagesSectionState extends State<MessagesSection> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -202,7 +214,7 @@ class _MessagesSectionState extends State<MessagesSection> {
             children: [
               CircleAvatar(
                 radius: 28,
-                backgroundColor: const Color(0xFF007AFF).withOpacity(0.1),
+                backgroundColor: const Color(0xFF007AFF).withValues(alpha: 0.1),
                 child: const Icon(
                   CupertinoIcons.person,
                   color: Color(0xFF007AFF),

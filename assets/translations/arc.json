@@ -16,7 +16,6 @@
   },
   "parent": {
     "welcome": "ܫܠܡܐ ܠܟ ܒܬܪܥܐ ܕܐܒܐ ܘܐܡܐ",
-<<<<<<< HEAD
     "welcome_back": "ܫܠܡܐ ܠܟ ܬܘܒ",
     "your_students": "ܐܣܟܪܝܟ ܕܝܠܟ",
     "students": "ܐܣܟܪܝ̈ܐ",
@@ -41,6 +40,7 @@
     "attendance_count": "ܥܘܕܪܢܐ",
     "recent_activity": "ܦܥܠܘܬܐ ܚܕܬܐ",
     "no_recent_activity": "ܠܐ ܐܝܬ ܦܥܠܘܬܐ ܚܕܬܐ",
+    "select_student_detail": "ܓܠܐ ܐܣܟܪܝܐ ܠܚܙܝܐ ܦܪܘܦܝܐ",
     "schedule": "ܠܘܚܐ",
     "exams": "ܒܘܚܢ̈ܐ",
     "no_students": "ܠܐ ܐܝܬ ܐܣܟܪܝ̈ܐ",
@@ -60,6 +60,7 @@
     "no_homework": "ܠܐ ܐܝܬ ܥܒܕ̈ܐ ܕܒܝܬܐ",
     "no_grades": "ܠܐ ܐܝܬ ܢܩܘܕ̈ܐ",
     "no_attendance": "ܠܐ ܐܝܬ ܝܕܥܬܐ ܕܥܘܕܪܢܐ",
+    "no_attendance_found": "ܠܐ ܐܫܬܟܚ ܝܕܥܬܐ ܕܥܘܕܪܢܐ",
     "no_announcements": "ܠܐ ܐܝܬ ܐܘܕܥ̈ܬܐ",
     "pending_homework": "ܥܒܕ̈ܐ ܡܣܟܝ̈ܐ",
     "latest_announcements": "ܐܘܕܥ̈ܬܐ ܚܕܬ̈ܐ",
@@ -72,6 +73,7 @@
     "grade_label": "ܕܪܓܐ",
     "present": "ܐܝܬܘܗܝ",
     "absent": "ܠܝܬܘܗܝ",
+    "late": "ܡܥܒܪ ܙܒܢܐ",
     "pending": "ܡܣܟܐ",
     "overdue": "ܡܥܒܪ ܙܒܢܐ",
     "total": "ܟܠܢܝܐ",
@@ -87,34 +89,57 @@
     "urgent": "ܚܫܝܬܐ",
     "important": "ܡܗܝܡܐ",
     "normal": "ܥܕܝܐ"
-=======
-    "your_students": "ܐܣܟܪܝܟ ܕܝܠܟ",
-    "quick_actions": "ܦܥܠܝ̈ܐ ܚܫܝܬܐ",
-    "performance": "ܫܘܘܕܥܐ",
-    "homework": "ܥܒܕ̈ܐ ܕܒܝܬܐ",
+  },
+  "teacher": {
+    "welcome": "ܫܠܡܐ ܠܟ ܒܬܪܥܐ ܕܡܠܦܢܐ",
+    "welcome_back": "ܫܠܡܐ ܠܟ ܬܘܒ",
+    "home": "ܒܝܬ",
+    "dashboard": "ܠܘܚܐ ܪܝܫܝܐ",
     "attendance": "ܥܘܕܪܢܐ",
-    "messages": "ܐܓܪ̈ܬܐ",
-    "student_details": "ܦܪܘܦܝܐ ܕܐܣܟܪܝܐ",
+    "homework": "ܥܒܕ̈ܐ ܕܒܝܬܐ",
+    "announcements": "ܐܘܕܥ̈ܬܐ",
     "grades": "ܢܩܘܕ̈ܐ",
-    "attendance_count": "ܥܘܕܪܢܐ",
-    "recent_activity": "ܦܥܠܘܬܐ ܚܕܬܐ",
-    "no_recent_activity": "ܠܐ ܐܝܬ ܦܥܠܘܬܐ ܚܕܬܐ",
-    "select_student": "ܓܠܐ ܐܣܟܪܝܐ ܠܚܙܝܐ ܦܪܘܦܝܐ"
->>>>>>> 5ea39b80f25d143fa8c22ac385725aae8213a457
+    "messages": "ܐܓܪ̈ܬܐ",
+    "leaderboard": "ܡܘܕܝܢܐ ܕܝܘܬܪ̈ܢܐ",
+    "profile": "ܦܪܘܦܝܠ",
+    "my_classes": "ܕܪܓܝ̈ܐ ܕܝܠܝ",
+    "students": "ܐܣܟܪܝ̈ܐ",
+    "today_schedule": "ܠܘܚܐ ܕܝܘܡܐ",
+    "quick_actions": "ܦܥܠܝ̈ܐ ܚܫܝܬܐ",
+    "take_attendance": "ܣܝܒܘܬ ܥܘܕܪܢܐ",
+    "create_homework": "ܒܪܝ ܥܒܕܐ ܕܒܝܬܐ",
+    "post_announcement": "ܦܫܛ ܐܘܕܥܬܐ",
+    "add_grade": "ܐܘܤܦ ܢܩܘܕܐ",
+    "total_students": "ܡܢܝܢܐ ܓܘܢܝܐ ܕܐܣܟܪܝ̈ܐ",
+    "present_today": "ܐܝܬܘܗܝ ܝܘܡܐ",
+    "pending_homework": "ܥܒܕ̈ܐ ܡܣܟܝ̈ܐ",
+    "unread_messages": "ܐܓܪ̈ܬܐ ܕܠܐ ܐܬܩܪܝ̈ܢ",
+    "no_classes": "ܠܐ ܐܝܬ ܕܪܓܝ̈ܐ"
   },
   "common": {
     "ok": "ܛܒ",
-    "cancel": "ܒܛܘܠܐ",
+    "cancel": "ܣܟܘܬ",
     "error": "ܚܛܐ",
-    "success": "ܦܘܪܫܢܐ",
-<<<<<<< HEAD
-    "loading": "ܥܐܕܐ...",
-    "try_again": "ܢܣܐ ܬܘܒ",
+    "success": "ܫܘܬܦܝܐ",
+    "loading": "ܥܐܕ...",
+    "try_again": "ܬܘܒ ܐܬܢܦܩ",
+    "retry": "ܬܘܒ ܢܦܫ",
+    "close": "ܣܟܘ",
+    "save": "ܦܝܫ",
+    "delete": "ܫܢܝ",
+    "edit": "ܚܠܦ",
+    "add": "ܐܘܤܦ",
+    "search": "ܒܥܝ",
+    "filter": "ܡܪܝܪ",
+    "sort": "ܡܚܘܬ",
+    "refresh": "ܡܚܝܪ",
+    "logout": "ܦܝܫ",
+    "profile": "ܦܪܘܦܝܠ",
+    "settings": "ܡܘܕܡ̈ܝܢ",
+    "notification": "ܚܙܝܪ̈ܐ",
+    "warning": "ܐܝܬܝܐ",
+    "info": "ܝܕܥܬܐ",
     "all": "ܟܠ",
-    "logout": "ܦܘܩ",
-    "refresh": "ܚܕܬ"
-=======
-    "loading": "ܥܐܕܐ..."
->>>>>>> 5ea39b80f25d143fa8c22ac385725aae8213a457
+    "more": "ܝܬܝܪ"
   }
 }

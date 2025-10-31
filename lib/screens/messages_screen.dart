@@ -17,12 +17,9 @@ class _MessagesScreenState extends State<MessagesScreen>
   final AuthService _authService = AuthService();
 
   List<Map<String, dynamic>> _conversations = [];
-  List<Map<String, dynamic>> _messages = [];
   bool _isLoading = true;
   String? _errorMessage;
-  String? _selectedConversationId;
   Map<String, dynamic>? _currentUser;
-  Map<String, dynamic>? _selectedUser;
 
   late AnimationController _fabController;
   late AnimationController _listController;
@@ -104,36 +101,9 @@ class _MessagesScreenState extends State<MessagesScreen>
     }
   }
 
-  Future<void> _loadMessages(String conversationId) async {
-    if (_currentUser == null) return;
-
-    try {
-      final messages = await _messageService.getMessages(
-        userId: _currentUser!['id'],
-      );
-
-      // Filter messages for this conversation
-      final conversationMessages = messages.where((message) {
-        return (message['senderId'] == conversationId || message['receiverId'] == conversationId);
-      }).toList();
-
-      setState(() {
-        _messages = conversationMessages;
-        _selectedConversationId = conversationId;
-      });
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to load messages'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-  }
-
   bool _isRTL() {
     final locale = context.locale;
-    return ['ar', 'ckb', 'bhn', 'arc'].contains(locale.languageCode);
+    return ['ar', 'ckb', 'ku', 'bhn', 'arc', 'bad', 'bdi', 'sdh', 'kmr'].contains(locale.languageCode);
   }
 
   @override
@@ -246,13 +216,13 @@ class _MessagesScreenState extends State<MessagesScreen>
               width: 120,
               height: 120,
               decoration: BoxDecoration(
-                color: const Color(0xFF0D47A1).withOpacity(0.1),
+                color: const Color(0xFF0D47A1).withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.message_outlined,
                 size: 60,
-                color: const Color(0xFF0D47A1).withOpacity(0.6),
+                color: const Color(0xFF0D47A1).withValues(alpha: 0.6),
               ),
             ),
             const SizedBox(height: 24),
@@ -333,7 +303,7 @@ class _MessagesScreenState extends State<MessagesScreen>
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -364,7 +334,7 @@ class _MessagesScreenState extends State<MessagesScreen>
                 // User Avatar
                 CircleAvatar(
                   radius: 28,
-                  backgroundColor: const Color(0xFF0D47A1).withOpacity(0.1),
+                  backgroundColor: const Color(0xFF0D47A1).withValues(alpha: 0.1),
                   backgroundImage: otherUser?['avatar'] != null
                       ? NetworkImage(otherUser!['avatar'])
                       : null,
@@ -490,6 +460,7 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final MessageService _messageService = MessageService();
   final TextEditingController _messageController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
 
   List<Map<String, dynamic>> _messages = [];
   bool _isLoading = true;
@@ -511,9 +482,24 @@ class _ChatScreenState extends State<ChatScreen> {
         _messages = messages;
         _isLoading = false;
       });
+
+      // Auto-scroll to bottom after loading messages
+      _scrollToBottom();
     } catch (e) {
       setState(() {
         _isLoading = false;
+      });
+    }
+  }
+
+  void _scrollToBottom() {
+    if (_scrollController.hasClients) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
       });
     }
   }
@@ -531,28 +517,35 @@ class _ChatScreenState extends State<ChatScreen> {
 
       if (result['success']) {
         _messageController.clear();
-        _loadMessages();
+        if (mounted) {
+          _loadMessages();
+        }
       } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(result['message'] ?? 'Failed to send message'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(result['message'] ?? 'Failed to send message'),
+          const SnackBar(
+            content: Text('Failed to send message'),
             backgroundColor: Colors.red,
           ),
         );
       }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Failed to send message'),
-          backgroundColor: Colors.red,
-        ),
-      );
     }
   }
 
   @override
   void dispose() {
     _messageController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -565,7 +558,7 @@ class _ChatScreenState extends State<ChatScreen> {
           children: [
             CircleAvatar(
               radius: 20,
-              backgroundColor: Colors.white.withOpacity(0.2),
+              backgroundColor: Colors.white.withValues(alpha: 0.2),
               backgroundImage: widget.otherUser['avatar'] != null
                   ? NetworkImage(widget.otherUser['avatar'])
                   : null,
@@ -596,7 +589,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     widget.otherUser['subject'] ?? widget.isRTL ? 'معلم' : 'Teacher',
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.white.withOpacity(0.9),
+                      color: Colors.white.withValues(alpha: 0.9),
                     ),
                   ),
                 ],
@@ -656,6 +649,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _buildMessagesList() {
     return ListView.builder(
+      controller: _scrollController,
       padding: const EdgeInsets.all(16),
       itemCount: _messages.length,
       itemBuilder: (context, index) {
@@ -683,10 +677,9 @@ class _ChatScreenState extends State<ChatScreen> {
       child: Row(
         mainAxisAlignment: isFromMe
             ? MainAxisAlignment.end
-            : (widget.isRTL ? MainAxisAlignment.end : MainAxisAlignment.start),
+            : MainAxisAlignment.start,
         children: [
-          if (!isFromMe && !widget.isRTL) const SizedBox(width: 40),
-          if (isFromMe && widget.isRTL) const SizedBox(width: 40),
+          if (isFromMe) const SizedBox(width: 40),
           Flexible(
             child: Container(
               constraints: BoxConstraints(
@@ -709,7 +702,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 5,
                     offset: const Offset(0, 1),
                   ),
@@ -732,7 +725,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         : '',
                     style: TextStyle(
                       color: isFromMe
-                          ? Colors.white.withOpacity(0.7)
+                          ? Colors.white.withValues(alpha: 0.7)
                           : Colors.grey[500],
                       fontSize: 11,
                     ),
@@ -741,8 +734,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ),
           ),
-          if (isFromMe && !widget.isRTL) const SizedBox(width: 40),
-          if (!isFromMe && widget.isRTL) const SizedBox(width: 40),
+          if (!isFromMe) const SizedBox(width: 40),
         ],
       ),
     );
@@ -755,7 +747,7 @@ class _ChatScreenState extends State<ChatScreen> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, -2),
           ),
@@ -870,30 +862,36 @@ class _NewMessageDialogState extends State<NewMessageDialog> {
       );
 
       if (result['success']) {
-        Navigator.of(context).pop();
-        widget.onMessageSent();
+        if (mounted) {
+          Navigator.of(context).pop();
+          widget.onMessageSent();
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(widget.isRTL ? 'تم إرسال الرسالة' : 'Message sent'),
-            backgroundColor: Colors.green,
-          ),
-        );
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(widget.isRTL ? 'تم إرسال الرسالة' : 'Message sent'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
       } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(result['message'] ?? 'Failed to send message'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(result['message'] ?? 'Failed to send message'),
+          const SnackBar(
+            content: Text('Failed to send message'),
             backgroundColor: Colors.red,
           ),
         );
       }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Failed to send message'),
-          backgroundColor: Colors.red,
-        ),
-      );
     } finally {
       setState(() {
         _isLoading = false;

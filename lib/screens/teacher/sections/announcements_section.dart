@@ -17,6 +17,11 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
   bool _isLoading = true;
   List<Map<String, dynamic>> _announcements = [];
 
+  bool _isRTL() {
+    final locale = context.locale;
+    return ['ar', 'ckb', 'ku', 'bhn', 'arc', 'bad', 'bdi', 'sdh', 'kmr'].contains(locale.languageCode);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -128,27 +133,37 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF2F2F7),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _announcements.isEmpty
-              ? _buildEmptyState()
-              : RefreshIndicator(
-                  onRefresh: _loadAnnouncements,
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: _announcements.length,
-                    itemBuilder: (context, index) {
-                      final announcement = _announcements[index];
-                      return _buildAnnouncementCard(announcement);
-                    },
-                  ),
+    final isRTL = _isRTL();
+
+    return Directionality(
+      textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF2F2F7),
+        body: _isLoading
+            ? Center(
+                child: Directionality(
+                  textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
+                  child: const CircularProgressIndicator(),
                 ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showCreateAnnouncementDialog,
-        backgroundColor: const Color(0xFF007AFF),
-        child: const Icon(CupertinoIcons.add, color: Colors.white),
+              )
+            : _announcements.isEmpty
+                ? _buildEmptyState()
+                : RefreshIndicator(
+                    onRefresh: _loadAnnouncements,
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: _announcements.length,
+                      itemBuilder: (context, index) {
+                        final announcement = _announcements[index];
+                        return _buildAnnouncementCard(announcement);
+                      },
+                    ),
+                  ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: _showCreateAnnouncementDialog,
+          backgroundColor: const Color(0xFF007AFF),
+          child: const Icon(CupertinoIcons.add, color: Colors.white),
+        ),
       ),
     );
   }
@@ -172,13 +187,16 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
             ),
           ),
           const SizedBox(height: 8),
-          ElevatedButton.icon(
-            onPressed: _showCreateAnnouncementDialog,
-            icon: const Icon(CupertinoIcons.add),
-            label: Text('teacher.post_announcement'.tr()),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF007AFF),
-              foregroundColor: Colors.white,
+          Directionality(
+            textDirection: TextDirection.ltr,
+            child: ElevatedButton.icon(
+              onPressed: _showCreateAnnouncementDialog,
+              icon: const Icon(CupertinoIcons.add),
+              label: Text('teacher.post_announcement'.tr()),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF007AFF),
+                foregroundColor: Colors.white,
+              ),
             ),
           ),
         ],
@@ -209,7 +227,7 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -222,7 +240,7 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: priorityColor.withOpacity(0.1),
+              color: priorityColor.withValues(alpha: 0.1),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(12),
                 topRight: Radius.circular(12),

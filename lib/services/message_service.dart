@@ -188,18 +188,8 @@ class MessageService {
   }
 
   Future<List<Map<String, dynamic>>> getTeachersForParent(String parentId) async {
-    try {
-      // First try dedicated endpoint
-      final response = await ApiService.dio.get('/api/users/teachers/$parentId');
-
-      if (response.statusCode == 200) {
-        return List<Map<String, dynamic>>.from(response.data);
-      }
-    } catch (e) {
-      // If endpoint doesn't exist, return empty list
-      // In a real implementation, you might need to get this from
-      // the parent's children's classes or other relationships
-    }
+    // This method is not used - logic is handled in MessagesSection
+    // Return empty list to avoid confusion
     return [];
   }
 

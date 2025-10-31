@@ -15,7 +15,7 @@ class ChildSelectionScreen extends StatefulWidget {
 class _ChildSelectionScreenState extends State<ChildSelectionScreen> {
   final ParentService _parentService = ParentService();
   final AuthService _authService = AuthService();
-  
+
   Map<String, dynamic>? _currentUser;
   List<Map<String, dynamic>> _children = [];
   bool _isLoading = true;
@@ -56,28 +56,46 @@ class _ChildSelectionScreenState extends State<ChildSelectionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F2F7),
+      backgroundColor: const Color(0xFF0D47A1),
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: const Color(0xFF0D47A1),
         elevation: 0,
-        title: Text(
-          'parent.select_student'.tr(),
-          style: const TextStyle(
-            color: Colors.black,
-            fontSize: 17,
-            fontWeight: FontWeight.w600,
-          ),
+        title: Row(
+          children: [
+            Image.asset(
+              'assets/logowhite.png',
+              height: 45,
+              errorBuilder: (context, error, stackTrace) {
+                return const Icon(
+                  Icons.school,
+                  color: Colors.white,
+                  size: 45,
+                );
+              },
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'parent.select_student'.tr(),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
         ),
         actions: [
           IconButton(
-            icon: const Icon(CupertinoIcons.square_arrow_right, color: Colors.red),
+            icon: const Icon(CupertinoIcons.square_arrow_right, color: Colors.white),
             onPressed: _logout,
           ),
         ],
       ),
       body: _isLoading
           ? const Center(
-              child: CupertinoActivityIndicator(radius: 16),
+              child: CupertinoActivityIndicator(radius: 16, color: Colors.white),
             )
           : _errorMessage != null
               ? _buildErrorView()
@@ -95,7 +113,7 @@ class _ChildSelectionScreenState extends State<ChildSelectionScreen> {
             const Icon(
               CupertinoIcons.exclamationmark_triangle,
               size: 64,
-              color: Colors.red,
+              color: Colors.white,
             ),
             const SizedBox(height: 16),
             Text(
@@ -103,7 +121,7 @@ class _ChildSelectionScreenState extends State<ChildSelectionScreen> {
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontSize: 16,
-                color: Colors.red,
+                color: Colors.white,
               ),
             ),
             const SizedBox(height: 24),
@@ -138,14 +156,14 @@ class _ChildSelectionScreenState extends State<ChildSelectionScreen> {
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
-                      colors: [Color(0xFF007AFF), Color(0xFF5AC8FA)],
+                      colors: [Color(0xFF0D47A1), Color(0xFF1565C0)],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF007AFF).withOpacity(0.3),
+                        color: Colors.black.withValues(alpha: 0.3),
                         blurRadius: 20,
                         offset: const Offset(0, 8),
                       ),
@@ -166,7 +184,7 @@ class _ChildSelectionScreenState extends State<ChildSelectionScreen> {
                       Text(
                         _currentUser?['name'] ?? 'Parent',
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.9),
+                          color: Colors.white.withValues(alpha: 0.9),
                           fontSize: 18,
                         ),
                       ),
@@ -177,7 +195,7 @@ class _ChildSelectionScreenState extends State<ChildSelectionScreen> {
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
@@ -198,7 +216,7 @@ class _ChildSelectionScreenState extends State<ChildSelectionScreen> {
                   style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                    color: Colors.white,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -206,7 +224,7 @@ class _ChildSelectionScreenState extends State<ChildSelectionScreen> {
                   'parent.select_student_subtitle'.tr(),
                   style: TextStyle(
                     fontSize: 15,
-                    color: Colors.grey[600],
+                    color: Colors.white70,
                   ),
                 ),
               ],
@@ -240,7 +258,7 @@ class _ChildSelectionScreenState extends State<ChildSelectionScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.15),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -269,8 +287,8 @@ class _ChildSelectionScreenState extends State<ChildSelectionScreen> {
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        Color(0xFF007AFF).withOpacity(0.8),
-                        Color(0xFF5AC8FA).withOpacity(0.8),
+                        const Color(0xFF0D47A1).withValues(alpha: 0.9),
+                        const Color(0xFF1565C0).withValues(alpha: 0.9),
                       ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -313,11 +331,10 @@ class _ChildSelectionScreenState extends State<ChildSelectionScreen> {
                     ],
                   ),
                 ),
-                // Arrow
-                const Icon(
-                  CupertinoIcons.chevron_right,
-                  color: Colors.grey,
-                  size: 20,
+                const SizedBox(width: 8),
+                Icon(
+                  CupertinoIcons.chevron_forward,
+                  color: Colors.grey[400],
                 ),
               ],
             ),

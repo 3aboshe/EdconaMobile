@@ -16,7 +16,6 @@
   },
   "parent": {
     "welcome": "به‌خێربێیت بۆ دەروازەی دایک و باوک",
-<<<<<<< HEAD
     "welcome_back": "به‌خێربێیتەوە",
     "your_students": "خوێندکارەکانت",
     "students": "خوێندکاران",
@@ -41,6 +40,7 @@
     "attendance_count": "ئامادەبوون",
     "recent_activity": "بەرژارەی دوایی",
     "no_recent_activity": "هیچ بەرژارەیەکی دوایی نییە",
+    "select_student_detail": "خوێندکارێک هەڵبژێرە بۆ بینینی وردەکاریی",
     "schedule": "خشتە",
     "exams": "تاقیکردنەوەکان",
     "no_students": "هیچ خوێندکارێک نەدۆزرایەوە",
@@ -60,6 +60,7 @@
     "no_homework": "هیچ ئەرکێکی ماڵەوە نییە ئێستا",
     "no_grades": "هیچ نمرەیەک نییە ئێستا",
     "no_attendance": "هیچ زانیاریەکی ئامادەبوون نییە ئێستا",
+    "no_attendance_found": "هیچ تۆمارێکی ئامادەبوون نەدۆزرایەوە",
     "no_announcements": "هیچ راگەیاندنێک نییە ئێستا",
     "pending_homework": "ئەرکی چاوەڕوانکراو",
     "latest_announcements": "دوایین راگەیاندنەکان",
@@ -72,6 +73,7 @@
     "grade_label": "پۆل",
     "present": "ئامادە",
     "absent": "غیاب",
+    "late": "دواخراوس",
     "pending": "چاوەڕوانکراو",
     "overdue": "دواکەوتوو",
     "total": "کۆی گشتی",
@@ -87,34 +89,57 @@
     "urgent": "پەلە",
     "important": "گرنگ",
     "normal": "ئاسایی"
-=======
-    "your_students": "خوێندکارەکانت",
-    "quick_actions": "کارکردنی خێرا",
-    "performance": "بەرژەوەندی",
-    "homework": "ئەرکە خانە",
+  },
+  "teacher": {
+    "welcome": "به‌خێربێیت بۆ دەروازەی مامۆستا",
+    "welcome_back": "مرحبا بعودتك",
+    "home": "سەرەکی",
+    "dashboard": "پەنجەرەی سەرەکی",
     "attendance": "ئامادەبوون",
-    "messages": "پەیامانەکان",
-    "student_details": "وردەکاری خوێندکار",
+    "homework": "ئەرکەکان",
+    "announcements": "راگەیاندنەکان",
     "grades": "نمرەکان",
-    "attendance_count": "ئامادەبوون",
-    "recent_activity": "بەرژارەی دوایی",
-    "no_recent_activity": "هیچ بەرژارەیەکی دوایی نییە",
-    "select_student": "خوێندکارێک هەڵبژێرە بۆ بینینی وردەکاریی"
->>>>>>> 5ea39b80f25d143fa8c22ac385725aae8213a457
+    "messages": "پەیامەکان",
+    "leaderboard": "لیستی سەرەکی",
+    "profile": "پرۆفایل",
+    "my_classes": "پۆلەکانم",
+    "students": "خوێندکاران",
+    "today_schedule": "خشتەی ئەمڕۆ",
+    "quick_actions": "کارکردنی خێرا",
+    "take_attendance": "ئامادەبوون بگرە",
+    "create_homework": "ئەرکی ماڵەوە دروست بکە",
+    "post_announcement": "راگەیاندن بڵاوبکەوە",
+    "add_grade": "نمرە زیاد بکە",
+    "total_students": "کۆی خوێندکاران",
+    "present_today": "ئامادە ئەمڕۆ",
+    "pending_homework": "ئەرکی چاوەڕوانکراو",
+    "unread_messages": "پەیامەخوێنەکراوەکان",
+    "no_classes": "هیچ پۆلێک نییە"
   },
   "common": {
     "ok": "باشه‌",
     "cancel": "هه‌ڵوه‌شاندنه‌وه‌",
     "error": "هه‌ڵه‌",
     "success": "سه‌رکه‌توو",
-<<<<<<< HEAD
     "loading": "ده‌ستپێده‌كات...",
     "try_again": "جار هەتانە بکە",
-    "all": "هەموو",
+    "retry": "هەمانە دیسان",
+    "close": "داخستن",
+    "save": "پاراستن",
+    "delete": "سڕینەوە",
+    "edit": "دەستکاریکردن",
+    "add": "زیادکردن",
+    "search": "گەڕان",
+    "filter": "پاڵێنراو",
+    "sort": "ڕێکخستن",
+    "refresh": "نوێکردنەوە",
     "logout": "چوونەدەرەوە",
-    "refresh": "نوێکردنەوە"
-=======
-    "loading": "ده‌ستپێده‌كات..."
->>>>>>> 5ea39b80f25d143fa8c22ac385725aae8213a457
+    "profile": "پرۆفایل",
+    "settings": "ڕێکخستنەکان",
+    "notification": "ئاگادارکردنەوە",
+    "warning": "ئاگاداری",
+    "info": "زانیاری",
+    "all": "هەموو",
+    "more": "زیاتر"
   }
 }

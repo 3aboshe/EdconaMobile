@@ -29,44 +29,61 @@ class _PerformanceSectionState extends State<PerformanceSection> {
   Future<void> _loadGrades() async {
     try {
       final grades = await _parentService.getChildGrades(widget.student['id']);
-      setState(() {
-        _grades = grades;
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _grades = grades;
+          _isLoading = false;
+        });
+      }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
+  }
+
+  bool _isRTL() {
+    final locale = context.locale;
+    return ['ar', 'ckb', 'ku', 'bhn', 'arc', 'bad', 'bdi', 'sdh', 'kmr'].contains(locale.languageCode);
   }
 
   @override
   Widget build(BuildContext context) {
+    final isRTL = _isRTL();
+
     if (_isLoading) {
-      return const Center(
-        child: CupertinoActivityIndicator(radius: 16),
+      return Center(
+        child: Directionality(
+          textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
+          child: const CupertinoActivityIndicator(radius: 16),
+        ),
       );
     }
 
     if (_grades.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              CupertinoIcons.chart_bar,
-              size: 64,
-              color: Colors.grey[400],
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'parent.no_grades'.tr(),
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.grey[600],
+      return Directionality(
+        textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                CupertinoIcons.chart_bar,
+                size: 64,
+                color: Colors.grey[400],
               ),
-            ),
-          ],
+              const SizedBox(height: 16),
+              Text(
+                'parent.no_grades'.tr(),
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.grey[600],
+                ),
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -74,89 +91,92 @@ class _PerformanceSectionState extends State<PerformanceSection> {
     // Calculate average
     final avgScore = _grades.map((g) => (g['score'] / g['totalScore'] * 100)).reduce((a, b) => a + b) / _grades.length;
 
-    return RefreshIndicator(
-      onRefresh: _loadGrades,
-      child: ListView(
-        padding: const EdgeInsets.all(20),
-        children: [
-          // Overall Performance Card
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFF34C759), Color(0xFF30D158)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF34C759).withOpacity(0.3),
-                  blurRadius: 20,
-                  offset: const Offset(0, 8),
+    return Directionality(
+      textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
+      child: RefreshIndicator(
+        onRefresh: _loadGrades,
+        child: ListView(
+          padding: const EdgeInsets.all(20),
+          children: [
+            // Overall Performance Card
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF34C759), Color(0xFF30D158)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-              ],
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF34C759).withValues(alpha: 0.3),
+                    blurRadius: 20,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    'parent.overall_average'.tr(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '${avgScore.toStringAsFixed(1)}%',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 48,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '${_grades.length} ${_grades.length == 1 ? 'parent.grade'.tr() : 'parent.grades'.tr()}',
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.9),
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
             ),
-            child: Column(
+
+            const SizedBox(height: 32),
+
+            // Section Header
+            Row(
               children: [
-                Text(
-                  'parent.overall_average'.tr(),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
+                const Icon(
+                  CupertinoIcons.list_bullet,
+                  color: Colors.white,
+                  size: 20,
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(width: 8),
                 Text(
-                  '${avgScore.toStringAsFixed(1)}%',
+                  'parent.all_grades'.tr(),
                   style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 48,
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  '${_grades.length} ${_grades.length == 1 ? 'parent.grade'.tr() : 'parent.grades'.tr()}',
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.9),
-                    fontSize: 14,
+                    color: Colors.white,
                   ),
                 ),
               ],
             ),
-          ),
-          
-          const SizedBox(height: 32),
-          
-          // Section Header
-          Row(
-            children: [
-              const Icon(
-                CupertinoIcons.list_bullet,
-                color: Color(0xFF007AFF),
-                size: 20,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                'parent.all_grades'.tr(),
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-            ],
-          ),
-          
-          const SizedBox(height: 16),
-          
-          // Grades List
-          ..._grades.map((grade) => _buildGradeCard(grade)),
-          
-          const SizedBox(height: 40),
-        ],
+
+            const SizedBox(height: 16),
+
+            // Grades List
+            ..._grades.map((grade) => _buildGradeCard(grade)),
+
+            const SizedBox(height: 40),
+          ],
+        ),
       ),
     );
   }
@@ -172,7 +192,7 @@ class _PerformanceSectionState extends State<PerformanceSection> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -190,7 +210,7 @@ class _PerformanceSectionState extends State<PerformanceSection> {
                   width: 56,
                   height: 56,
                   decoration: BoxDecoration(
-                    color: gradeColor.withOpacity(0.1),
+                    color: gradeColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: Center(
@@ -285,7 +305,7 @@ class _PerformanceSectionState extends State<PerformanceSection> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF007AFF).withOpacity(0.1),
+                    color: const Color(0xFF007AFF).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(

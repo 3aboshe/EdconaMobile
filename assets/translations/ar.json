@@ -59,6 +59,7 @@
     "no_homework": "لا توجد واجبات حالياً",
     "no_grades": "لا توجد درجات حالياً",
     "no_attendance": "لا توجد بيانات حضور حالياً",
+    "no_attendance_found": "لم يتم العثور على سجلات حضور",
     "no_announcements": "لا توجد إعلانات حالياً",
     "pending_homework": "الواجبات المعلقة",
     "latest_announcements": "آخر الإعلانات",
@@ -71,6 +72,7 @@
     "grade_label": "الصف",
     "present": "حاضر",
     "absent": "غائب",
+    "late": "متأخر",
     "pending": "معلق",
     "overdue": "متأخر",
     "total": "المجموع",
@@ -90,6 +92,7 @@
   "teacher": {
     "welcome": "أهلاً بك في بوابة المعلم",
     "welcome_back": "مرحباً بعودتك",
+    "home": "الرئيسية",
     "dashboard": "لوحة التحكم",
     "attendance": "الحضور",
     "homework": "الواجبات",

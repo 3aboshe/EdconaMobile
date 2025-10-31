@@ -21,11 +21,6 @@ class _AttendanceSectionState extends State<AttendanceSection> {
   Map<String, String> _attendanceStatus = {}; // studentId -> status
   DateTime _selectedDate = DateTime.now();
 
-  bool _isRTL() {
-    final locale = context.locale;
-    return ['ar', 'ckb', 'ku', 'bhn', 'arc', 'bad', 'bdi', 'sdh', 'kmr'].contains(locale.languageCode);
-  }
-
   @override
   void initState() {
     super.initState();
@@ -131,27 +126,17 @@ class _AttendanceSectionState extends State<AttendanceSection> {
 
   @override
   Widget build(BuildContext context) {
-    final isRTL = _isRTL();
-
-    return Directionality(
-      textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
-      child: Column(
-        children: [
-          _buildHeader(),
-          Expanded(
-            child: _isLoading
-                ? Center(
-                    child: Directionality(
-                      textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
-                      child: const CircularProgressIndicator(),
-                    ),
-                  )
-                : _students.isEmpty
-                    ? _buildEmptyState()
-                    : _buildStudentsList(),
-          ),
-        ],
-      ),
+    return Column(
+      children: [
+        _buildHeader(),
+        Expanded(
+          child: _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : _students.isEmpty
+                  ? _buildEmptyState()
+                  : _buildStudentsList(),
+        ),
+      ],
     );
   }
 

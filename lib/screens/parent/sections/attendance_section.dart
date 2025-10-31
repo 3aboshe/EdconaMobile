@@ -3,36 +3,36 @@ import 'package:flutter/cupertino.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../../services/parent_service.dart';
 
-class HomeworkSection extends StatefulWidget {
+class AttendanceSection extends StatefulWidget {
   final Map<String, dynamic> student;
 
-  const HomeworkSection({
+  const AttendanceSection({
     super.key,
     required this.student,
   });
 
   @override
-  State<HomeworkSection> createState() => _HomeworkSectionState();
+  State<AttendanceSection> createState() => _AttendanceSectionState();
 }
 
-class _HomeworkSectionState extends State<HomeworkSection> {
+class _AttendanceSectionState extends State<AttendanceSection> {
   final ParentService _parentService = ParentService();
   bool _isLoading = true;
-  List<Map<String, dynamic>> _homework = [];
-  String _selectedFilter = 'all'; // all, pending, submitted, overdue
+  List<Map<String, dynamic>> _attendance = [];
+  String _selectedFilter = 'all'; // all, present, absent, late
 
   @override
   void initState() {
     super.initState();
-    _loadHomework();
+    _loadAttendance();
   }
 
-  Future<void> _loadHomework() async {
+  Future<void> _loadAttendance() async {
     try {
-      final homework = await _parentService.getChildHomework(widget.student['id']);
+      final attendance = await _parentService.getChildAttendance(widget.student['id']);
       if (mounted) {
         setState(() {
-          _homework = homework;
+          _attendance = attendance;
           _isLoading = false;
         });
       }
@@ -45,9 +45,9 @@ class _HomeworkSectionState extends State<HomeworkSection> {
     }
   }
 
-  List<Map<String, dynamic>> get _filteredHomework {
-    if (_selectedFilter == 'all') return _homework;
-    return _homework.where((hw) => hw['status']?.toLowerCase() == _selectedFilter).toList();
+  List<Map<String, dynamic>> get _filteredAttendance {
+    if (_selectedFilter == 'all') return _attendance;
+    return _attendance.where((att) => att['status']?.toLowerCase() == _selectedFilter).toList();
   }
 
   bool _isRTL() {
@@ -68,14 +68,18 @@ class _HomeworkSectionState extends State<HomeworkSection> {
       );
     }
 
-    final pendingCount = _homework.where((hw) => hw['status'] == 'pending').length;
-    final submittedCount = _homework.where((hw) => hw['status'] == 'submitted').length;
-    final overdueCount = _homework.where((hw) => hw['status'] == 'overdue').length;
+    final presentCount = _attendance.where((att) => att['status'] == 'PRESENT').length;
+    final absentCount = _attendance.where((att) => att['status'] == 'ABSENT').length;
+    final lateCount = _attendance.where((att) => att['status'] == 'LATE').length;
+    final totalDays = _attendance.length;
+    final attendancePercentage = totalDays > 0
+        ? ((presentCount + lateCount) / totalDays * 100).toStringAsFixed(1)
+        : '0.0';
 
     return Directionality(
       textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
       child: RefreshIndicator(
-        onRefresh: _loadHomework,
+        onRefresh: _loadAttendance,
         child: ListView(
           padding: const EdgeInsets.all(20),
           children: [
@@ -84,17 +88,17 @@ class _HomeworkSectionState extends State<HomeworkSection> {
               children: [
                 Expanded(
                   child: _buildStatCard(
-                    'parent.pending'.tr(),
-                    pendingCount.toString(),
-                    const Color(0xFFFF9500),
-                    CupertinoIcons.clock,
+                    'parent.attendance_rate'.tr(),
+                    '$attendancePercentage%',
+                    const Color(0xFF007AFF),
+                    CupertinoIcons.chart_bar,
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: _buildStatCard(
-                    'parent.submitted'.tr(),
-                    submittedCount.toString(),
+                    'parent.present'.tr(),
+                    presentCount.toString(),
                     const Color(0xFF34C759),
                     CupertinoIcons.checkmark_circle,
                   ),
@@ -108,19 +112,19 @@ class _HomeworkSectionState extends State<HomeworkSection> {
               children: [
                 Expanded(
                   child: _buildStatCard(
-                    'parent.overdue'.tr(),
-                    overdueCount.toString(),
+                    'parent.absent'.tr(),
+                    absentCount.toString(),
                     const Color(0xFFFF3B30),
-                    CupertinoIcons.exclamationmark_triangle,
+                    CupertinoIcons.xmark_circle,
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: _buildStatCard(
-                    'parent.total'.tr(),
-                    _homework.length.toString(),
-                    const Color(0xFF007AFF),
-                    CupertinoIcons.doc_text,
+                    'parent.late'.tr(),
+                    lateCount.toString(),
+                    const Color(0xFFFF9500),
+                    CupertinoIcons.clock,
                   ),
                 ),
               ],
@@ -135,22 +139,22 @@ class _HomeworkSectionState extends State<HomeworkSection> {
                 children: [
                   _buildFilterChip('common.all'.tr(), 'all'),
                   const SizedBox(width: 8),
-                  _buildFilterChip('parent.pending'.tr(), 'pending'),
+                  _buildFilterChip('parent.present'.tr(), 'present'),
                   const SizedBox(width: 8),
-                  _buildFilterChip('parent.submitted'.tr(), 'submitted'),
+                  _buildFilterChip('parent.absent'.tr(), 'absent'),
                   const SizedBox(width: 8),
-                  _buildFilterChip('parent.overdue'.tr(), 'overdue'),
+                  _buildFilterChip('parent.late'.tr(), 'late'),
                 ],
               ),
             ),
 
             const SizedBox(height: 20),
 
-            // Homework List
-            if (_filteredHomework.isEmpty)
+            // Attendance List
+            if (_filteredAttendance.isEmpty)
               _buildEmptyState()
             else
-              ..._filteredHomework.map((hw) => _buildHomeworkCard(hw)),
+              ..._filteredAttendance.map((att) => _buildAttendanceCard(att)),
 
             const SizedBox(height: 40),
           ],
@@ -239,18 +243,18 @@ class _HomeworkSectionState extends State<HomeworkSection> {
     );
   }
 
-  Widget _buildHomeworkCard(Map<String, dynamic> hw) {
-    final status = hw['status']?.toLowerCase() ?? 'pending';
+  Widget _buildAttendanceCard(Map<String, dynamic> att) {
+    final status = att['status']?.toLowerCase() ?? 'present';
     final statusColor = _getStatusColor(status);
     final statusIcon = _getStatusIcon(status);
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: status == 'overdue' 
+          color: status == 'absent'
               ? const Color(0xFFFF3B30).withValues(alpha: 0.3)
               : Colors.transparent,
           width: 2,
@@ -265,105 +269,54 @@ class _HomeworkSectionState extends State<HomeworkSection> {
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: statusColor.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(statusIcon, color: statusColor, size: 24),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        hw['title'] ?? 'Homework',
-                        style: const TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        hw['subject'] ?? 'Subject',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: statusColor.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    status.toUpperCase(),
-                    style: TextStyle(
-                      color: statusColor,
-                      fontSize: 11,
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: statusColor.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(statusIcon, color: statusColor, size: 24),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    att['date'] ?? 'N/A',
+                    style: const TextStyle(
+                      fontSize: 17,
                       fontWeight: FontWeight.w600,
+                      color: Colors.black,
                     ),
                   ),
-                ),
-              ],
-            ),
-            if (hw['description'] != null) ...[
-              const SizedBox(height: 12),
-              Text(
-                hw['description'],
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[700],
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Icon(
-                  CupertinoIcons.calendar,
-                  size: 16,
-                  color: Colors.grey[500],
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  'Due: ${hw['dueDate'] ?? 'N/A'}',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey[600],
-                  ),
-                ),
-                if (hw['submittedDate'] != null) ...[
-                  const SizedBox(width: 16),
-                  Icon(
-                    CupertinoIcons.checkmark_circle,
-                    size: 16,
-                    color: Colors.grey[500],
-                  ),
-                  const SizedBox(width: 6),
+                  const SizedBox(height: 4),
                   Text(
-                    'Submitted: ${hw['submittedDate']}',
+                    'parent.attendance'.tr(),
                     style: TextStyle(
-                      fontSize: 13,
+                      fontSize: 14,
                       color: Colors.grey[600],
                     ),
                   ),
                 ],
-              ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: statusColor.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                status.toUpperCase(),
+                style: TextStyle(
+                  color: statusColor,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
           ],
         ),
@@ -389,13 +342,13 @@ class _HomeworkSectionState extends State<HomeworkSection> {
         child: Column(
           children: [
             Icon(
-              CupertinoIcons.checkmark_circle,
+              CupertinoIcons.calendar,
               size: 64,
               color: Colors.grey[400],
             ),
             const SizedBox(height: 16),
             Text(
-              'parent.no_homework_found'.tr(),
+              'parent.no_attendance_found'.tr(),
               style: TextStyle(
                 fontSize: 18,
                 color: Colors.grey[600],
@@ -409,12 +362,12 @@ class _HomeworkSectionState extends State<HomeworkSection> {
 
   Color _getStatusColor(String status) {
     switch (status) {
-      case 'submitted':
+      case 'present':
         return const Color(0xFF34C759);
-      case 'pending':
-        return const Color(0xFFFF9500);
-      case 'overdue':
+      case 'absent':
         return const Color(0xFFFF3B30);
+      case 'late':
+        return const Color(0xFFFF9500);
       default:
         return Colors.grey;
     }
@@ -422,14 +375,14 @@ class _HomeworkSectionState extends State<HomeworkSection> {
 
   IconData _getStatusIcon(String status) {
     switch (status) {
-      case 'submitted':
+      case 'present':
         return CupertinoIcons.checkmark_circle_fill;
-      case 'pending':
+      case 'absent':
+        return CupertinoIcons.xmark_circle_fill;
+      case 'late':
         return CupertinoIcons.clock_fill;
-      case 'overdue':
-        return CupertinoIcons.exclamationmark_triangle_fill;
       default:
-        return CupertinoIcons.doc_text_fill;
+        return CupertinoIcons.calendar;
     }
   }
 }

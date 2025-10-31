@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../../services/parent_service.dart';
 
 class AnnouncementsSection extends StatefulWidget {
@@ -28,57 +29,77 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
   Future<void> _loadAnnouncements() async {
     try {
       final announcements = await _parentService.getAnnouncements();
-      setState(() {
-        _announcements = announcements;
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _announcements = announcements;
+          _isLoading = false;
+        });
+      }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
+  }
+
+  bool _isRTL() {
+    final locale = context.locale;
+    return ['ar', 'ckb', 'ku', 'bhn', 'arc', 'bad', 'bdi', 'sdh', 'kmr'].contains(locale.languageCode);
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return const Center(
-        child: CupertinoActivityIndicator(radius: 16),
-      );
-    }
+    final isRTL = _isRTL();
 
-    if (_announcements.isEmpty) {
+    if (_isLoading) {
       return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              CupertinoIcons.bell,
-              size: 64,
-              color: Colors.grey[400],
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'parent.no_announcements'.tr(),
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.grey[600],
-              ),
-            ),
-          ],
+        child: Directionality(
+          textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
+          child: const CupertinoActivityIndicator(radius: 16),
         ),
       );
     }
 
-    return RefreshIndicator(
-      onRefresh: _loadAnnouncements,
-      child: ListView.builder(
-        padding: const EdgeInsets.all(20),
-        itemCount: _announcements.length,
-        itemBuilder: (context, index) {
-          final announcement = _announcements[index];
-          return _buildAnnouncementCard(announcement);
-        },
+    if (_announcements.isEmpty) {
+      return Directionality(
+        textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                CupertinoIcons.bell,
+                size: 64,
+                color: Colors.grey[400],
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'parent.no_announcements'.tr(),
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.grey[600],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Directionality(
+      textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
+      child: RefreshIndicator(
+        onRefresh: _loadAnnouncements,
+        child: ListView.builder(
+          padding: const EdgeInsets.all(20),
+          itemCount: _announcements.length,
+          itemBuilder: (context, index) {
+            final announcement = _announcements[index];
+            return _buildAnnouncementCard(announcement);
+          },
+        ),
       ),
     );
   }
@@ -94,11 +115,11 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: priority == 'urgent' 
-            ? Border.all(color: const Color(0xFFFF3B30).withOpacity(0.3), width: 2)
+            ? Border.all(color: const Color(0xFFFF3B30).withValues(alpha: 0.3), width: 2)
             : null,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -115,7 +136,7 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: priorityColor.withOpacity(0.1),
+                    color: priorityColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(priorityIcon, color: priorityColor, size: 24),
@@ -144,7 +165,7 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
                                 vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color: const Color(0xFFFF3B30).withOpacity(0.1),
+                                color: const Color(0xFFFF3B30).withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: const Text(

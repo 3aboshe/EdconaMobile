@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:easy_localization/easy_localization.dart';
-import '../../services/auth_service.dart';
-import '../../services/parent_service.dart';
 import 'child_selection_screen.dart';
 import 'sections/dashboard_section.dart';
 import 'sections/performance_section.dart';
 import 'sections/homework_section.dart';
+import 'sections/attendance_section.dart';
 import 'sections/announcements_section.dart';
 import 'sections/messages_section.dart';
-import 'sections/profile_section.dart';
 
 class ParentDashboard extends StatefulWidget {
   final Map<String, dynamic> selectedChild;
@@ -25,17 +23,21 @@ class ParentDashboard extends StatefulWidget {
 
 class _ParentDashboardState extends State<ParentDashboard> {
   int _selectedIndex = 0;
-  final ParentService _parentService = ParentService();
 
   // Section title keys for translation
   final List<String> _sectionTitleKeys = [
     'parent.dashboard',
     'parent.performance',
     'parent.homework',
+    'parent.attendance',
     'parent.announcements',
     'parent.messages',
-    'parent.profile',
   ];
+
+  bool _isRTL() {
+    final locale = context.locale;
+    return ['ar', 'ckb', 'ku', 'bhn', 'arc', 'bad', 'bdi', 'sdh', 'kmr'].contains(locale.languageCode);
+  }
 
   String _getSectionTitle(int index) {
     return _sectionTitleKeys[index].tr();
@@ -46,53 +48,92 @@ class _ParentDashboardState extends State<ParentDashboard> {
     CupertinoIcons.home,
     CupertinoIcons.chart_bar,
     CupertinoIcons.doc_text,
+    CupertinoIcons.calendar,
     CupertinoIcons.bell,
     CupertinoIcons.chat_bubble_2,
-    CupertinoIcons.person,
   ];
 
   @override
   Widget build(BuildContext context) {
+    final isRTL = _isRTL();
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F2F7),
-      appBar: _buildAppBar(),
+      backgroundColor: const Color(0xFF0D47A1),
+      appBar: _buildAppBar(isRTL),
       body: _buildBody(),
       bottomNavigationBar: _buildBottomNav(),
     );
   }
 
-  PreferredSizeWidget _buildAppBar() {
+  PreferredSizeWidget _buildAppBar(bool isRTL) {
     return AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFF0D47A1),
       elevation: 0,
-      leading: IconButton(
-        icon: const Icon(CupertinoIcons.back, color: Color(0xFF007AFF)),
-        onPressed: () {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const ChildSelectionScreen(),
+      automaticallyImplyLeading: false,
+      leading: isRTL
+          ? Padding(
+              padding: const EdgeInsets.only(left: 16),
+              child: IconButton(
+                icon: const Icon(CupertinoIcons.forward, color: Colors.white),
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ChildSelectionScreen(),
+                    ),
+                  );
+                },
+              ),
+            )
+          : Padding(
+              padding: const EdgeInsets.only(left: 16),
+              child: IconButton(
+                icon: const Icon(CupertinoIcons.back, color: Colors.white),
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ChildSelectionScreen(),
+                    ),
+                  );
+                },
+              ),
             ),
-          );
-        },
-      ),
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      title: Row(
         children: [
-          Text(
-            widget.selectedChild['name'],
-            style: const TextStyle(
-              color: Colors.black,
-              fontSize: 17,
-              fontWeight: FontWeight.w600,
-            ),
+          Image.asset(
+            'assets/logowhite.png',
+            height: 45,
+            errorBuilder: (context, error, stackTrace) {
+              return const Icon(
+                Icons.school,
+                color: Colors.white,
+                size: 45,
+              );
+            },
           ),
-          Text(
-            _getSectionTitle(_selectedIndex),
-            style: const TextStyle(
-              color: Colors.grey,
-              fontSize: 12,
-              fontWeight: FontWeight.w400,
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.selectedChild['name'],
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Text(
+                  _getSectionTitle(_selectedIndex),
+                  style: const TextStyle(
+                    color: Colors.white70,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -102,11 +143,11 @@ class _ParentDashboardState extends State<ParentDashboard> {
           padding: const EdgeInsets.only(right: 16),
           child: CircleAvatar(
             radius: 18,
-            backgroundColor: const Color(0xFF007AFF).withOpacity(0.1),
+            backgroundColor: Colors.white.withValues(alpha: 0.2),
             child: Text(
               widget.selectedChild['name'][0].toUpperCase(),
               style: const TextStyle(
-                color: Color(0xFF007AFF),
+                color: Colors.white,
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
               ),
@@ -126,11 +167,11 @@ class _ParentDashboardState extends State<ParentDashboard> {
       case 2:
         return HomeworkSection(student: widget.selectedChild);
       case 3:
-        return AnnouncementsSection(student: widget.selectedChild);
+        return AttendanceSection(student: widget.selectedChild);
       case 4:
-        return MessagesSection(student: widget.selectedChild);
+        return AnnouncementsSection(student: widget.selectedChild);
       case 5:
-        return ProfileSection(student: widget.selectedChild);
+        return MessagesSection(student: widget.selectedChild);
       default:
         return DashboardSection(student: widget.selectedChild);
     }
@@ -139,10 +180,10 @@ class _ParentDashboardState extends State<ParentDashboard> {
   Widget _buildBottomNav() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color(0xFF0D47A1),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.2),
             blurRadius: 10,
             offset: const Offset(0, -2),
           ),
@@ -152,47 +193,52 @@ class _ParentDashboardState extends State<ParentDashboard> {
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: List.generate(6, (index) {
               final isSelected = _selectedIndex == index;
-              return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _selectedIndex = index;
-                  });
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: isSelected
-                        ? const Color(0xFF007AFF).withOpacity(0.1)
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        _sectionIcons[index],
-                        color: isSelected
-                            ? const Color(0xFF007AFF)
-                            : Colors.grey,
-                        size: 24,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        _getSectionTitle(index),
-                        style: TextStyle(
+              return Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _selectedIndex = index;
+                    });
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? Colors.white.withValues(alpha: 0.2)
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          _sectionIcons[index],
                           color: isSelected
-                              ? const Color(0xFF007AFF)
-                              : Colors.grey,
-                          fontSize: 10,
-                          fontWeight: isSelected
-                              ? FontWeight.w600
-                              : FontWeight.w400,
+                              ? Colors.white
+                              : Colors.white70,
+                          size: 22,
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 4),
+                        Text(
+                          _getSectionTitle(index),
+                          style: TextStyle(
+                            color: isSelected
+                                ? Colors.white
+                                : Colors.white70,
+                            fontSize: 9,
+                            fontWeight: isSelected
+                                ? FontWeight.w600
+                                : FontWeight.w400,
+                          ),
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );

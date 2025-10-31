@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../services/auth_service.dart';
 import '../services/parent_service.dart';
-import 'messages_screen.dart';
 
 class ParentHomeScreen extends StatefulWidget {
   const ParentHomeScreen({super.key});
@@ -105,7 +103,7 @@ class _ParentHomeScreenState extends State<ParentHomeScreen>
 
   bool _isRTL() {
     final locale = context.locale;
-    return ['ar', 'ckb', 'bhn', 'arc'].contains(locale.languageCode);
+    return ['ar', 'ckb', 'ku', 'bhn', 'arc', 'bad', 'bdi', 'sdh', 'kmr'].contains(locale.languageCode);
   }
 
   @override

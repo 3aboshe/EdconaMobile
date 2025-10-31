@@ -1,16 +1,12 @@
 {
   "permissions": {
     "allow": [
-      "WebFetch(domain:edcon-production.up.railway.app)",
-      "WebFetch(domain:ed-co.vercel.app)",
-      "Bash(flutter pub get:*)",
-      "Bash(flutter analyze:*)",
-      "Bash(flutter test:*)",
-      "Bash(cat:*)",
-      "Bash(flutter run:*)",
-      "Bash(git checkout:*)",
-      "Bash(flutter build:*)",
-      "Bash(curl:*)"
+      "Bash(flutter clean)",
+      "Bash(flutter pub get)",
+      "Bash(flutter analyze)",
+      "Bash(flutter analyze lib/screens/teacher/teacher_dashboard.dart)",
+      "Bash(flutter build ios --debug --no-codesign)",
+      "Bash(flutter --version)"
     ],
     "deny": [],
     "ask": []

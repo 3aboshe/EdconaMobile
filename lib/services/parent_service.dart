@@ -76,10 +76,36 @@ class ParentService {
       final response = await ApiService.dio.get('/api/homework/student/$childId');
 
       if (response.statusCode == 200) {
-        return List<Map<String, dynamic>>.from(response.data);
+        final homework = List<Map<String, dynamic>>.from(response.data);
+        return homework.map((hw) {
+          // Calculate status based on due date and submission
+          final dueDate = DateTime.tryParse(hw['dueDate'] ?? '');
+          final isSubmitted = hw['submittedDate'] != null;
+          String status = 'pending';
+
+          if (isSubmitted) {
+            status = 'submitted';
+          } else if (dueDate != null && dueDate.isBefore(DateTime.now())) {
+            status = 'overdue';
+          }
+
+          return {
+            'id': hw['id'],
+            'title': hw['title'] ?? hw['assignment'] ?? 'Homework',
+            'subject': hw['subject'] ?? 'General',
+            'description': hw['description'] ?? '',
+            'dueDate': hw['dueDate'] ?? '',
+            'status': status,
+            'submittedDate': hw['submittedDate'],
+            'score': hw['score'],
+            'maxScore': hw['maxScore'],
+          };
+        }).toList();
       }
     } catch (e) {
-      throw Exception('Failed to load homework: ${e.toString()}');
+      print('Error loading homework: $e');
+      // Return empty list instead of throwing
+      return [];
     }
     return [];
   }
@@ -107,13 +133,38 @@ class ParentService {
     return [];
   }
 
-  // Get teachers - Use real API data
+  // Get teachers for parent's children - Use real API data
   Future<List<Map<String, dynamic>>> getTeachersForParent(String parentId) async {
     try {
-      final response = await ApiService.dio.get('/api/users/teachers');
+      // First get the parent's children
+      final children = await getChildren(parentId);
+
+      // Get all classIds from children
+      final classIds = <String>{};
+      for (var child in children) {
+        final childClassId = child['classId']; // Students have classId (singular)
+        if (childClassId != null) {
+          classIds.add(childClassId);
+        }
+      }
+
+      if (classIds.isEmpty) {
+        return [];
+      }
+
+      // Get all teachers
+      final response = await ApiService.dio.get('/api/auth/users/teachers');
 
       if (response.statusCode == 200) {
-        return List<Map<String, dynamic>>.from(response.data);
+        final allTeachers = List<Map<String, dynamic>>.from(response.data);
+
+        // Filter teachers who teach any of the children's classes
+        final relevantTeachers = allTeachers.where((teacher) {
+          final teacherClassIds = List<String>.from(teacher['classIds'] ?? []);
+          return teacherClassIds.any((id) => classIds.contains(id));
+        }).toList();
+
+        return relevantTeachers;
       }
     } catch (e) {
       throw Exception('Failed to load teachers: ${e.toString()}');

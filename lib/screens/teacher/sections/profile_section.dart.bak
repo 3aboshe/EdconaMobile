@@ -17,14 +17,9 @@ class ProfileSection extends StatefulWidget {
 class _ProfileSectionState extends State<ProfileSection> {
   final TeacherService _teacherService = TeacherService();
   final AuthService _authService = AuthService();
-
+  
   TimeOfDay? _availableFrom;
   TimeOfDay? _availableTo;
-
-  bool _isRTL() {
-    final locale = context.locale;
-    return ['ar', 'ckb', 'ku', 'bhn', 'arc', 'bad', 'bdi', 'sdh', 'kmr'].contains(locale.languageCode);
-  }
 
   @override
   void initState() {
@@ -99,24 +94,19 @@ class _ProfileSectionState extends State<ProfileSection> {
 
   @override
   Widget build(BuildContext context) {
-    final isRTL = _isRTL();
-
-    return Directionality(
-      textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildProfileHeader(),
-            const SizedBox(height: 20),
-            _buildInfoCard(),
-            const SizedBox(height: 20),
-            _buildAvailabilityCard(),
-            const SizedBox(height: 20),
-            _buildLogoutButton(),
-          ],
-        ),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildProfileHeader(),
+          const SizedBox(height: 20),
+          _buildInfoCard(),
+          const SizedBox(height: 20),
+          _buildAvailabilityCard(),
+          const SizedBox(height: 20),
+          _buildLogoutButton(),
+        ],
       ),
     );
   }

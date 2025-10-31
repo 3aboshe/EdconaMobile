@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:easy_localization/easy_localization.dart';
-import '../../services/auth_service.dart';
 import 'sections/dashboard_section.dart';
-import 'sections/attendance_section.dart';
-import 'sections/homework_section.dart';
-import 'sections/announcements_section.dart';
 import 'sections/grades_section.dart';
+import 'sections/homework_section.dart';
+import 'sections/attendance_section.dart';
+import 'sections/announcements_section.dart';
 import 'sections/messages_section.dart';
-import 'sections/leaderboard_section.dart';
 import 'sections/profile_section.dart';
+import 'sections/leaderboard_section.dart';
 
 class TeacherDashboard extends StatefulWidget {
   final Map<String, dynamic> teacher;
@@ -26,101 +25,155 @@ class TeacherDashboard extends StatefulWidget {
 class _TeacherDashboardState extends State<TeacherDashboard> {
   int _selectedIndex = 0;
 
+  // Section title keys for translation
   final List<String> _sectionTitleKeys = [
     'teacher.dashboard',
-    'teacher.attendance',
-    'teacher.homework',
-    'teacher.announcements',
     'teacher.grades',
+    'teacher.homework',
+    'teacher.attendance',
+    'teacher.announcements',
     'teacher.messages',
     'teacher.leaderboard',
-    'teacher.profile',
   ];
 
-  final List<IconData> _sectionIcons = [
-    CupertinoIcons.home,
-    CupertinoIcons.checkmark_square,
-    CupertinoIcons.doc_text,
-    CupertinoIcons.bell,
-    CupertinoIcons.chart_bar_square,
-    CupertinoIcons.chat_bubble_2,
-    CupertinoIcons.star,
-    CupertinoIcons.person,
-  ];
+  bool _isRTL() {
+    final locale = context.locale;
+    return ['ar', 'ckb', 'ku', 'bhn', 'arc', 'bad', 'bdi', 'sdh', 'kmr'].contains(locale.languageCode);
+  }
 
   String _getSectionTitle(int index) {
     return _sectionTitleKeys[index].tr();
   }
 
+  // Section icons
+  final List<IconData> _sectionIcons = [
+    CupertinoIcons.home,
+    CupertinoIcons.chart_bar,
+    CupertinoIcons.doc_text,
+    CupertinoIcons.calendar,
+    CupertinoIcons.bell,
+    CupertinoIcons.chat_bubble_2,
+    CupertinoIcons.star_fill,
+  ];
+
   @override
   Widget build(BuildContext context) {
+    final isRTL = _isRTL();
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F2F7),
-      appBar: _buildAppBar(),
+      backgroundColor: const Color(0xFF0D47A1),
+      appBar: _buildAppBar(isRTL),
       body: _buildBody(),
       bottomNavigationBar: _buildBottomNav(),
     );
   }
 
-  PreferredSizeWidget _buildAppBar() {
+  PreferredSizeWidget _buildAppBar(bool isRTL) {
     return AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFF0D47A1),
       elevation: 0,
       automaticallyImplyLeading: false,
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            widget.teacher['name'],
-            style: const TextStyle(
-              color: Colors.black,
-              fontSize: 17,
-              fontWeight: FontWeight.w600,
+      leading: isRTL
+          ? Padding(
+              padding: const EdgeInsets.only(left: 16),
+              child: IconButton(
+                icon: const Icon(CupertinoIcons.forward, color: Colors.white),
+                onPressed: () {
+                  // TODO: Add back button functionality if needed
+                },
+              ),
+            )
+          : Padding(
+              padding: const EdgeInsets.only(left: 16),
+              child: IconButton(
+                icon: const Icon(CupertinoIcons.back, color: Colors.white),
+                onPressed: () {
+                  // TODO: Add back button functionality if needed
+                },
+              ),
             ),
+      title: Row(
+        children: [
+          Image.asset(
+            'assets/logowhite.png',
+            height: 45,
+            errorBuilder: (context, error, stackTrace) {
+              return const Icon(
+                Icons.school,
+                color: Colors.white,
+                size: 45,
+              );
+            },
           ),
-          Text(
-            _getSectionTitle(_selectedIndex),
-            style: const TextStyle(
-              color: Colors.grey,
-              fontSize: 12,
-              fontWeight: FontWeight.w400,
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.teacher['name']?.toString() ?? 'Teacher',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Text(
+                  _getSectionTitle(_selectedIndex),
+                  style: const TextStyle(
+                    color: Colors.white70,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
       ),
       actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: 16),
-          child: CircleAvatar(
-            radius: 18,
-            backgroundColor: const Color(0xFF007AFF).withOpacity(0.1),
-            child: widget.teacher['avatar'] != null && widget.teacher['avatar'].toString().isNotEmpty
-                ? ClipOval(
-                    child: Image.memory(
-                      Uri.parse(widget.teacher['avatar']).data!.contentAsBytes(),
-                      width: 36,
-                      height: 36,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Text(
-                          widget.teacher['name'][0].toUpperCase(),
-                          style: const TextStyle(
-                            color: Color(0xFF007AFF),
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        );
-                      },
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ProfileSection(teacher: widget.teacher),
+              ),
+            );
+          },
+          child: Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: CircleAvatar(
+              radius: 18,
+              backgroundColor: Colors.white.withValues(alpha: 0.2),
+              child: widget.teacher['avatar'] != null && widget.teacher['avatar'].toString().isNotEmpty
+                  ? ClipOval(
+                      child: Image.memory(
+                        Uri.parse(widget.teacher['avatar']).data!.contentAsBytes(),
+                        width: 36,
+                        height: 36,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Text(
+                            (widget.teacher['name']?.toString() ?? 'T')[0].toUpperCase(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          );
+                        },
+                      ),
+                    )
+                  : Text(
+                      (widget.teacher['name']?.toString() ?? 'T')[0].toUpperCase(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                  )
-                : Text(
-                    widget.teacher['name'][0].toUpperCase(),
-                    style: const TextStyle(
-                      color: Color(0xFF007AFF),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+            ),
           ),
         ),
       ],
@@ -132,19 +185,17 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
       case 0:
         return DashboardSection(teacher: widget.teacher);
       case 1:
-        return AttendanceSection(teacher: widget.teacher);
+        return GradesSection(teacher: widget.teacher);
       case 2:
         return HomeworkSection(teacher: widget.teacher);
       case 3:
-        return AnnouncementsSection(teacher: widget.teacher);
+        return AttendanceSection(teacher: widget.teacher);
       case 4:
-        return GradesSection(teacher: widget.teacher);
+        return AnnouncementsSection(teacher: widget.teacher);
       case 5:
         return MessagesSection(teacher: widget.teacher);
       case 6:
         return LeaderboardSection(teacher: widget.teacher);
-      case 7:
-        return ProfileSection(teacher: widget.teacher);
       default:
         return DashboardSection(teacher: widget.teacher);
     }
@@ -153,21 +204,20 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
   Widget _buildBottomNav() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color(0xFF0D47A1),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.2),
             blurRadius: 10,
             offset: const Offset(0, -2),
           ),
         ],
       ),
       child: SafeArea(
-        child: SizedBox(
-          height: 65,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: List.generate(8, (index) {
+            children: List.generate(7, (index) {
               final isSelected = _selectedIndex == index;
               return Expanded(
                 child: GestureDetector(
@@ -177,15 +227,22 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                     });
                   },
                   child: Container(
-                    color: Colors.transparent,
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? Colors.white.withValues(alpha: 0.2)
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
                           _sectionIcons[index],
                           color: isSelected
-                              ? const Color(0xFF007AFF)
-                              : Colors.grey,
+                              ? Colors.white
+                              : Colors.white70,
                           size: 22,
                         ),
                         const SizedBox(height: 4),
@@ -193,8 +250,8 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                           _getSectionTitle(index),
                           style: TextStyle(
                             color: isSelected
-                                ? const Color(0xFF007AFF)
-                                : Colors.grey,
+                                ? Colors.white
+                                : Colors.white70,
                             fontSize: 9,
                             fontWeight: isSelected
                                 ? FontWeight.w600

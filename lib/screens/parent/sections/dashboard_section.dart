@@ -18,7 +18,7 @@ class DashboardSection extends StatefulWidget {
 class _DashboardSectionState extends State<DashboardSection> {
   final ParentService _parentService = ParentService();
   bool _isLoading = true;
-  
+
   List<Map<String, dynamic>> _grades = [];
   List<Map<String, dynamic>> _homework = [];
   List<Map<String, dynamic>> _attendance = [];
@@ -37,70 +37,86 @@ class _DashboardSectionState extends State<DashboardSection> {
       final attendance = await _parentService.getChildAttendance(widget.student['id']);
       final announcements = await _parentService.getAnnouncements();
 
-      setState(() {
-        _grades = grades;
-        _homework = homework;
-        _attendance = attendance;
-        _announcements = announcements;
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _grades = grades;
+          _homework = homework;
+          _attendance = attendance;
+          _announcements = announcements;
+          _isLoading = false;
+        });
+      }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
+  }
+
+  bool _isRTL() {
+    final locale = context.locale;
+    return ['ar', 'ckb', 'ku', 'bhn', 'arc', 'bad', 'bdi', 'sdh', 'kmr'].contains(locale.languageCode);
   }
 
   @override
   Widget build(BuildContext context) {
+    final isRTL = _isRTL();
+
     if (_isLoading) {
-      return const Center(
-        child: CupertinoActivityIndicator(radius: 16),
+      return Center(
+        child: Directionality(
+          textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
+          child: const CupertinoActivityIndicator(radius: 16),
+        ),
       );
     }
 
     // Calculate stats
     final totalHomework = _homework.length;
     final pendingHomework = _homework.where((hw) => hw['status'] == 'pending').length;
-    final overdueHomework = _homework.where((hw) => hw['status'] == 'overdue').length;
     final avgGrade = _grades.isNotEmpty
         ? (_grades.map((g) => (g['score'] / g['totalScore'] * 100)).reduce((a, b) => a + b) / _grades.length)
         : 0.0;
     final attendanceRate = _attendance.isNotEmpty
-        ? (_attendance.where((a) => a['present'] == true).length / _attendance.length * 100)
+        ? ((_attendance.where((a) => a['status'] == 'PRESENT' || a['status'] == 'LATE').length) / _attendance.length * 100)
         : 0.0;
 
-    return RefreshIndicator(
-      onRefresh: _loadDashboardData,
-      child: ListView(
-        padding: const EdgeInsets.all(20),
-        children: [
-          // Quick Stats
-          _buildQuickStats(avgGrade, attendanceRate, totalHomework, pendingHomework),
-          
-          const SizedBox(height: 24),
-          
-          // Recent Grades
-          _buildSectionHeader('parent.recent_grades'.tr(), CupertinoIcons.chart_bar),
-          const SizedBox(height: 12),
-          _buildRecentGrades(),
-          
-          const SizedBox(height: 24),
-          
-          // Pending Homework
-          _buildSectionHeader('parent.pending_homework'.tr(), CupertinoIcons.doc_text),
-          const SizedBox(height: 12),
-          _buildPendingHomework(),
-          
-          const SizedBox(height: 24),
-          
-          // Latest Announcements
-          _buildSectionHeader('parent.latest_announcements'.tr(), CupertinoIcons.bell),
-          const SizedBox(height: 12),
-          _buildLatestAnnouncements(),
-          
-          const SizedBox(height: 40),
-        ],
+    return Directionality(
+      textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
+      child: RefreshIndicator(
+        onRefresh: _loadDashboardData,
+        child: ListView(
+          padding: const EdgeInsets.all(20),
+          children: [
+            // Quick Stats
+            _buildQuickStats(avgGrade, attendanceRate, totalHomework, pendingHomework),
+
+            const SizedBox(height: 24),
+
+            // Recent Grades
+            _buildSectionHeader('parent.recent_grades'.tr(), CupertinoIcons.chart_bar),
+            const SizedBox(height: 12),
+            _buildRecentGrades(),
+
+            const SizedBox(height: 24),
+
+            // Pending Homework
+            _buildSectionHeader('parent.pending_homework'.tr(), CupertinoIcons.doc_text),
+            const SizedBox(height: 12),
+            _buildPendingHomework(),
+
+            const SizedBox(height: 24),
+
+            // Latest Announcements
+            _buildSectionHeader('parent.latest_announcements'.tr(), CupertinoIcons.bell),
+            const SizedBox(height: 12),
+            _buildLatestAnnouncements(),
+
+            const SizedBox(height: 40),
+          ],
+        ),
       ),
     );
   }
@@ -137,7 +153,7 @@ class _DashboardSectionState extends State<DashboardSection> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -149,7 +165,7 @@ class _DashboardSectionState extends State<DashboardSection> {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: color, size: 24),
@@ -179,14 +195,14 @@ class _DashboardSectionState extends State<DashboardSection> {
   Widget _buildSectionHeader(String title, IconData icon) {
     return Row(
       children: [
-        Icon(icon, color: const Color(0xFF007AFF), size: 20),
+        Icon(icon, color: Colors.white, size: 20),
         const SizedBox(width: 8),
         Text(
           title,
           style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: Colors.black,
+            color: Colors.white,
           ),
         ),
       ],
@@ -206,7 +222,7 @@ class _DashboardSectionState extends State<DashboardSection> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -228,7 +244,7 @@ class _DashboardSectionState extends State<DashboardSection> {
                       width: 48,
                       height: 48,
                       decoration: BoxDecoration(
-                        color: _getGradeColor(grade['grade']).withOpacity(0.1),
+                        color: _getGradeColor(grade['grade']).withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Center(
@@ -299,7 +315,7 @@ class _DashboardSectionState extends State<DashboardSection> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -321,7 +337,7 @@ class _DashboardSectionState extends State<DashboardSection> {
                       width: 48,
                       height: 48,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFFF9500).withOpacity(0.1),
+                        color: const Color(0xFFFF9500).withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Icon(
@@ -388,7 +404,7 @@ class _DashboardSectionState extends State<DashboardSection> {
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 10,
                 offset: const Offset(0, 2),
               ),
@@ -400,7 +416,7 @@ class _DashboardSectionState extends State<DashboardSection> {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFF3B30).withOpacity(0.1),
+                  color: const Color(0xFFFF3B30).withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(
@@ -450,7 +466,7 @@ class _DashboardSectionState extends State<DashboardSection> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
