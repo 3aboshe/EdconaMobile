@@ -93,43 +93,84 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
               ),
             ),
       title: Row(
-        children: [
-          Image.asset(
-            'assets/logowhite.png',
-            height: 45,
-            errorBuilder: (context, error, stackTrace) {
-              return const Icon(
-                Icons.school,
-                color: Colors.white,
-                size: 45,
-              );
-            },
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.teacher['name']?.toString() ?? 'Teacher',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+        // Reverse order for RTL languages
+        children: isRTL
+            ? [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        widget.teacher['name']?.toString() ?? 'Teacher',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        textAlign: TextAlign.right,
+                      ),
+                      Text(
+                        _getSectionTitle(_selectedIndex),
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w400,
+                        ),
+                        textAlign: TextAlign.right,
+                      ),
+                    ],
                   ),
                 ),
-                Text(
-                  _getSectionTitle(_selectedIndex),
-                  style: const TextStyle(
-                    color: Colors.white70,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w400,
+                const SizedBox(width: 12),
+                Image.asset(
+                  'assets/logowhite.png',
+                  height: 45,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Icon(
+                      Icons.school,
+                      color: Colors.white,
+                      size: 45,
+                    );
+                  },
+                ),
+              ]
+            : [
+                Image.asset(
+                  'assets/logowhite.png',
+                  height: 45,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Icon(
+                      Icons.school,
+                      color: Colors.white,
+                      size: 45,
+                    );
+                  },
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.teacher['name']?.toString() ?? 'Teacher',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        _getSectionTitle(_selectedIndex),
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
-            ),
-          ),
-        ],
       ),
       actions: [
         GestureDetector(
@@ -217,13 +258,17 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Row(
-            children: List.generate(7, (index) {
-              final isSelected = _selectedIndex == index;
+            // Reverse icon order for RTL languages
+            children: (_isRTL()
+                ? List.generate(7, (index) => 6 - index)
+                : List.generate(7, (index) => index)
+            ).map((iconIndex) {
+              final isSelected = _selectedIndex == iconIndex;
               return Expanded(
                 child: GestureDetector(
                   onTap: () {
                     setState(() {
-                      _selectedIndex = index;
+                      _selectedIndex = iconIndex;
                     });
                   },
                   child: Container(
@@ -239,7 +284,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
-                          _sectionIcons[index],
+                          _sectionIcons[iconIndex],
                           color: isSelected
                               ? Colors.white
                               : Colors.white70,
@@ -247,7 +292,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          _getSectionTitle(index),
+                          _getSectionTitle(iconIndex),
                           style: TextStyle(
                             color: isSelected
                                 ? Colors.white
@@ -266,7 +311,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                   ),
                 ),
               );
-            }),
+            }).toList(),
           ),
         ),
       ),

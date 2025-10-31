@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import '../services/auth_service.dart';
 import '../services/language_service.dart';
 
@@ -147,11 +147,20 @@ class _LoginScreenState extends State<LoginScreen>
     }
   }
 
+  bool _isRTL() {
+    final locale = context.locale;
+    return ['ar', 'ckb', 'ku', 'bhn', 'arc', 'bad', 'bdi', 'sdh', 'kmr'].contains(locale.languageCode);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF0D47A1),
-      body: SafeArea(
+    final isRTL = _isRTL();
+
+    return Directionality(
+      textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
+      child: Scaffold(
+        backgroundColor: const Color(0xFF0D47A1),
+        body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 24.0),
@@ -309,10 +318,15 @@ class _LoginScreenState extends State<LoginScreen>
                             hintStyle: TextStyle(
                               color: Colors.grey.withValues(alpha: 0.5),
                             ),
-                            prefixIcon: const Icon(
+                            // Icon position based on RTL
+                            prefixIcon: isRTL ? null : const Icon(
                               Icons.vpn_key_outlined,
                               color: Color(0xFF0D47A1),
                             ),
+                            suffixIcon: isRTL ? const Icon(
+                              Icons.vpn_key_outlined,
+                              color: Color(0xFF0D47A1),
+                            ) : null,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide(
@@ -334,9 +348,11 @@ class _LoginScreenState extends State<LoginScreen>
                             ),
                             filled: true,
                             fillColor: Colors.grey.withValues(alpha: 0.02),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 16,
+                            contentPadding: EdgeInsets.only(
+                              left: isRTL ? 16 : 16,
+                              right: isRTL ? 16 : 48,
+                              top: 16,
+                              bottom: 16,
                             ),
                           ),
                           keyboardType: TextInputType.text,
@@ -439,6 +455,7 @@ class _LoginScreenState extends State<LoginScreen>
             ),
           ),
         ),
+      ),
       ),
     );
   }

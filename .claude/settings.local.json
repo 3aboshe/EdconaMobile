@@ -1,19 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(flutter clean)",
-      "Bash(flutter pub get)",
-      "Bash(flutter analyze)",
-      "Bash(flutter analyze lib/screens/teacher/teacher_dashboard.dart)",
-      "Bash(flutter build ios --debug --no-codesign)",
-      "Bash(flutter --version)",
-      "Bash(flutter analyze lib/screens/teacher/sections/dashboard_section.dart)",
-      "Bash(flutter analyze lib/screens/parent/sections/dashboard_section.dart)",
-      "Bash(dart pub deps easy_localization)",
-      "Bash(find lib/screens/parent/sections lib/screens/teacher/sections -name \"*.dart\" -exec sed -i '' 's/TextDirection\\.rtl/TextDirection.values[0]/g' {} ;)",
-      "Bash(find lib/screens/parent/sections lib/screens/teacher/sections -name \"*.dart\" -exec sed -i '' 's/TextDirection\\.ltr/TextDirection.values[1]/g' {} ;)",
-      "Bash(dart doc --no-include-sdk --format=markdown easy_localization)",
-      "Bash(find lib/screens/teacher/sections -name \"*.dart\" -exec sed -i '' 's/DropdownButtonFormField<String>(\\s*value:/DropdownButtonFormField<String>( initialValue:/g' {} ;)"
+      "Bash(flutter analyze lib/screens/parent/parent_dashboard.dart lib/screens/teacher/teacher_dashboard.dart)",
+      "Bash(flutter analyze lib/screens/login_screen.dart lib/screens/parent/parent_dashboard.dart lib/screens/teacher/teacher_dashboard.dart)"
     ],
     "deny": [],
     "ask": []
