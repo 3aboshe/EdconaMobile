@@ -16,6 +16,7 @@
   },
   "parent": {
     "welcome": "Welcome to Parent Portal",
+<<<<<<< HEAD
     "welcome_back": "Welcome Back",
     "your_students": "Your Students",
     "students": "Students",
@@ -24,10 +25,15 @@
     "select_student_subtitle": "Select a student to view their information",
     "quick_actions": "Quick Actions",
     "dashboard": "Dashboard",
+=======
+    "your_students": "Your Students",
+    "quick_actions": "Quick Actions",
+>>>>>>> 5ea39b80f25d143fa8c22ac385725aae8213a457
     "performance": "Performance",
     "homework": "Homework",
     "attendance": "Attendance",
     "messages": "Messages",
+<<<<<<< HEAD
     "profile": "Profile",
     "announcements": "Announcements",
     "student_details": "Student Details",
@@ -42,6 +48,17 @@
     "no_recent_activity": "No recent activity",
     "schedule": "Schedule",
     "exams": "Exams",
+=======
+    "student_details": "Student Details",
+    "grades": "Grades",
+    "attendance_count": "Attendance",
+    "recent_activity": "Recent Activity",
+    "no_recent_activity": "No recent activity",
+    "select_student": "Select a student to view details",
+    "schedule": "Schedule",
+    "exams": "Exams",
+    "announcements": "Announcements",
+>>>>>>> 5ea39b80f25d143fa8c22ac385725aae8213a457
     "no_students": "No students found",
     "loading_students": "Loading students...",
     "error_loading_students": "Failed to load students",
@@ -54,6 +71,7 @@
     "send": "Send",
     "message_sent": "Message sent successfully",
     "teacher": "Teacher",
+<<<<<<< HEAD
     "teachers": "Teachers",
     "no_teachers": "No teachers available",
     "no_homework": "No homework available",
@@ -64,10 +82,17 @@
     "latest_announcements": "Latest Announcements",
     "due": "Due",
     "submitted": "Submitted",
+=======
+    "no_homework": "No homework available",
+    "no_grades": "No grades available",
+    "no_attendance": "No attendance data available",
+    "due": "Due",
+>>>>>>> 5ea39b80f25d143fa8c22ac385725aae8213a457
     "subject": "Subject",
     "date": "Date",
     "status": "Status",
     "grade": "Grade",
+<<<<<<< HEAD
     "grade_label": "Grade",
     "present": "Present",
     "absent": "Absent",
@@ -86,6 +111,10 @@
     "urgent": "Urgent",
     "important": "Important",
     "normal": "Normal"
+=======
+    "present": "Present",
+    "absent": "Absent"
+>>>>>>> 5ea39b80f25d143fa8c22ac385725aae8213a457
   },
   "common": {
     "ok": "OK",
@@ -109,7 +138,11 @@
     "settings": "Settings",
     "notification": "Notification",
     "warning": "Warning",
+<<<<<<< HEAD
     "info": "Information",
     "all": "All"
+=======
+    "info": "Information"
+>>>>>>> 5ea39b80f25d143fa8c22ac385725aae8213a457
   }
 }

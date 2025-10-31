@@ -16,6 +16,7 @@
   },
   "parent": {
     "welcome": "به‌خێربێیت بۆ دەروازەی دایک و باوک",
+<<<<<<< HEAD
     "welcome_back": "به‌خێربێیتەوە",
     "your_students": "خوێندکارەکانت",
     "students": "خوێندکاران",
@@ -86,16 +87,34 @@
     "urgent": "پەلە",
     "important": "گرنگ",
     "normal": "ئاسایی"
+=======
+    "your_students": "خوێندکارەکانت",
+    "quick_actions": "کارکردنی خێرا",
+    "performance": "بەرژەوەندی",
+    "homework": "ئەرکە خانە",
+    "attendance": "ئامادەبوون",
+    "messages": "پەیامانەکان",
+    "student_details": "وردەکاری خوێندکار",
+    "grades": "نمرەکان",
+    "attendance_count": "ئامادەبوون",
+    "recent_activity": "بەرژارەی دوایی",
+    "no_recent_activity": "هیچ بەرژارەیەکی دوایی نییە",
+    "select_student": "خوێندکارێک هەڵبژێرە بۆ بینینی وردەکاریی"
+>>>>>>> 5ea39b80f25d143fa8c22ac385725aae8213a457
   },
   "common": {
     "ok": "باشه‌",
     "cancel": "هه‌ڵوه‌شاندنه‌وه‌",
     "error": "هه‌ڵه‌",
     "success": "سه‌رکه‌توو",
+<<<<<<< HEAD
     "loading": "ده‌ستپێده‌كات...",
     "try_again": "جار هەتانە بکە",
     "all": "هەموو",
     "logout": "چوونەدەرەوە",
     "refresh": "نوێکردنەوە"
+=======
+    "loading": "ده‌ستپێده‌كات..."
+>>>>>>> 5ea39b80f25d143fa8c22ac385725aae8213a457
   }
 }

@@ -16,6 +16,7 @@
   },
   "parent": {
     "welcome": "ܫܠܡܐ ܠܟ ܒܬܪܥܐ ܕܐܒܐ ܘܐܡܐ",
+<<<<<<< HEAD
     "welcome_back": "ܫܠܡܐ ܠܟ ܬܘܒ",
     "your_students": "ܐܣܟܪܝܟ ܕܝܠܟ",
     "students": "ܐܣܟܪܝ̈ܐ",
@@ -86,16 +87,34 @@
     "urgent": "ܚܫܝܬܐ",
     "important": "ܡܗܝܡܐ",
     "normal": "ܥܕܝܐ"
+=======
+    "your_students": "ܐܣܟܪܝܟ ܕܝܠܟ",
+    "quick_actions": "ܦܥܠܝ̈ܐ ܚܫܝܬܐ",
+    "performance": "ܫܘܘܕܥܐ",
+    "homework": "ܥܒܕ̈ܐ ܕܒܝܬܐ",
+    "attendance": "ܥܘܕܪܢܐ",
+    "messages": "ܐܓܪ̈ܬܐ",
+    "student_details": "ܦܪܘܦܝܐ ܕܐܣܟܪܝܐ",
+    "grades": "ܢܩܘܕ̈ܐ",
+    "attendance_count": "ܥܘܕܪܢܐ",
+    "recent_activity": "ܦܥܠܘܬܐ ܚܕܬܐ",
+    "no_recent_activity": "ܠܐ ܐܝܬ ܦܥܠܘܬܐ ܚܕܬܐ",
+    "select_student": "ܓܠܐ ܐܣܟܪܝܐ ܠܚܙܝܐ ܦܪܘܦܝܐ"
+>>>>>>> 5ea39b80f25d143fa8c22ac385725aae8213a457
   },
   "common": {
     "ok": "ܛܒ",
     "cancel": "ܒܛܘܠܐ",
     "error": "ܚܛܐ",
     "success": "ܦܘܪܫܢܐ",
+<<<<<<< HEAD
     "loading": "ܥܐܕܐ...",
     "try_again": "ܢܣܐ ܬܘܒ",
     "all": "ܟܠ",
     "logout": "ܦܘܩ",
     "refresh": "ܚܕܬ"
+=======
+    "loading": "ܥܐܕܐ..."
+>>>>>>> 5ea39b80f25d143fa8c22ac385725aae8213a457
   }
 }
