@@ -1,0 +1,39 @@
+{
+  "language": {
+    "title": "ܓܠܐ ܠܫܢܐ",
+    "subtitle": "ܓܠܐ ܠܫܢܐ ܕܟܬܝܪ ܠܟ",
+    "continue": "ܐܬܪܐ"
+  },
+  "login": {
+    "welcome": "ܫܠܡܐ ܠܟ ܒܐܕܟܘܢܐ",
+    "subtitle": "ܐܬܒ ܩܘܕܐ ܕܥܠܬܐ ܠܐܬܪܐ",
+    "access_code": "ܩܘܕܐ ܕܥܠܬܐ",
+    "access_code_hint": "ܐܬܒ ܩܘܕܟ (ܡܬܠܐ: S123456)",
+    "login_button": "ܥܠܐ",
+    "help_text": "ܐܣܟܪܝܐ: S123456 | ܡܠܦܢܐ: T123 | ܐܒܐ ܘܐܡܐ: P123",
+    "error_required": "ܐܬܒ ܩܘܕܟ",
+    "error_invalid": "ܩܘܕܐ ܚܛܐ"
+  },
+  "parent": {
+    "welcome": "ܫܠܡܐ ܠܟ ܒܬܪܥܐ ܕܐܒܐ ܘܐܡܐ",
+    "your_students": "ܐܣܟܪܝܟ ܕܝܠܟ",
+    "quick_actions": "ܦܥܠܝ̈ܐ ܚܫܝܬܐ",
+    "performance": "ܫܘܘܕܥܐ",
+    "homework": "ܥܒܕ̈ܐ ܕܒܝܬܐ",
+    "attendance": "ܥܘܕܪܢܐ",
+    "messages": "ܐܓܪ̈ܬܐ",
+    "student_details": "ܦܪܘܦܝܐ ܕܐܣܟܪܝܐ",
+    "grades": "ܢܩܘܕ̈ܐ",
+    "attendance_count": "ܥܘܕܪܢܐ",
+    "recent_activity": "ܦܥܠܘܬܐ ܚܕܬܐ",
+    "no_recent_activity": "ܠܐ ܐܝܬ ܦܥܠܘܬܐ ܚܕܬܐ",
+    "select_student": "ܓܠܐ ܐܣܟܪܝܐ ܠܚܙܝܐ ܦܪܘܦܝܐ"
+  },
+  "common": {
+    "ok": "ܛܒ",
+    "cancel": "ܒܛܘܠܐ",
+    "error": "ܚܛܐ",
+    "success": "ܦܘܪܫܢܐ",
+    "loading": "ܥܐܕܐ..."
+  }
+}
