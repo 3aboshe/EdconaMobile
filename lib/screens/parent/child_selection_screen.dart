@@ -47,7 +47,7 @@ class _ChildSelectionScreenState extends State<ChildSelectionScreen> {
   }
 
   Future<void> _logout() async {
-    await _authService.logout();
+    await AuthService.logout();
     if (mounted) {
       Navigator.pushReplacementNamed(context, '/login');
     }

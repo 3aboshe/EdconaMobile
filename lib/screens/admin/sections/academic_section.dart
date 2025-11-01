@@ -30,27 +30,20 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
   }
 
   Future<void> _loadData() async {
-    print('AcademicSection: _loadData() called');
     setState(() {
       _isLoading = true;
     });
 
     try {
-      print('AcademicSection: Fetching subjects and classes...');
       final subjects = await _adminService.getAllSubjects();
       final classes = await _adminService.getAllClasses();
-
-      print('AcademicSection: Got ${subjects.length} subjects and ${classes.length} classes');
 
       setState(() {
         _subjects = subjects;
         _classes = classes;
         _isLoading = false;
       });
-
-      print('AcademicSection: Data loaded successfully');
     } catch (e) {
-      print('AcademicSection: Error loading data: $e');
       setState(() {
         _isLoading = false;
       });
@@ -254,29 +247,36 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
                     ),
                     const SizedBox(height: 12),
                     Container(
-                      padding: const EdgeInsets.all(16),
+                      height: 200,
+                      padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.grey.shade300),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Column(
-                        children: subjects.map((subject) {
-                          return CheckboxListTile(
-                            title: Text(subject['name']),
-                            value: selectedSubjectIds.contains(subject['id']),
-                            onChanged: (value) {
-                              setState(() {
-                                if (value == true) {
-                                  selectedSubjectIds.add(subject['id']);
-                                } else {
-                                  selectedSubjectIds.remove(subject['id']);
-                                }
-                              });
-                            },
-                            controlAffinity: ListTileControlAffinity.leading,
-                            contentPadding: EdgeInsets.zero,
-                          );
-                        }).toList(),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: subjects.map((subject) {
+                            return CheckboxListTile(
+                              title: Text(
+                                subject['name'],
+                                style: const TextStyle(fontSize: 14),
+                              ),
+                              value: selectedSubjectIds.contains(subject['id']),
+                              onChanged: (value) {
+                                setState(() {
+                                  if (value == true) {
+                                    selectedSubjectIds.add(subject['id']);
+                                  } else {
+                                    selectedSubjectIds.remove(subject['id']);
+                                  }
+                                });
+                              },
+                              controlAffinity: ListTileControlAffinity.leading,
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                              dense: true,
+                            );
+                          }).toList(),
+                        ),
                       ),
                     ),
                   ],
@@ -567,20 +567,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
                 color: Color(0xFF1D1D1F),
               ),
             ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 4),
-                Text(
-                  'ID: ${subject['id']}',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey[600],
-                    fontFamily: 'monospace',
-                  ),
-                ),
-              ],
-            ),
+            subtitle: null,
             trailing: IconButton(
               onPressed: () => _showDeleteSubjectConfirm(subject),
               icon: const Icon(Icons.delete, color: Colors.red),
@@ -672,35 +659,27 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
                 color: Color(0xFF1D1D1F),
               ),
             ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 4),
-                Text(
-                  'ID: ${classItem['id']}',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey[600],
-                    fontFamily: 'monospace',
-                  ),
-                ),
-                const SizedBox(height: 8),
-                if (assignedSubjects.isNotEmpty)
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 4,
-                    children: assignedSubjects.map((subjectName) {
-                      return Chip(
-                        label: Text(
-                          subjectName,
-                          style: const TextStyle(fontSize: 12),
-                        ),
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      );
-                    }).toList(),
-                  ),
-              ],
-            ),
+            subtitle: assignedSubjects.isNotEmpty
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 4),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 4,
+                        children: assignedSubjects.map((subjectName) {
+                          return Chip(
+                            label: Text(
+                              subjectName,
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                  )
+                : null,
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [

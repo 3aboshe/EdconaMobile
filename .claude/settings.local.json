@@ -33,7 +33,19 @@
       "Bash(flutter analyze lib/screens/admin/admin_dashboard.dart)",
       "Bash(curl -s https://edcon-production.up.railway.app/api/auth/users)",
       "Bash(flutter analyze lib/screens/admin/)",
-      "Read(//Users/abdalrahmanmajed/Desktop/edcon-app/**)"
+      "Read(//Users/abdalrahmanmajed/Desktop/edcon-app/**)",
+      "Bash(flutter analyze lib/screens/admin/admin_dashboard.dart --no-fatal-infos)",
+      "Bash(flutter analyze lib/screens/admin/sections/analytics_section.dart --no-fatal-infos)",
+      "Bash(flutter analyze lib/screens/admin/admin_dashboard.dart lib/screens/admin/sections/academic_section.dart --no-fatal-infos)",
+      "Bash(flutter analyze lib/screens/admin/ --no-fatal-infos)",
+      "Bash(cat /Users/abdalrahmanmajed/Desktop/edconamobile/assets/translations/arc.json)",
+      "Bash(cat /Users/abdalrahmanmajed/Desktop/edconamobile/assets/translations/bhn.json)",
+      "Bash(flutter analyze lib/screens/admin/admin_dashboard.dart lib/screens/admin/sections/academic_section.dart lib/screens/admin/sections/dashboard_section.dart --no-fatal-infos)",
+      "Bash(flutter analyze --no-fatal-infos)",
+      "Bash(flutter analyze lib/screens/admin/admin_dashboard.dart lib/services/auth_service.dart --no-fatal-infos)",
+      "Bash(flutter analyze lib/screens/admin/admin_dashboard.dart lib/screens/admin/sections/dashboard_section.dart lib/screens/admin/sections/users_section.dart --no-fatal-infos)",
+      "Bash(flutter analyze lib/screens/teacher/sections/profile_section.dart --no-fatal-infos)",
+      "Bash(flutter analyze lib/screens/login_screen.dart --no-fatal-infos)"
     ],
     "deny": [],
     "ask": []

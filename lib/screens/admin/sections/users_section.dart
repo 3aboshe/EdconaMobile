@@ -3,7 +3,14 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 import '../../../services/admin_service.dart';
 
 class UsersSection extends StatefulWidget {
-  const UsersSection({super.key});
+  const UsersSection({
+    super.key,
+    this.pendingCreateRole,
+    this.onCreateComplete,
+  });
+
+  final String? pendingCreateRole;
+  final VoidCallback? onCreateComplete;
 
   @override
   State<UsersSection> createState() => _UsersSectionState();
@@ -28,6 +35,43 @@ class _UsersSectionState extends State<UsersSection>
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
     _loadData();
+
+    // If a pending role is provided, show the create dialog
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.pendingCreateRole != null) {
+        _showCreateDialogForRole(widget.pendingCreateRole!);
+      }
+    });
+  }
+
+  @override
+  void didUpdateWidget(UsersSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Check if pendingCreateRole has changed
+    if (widget.pendingCreateRole != oldWidget.pendingCreateRole &&
+        widget.pendingCreateRole != null) {
+      _showCreateDialogForRole(widget.pendingCreateRole!);
+    }
+  }
+
+  void _showCreateDialogForRole(String role) {
+    // Switch to the appropriate tab first
+    if (role == 'STUDENT') {
+      _tabController.index = 0;
+    } else if (role == 'TEACHER') {
+      _tabController.index = 1;
+    } else if (role == 'PARENT') {
+      _tabController.index = 2;
+    }
+
+    // Show the create dialog after a short delay to ensure the tab has switched
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (mounted) {
+        _showCreateUserDialog(role);
+        // Notify parent that we're handling the role
+        widget.onCreateComplete?.call();
+      }
+    });
   }
 
   @override
@@ -37,6 +81,8 @@ class _UsersSectionState extends State<UsersSection>
   }
 
   Future<void> _loadData() async {
+    if (!mounted) return;
+
     setState(() {
       _isLoading = true;
     });
@@ -45,6 +91,8 @@ class _UsersSectionState extends State<UsersSection>
       final users = await _adminService.getAllUsers();
       final classes = await _adminService.getAllClasses();
       final subjects = await _adminService.getAllSubjects();
+
+      if (!mounted) return;
 
       setState(() {
         _students = users.where((u) => u['role'] == 'STUDENT').toList();
@@ -55,6 +103,8 @@ class _UsersSectionState extends State<UsersSection>
         _isLoading = false;
       });
     } catch (e) {
+      if (!mounted) return;
+
       setState(() {
         _isLoading = false;
       });

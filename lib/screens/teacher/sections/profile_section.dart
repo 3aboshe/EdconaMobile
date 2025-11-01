@@ -17,7 +17,6 @@ class ProfileSection extends StatefulWidget {
 
 class _ProfileSectionState extends State<ProfileSection> {
   final TeacherService _teacherService = TeacherService();
-  final AuthService _authService = AuthService();
 
   TimeOfDay? _availableFrom;
   TimeOfDay? _availableTo;
@@ -172,7 +171,7 @@ class _ProfileSectionState extends State<ProfileSection> {
   }
 
   Future<void> _logout() async {
-    await _authService.logout();
+    await AuthService.logout();
     if (mounted) {
       Navigator.pushAndRemoveUntil(
         context,

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:dio/dio.dart';
+import '../../services/auth_service.dart';
 import 'sections/dashboard_section.dart';
 import 'sections/analytics_section.dart';
 import 'sections/users_section.dart';
 import 'sections/academic_section.dart';
-import 'sections/system_section.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
@@ -17,24 +19,46 @@ class _AdminDashboardState extends State<AdminDashboard> {
   int _selectedIndex = 0;
   bool _isMobile = false;
 
-  final List<Widget> _sections = [
-    const DashboardSection(),
+  String? _pendingCreateRole;
+
+  List<Widget> get _sections => [
+    DashboardSection(onNavigateToUsers: _navigateToUsers),
     const AnalyticsSection(),
-    const UsersSection(),
+    UsersSection(
+      pendingCreateRole: _pendingCreateRole,
+      onCreateComplete: () {
+        setState(() {
+          _pendingCreateRole = null;
+        });
+      },
+    ),
     const AcademicSection(),
   ];
 
+  void _navigateToUsers(int tabIndex) {
+    setState(() {
+      _selectedIndex = 2; // Navigate to Users section (index 2)
+      // Set the role to create based on the tab index
+      if (tabIndex == 0) {
+        _pendingCreateRole = 'STUDENT';
+      } else if (tabIndex == 1) {
+        _pendingCreateRole = 'TEACHER';
+      } else if (tabIndex == 2) {
+        _pendingCreateRole = 'PARENT';
+      }
+    });
+  }
+
   final List<Map<String, dynamic>> _sectionInfo = [
-    {'title': 'overview', 'icon': Icons.dashboard},
-    {'title': 'analytics', 'icon': Icons.analytics},
-    {'title': 'users', 'icon': Icons.people},
-    {'title': 'academic', 'icon': Icons.school},
+    {'title': 'admin.dashboard', 'icon': Icons.dashboard_outlined},
+    {'title': 'admin.analytics', 'icon': Icons.analytics_outlined},
+    {'title': 'admin.users', 'icon': Icons.people_outline},
+    {'title': 'admin.academic', 'icon': Icons.school_outlined},
   ];
 
   @override
   void initState() {
     super.initState();
-    print('AdminDashboard: initState() called');
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkScreenSize();
     });
@@ -45,26 +69,43 @@ class _AdminDashboardState extends State<AdminDashboard> {
     setState(() {
       _isMobile = screenWidth < 768;
     });
-    print('AdminDashboard: screen width = $screenWidth, isMobile = $_isMobile');
   }
 
   @override
   Widget build(BuildContext context) {
-    print('AdminDashboard: build() called');
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F7),
       appBar: _isMobile
           ? AppBar(
               backgroundColor: const Color(0xFF1E3A8A),
               foregroundColor: Colors.white,
-              title: Text(
-                'admin_panel'.tr(),
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              elevation: 0,
+              title: LayoutBuilder(
+                builder: (context, constraints) {
+                  return Container(
+                    width: double.infinity,
+                    alignment: Alignment.center,
+                    child: Transform.translate(
+                      offset: const Offset(50, 0),
+                      child: Image.asset(
+                        'assets/logowhite.png',
+                        height: 128,
+                        width: 128,
+                      ),
+                    ),
+                  );
+                },
               ),
               actions: [
                 IconButton(
-                  icon: const Icon(Icons.menu),
+                  icon: const Icon(Icons.logout),
+                  onPressed: () => _showLogoutDialog(context),
+                  iconSize: 22,
+                ),
+                IconButton(
+                  icon: const Icon(Icons.more_vert),
                   onPressed: () => _showMobileMenu(context),
+                  iconSize: 22,
                 ),
               ],
             )
@@ -74,7 +115,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
           builder: (context, constraints) {
             final isTablet = constraints.maxWidth >= 768;
             if (isTablet) {
-              // Desktop/Tablet layout with sidebar
               return Row(
                 children: [
                   _buildSidebar(),
@@ -84,7 +124,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 ],
               );
             } else {
-              // Mobile layout - show content area with bottom navigation
               return Column(
                 children: [
                   Expanded(child: _buildMainContent()),
@@ -100,13 +139,13 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
   Widget _buildSidebar() {
     return Container(
-      width: 288,
+      width: 280,
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 40,
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 20,
             offset: const Offset(0, 0),
           ),
         ],
@@ -114,48 +153,50 @@ class _AdminDashboardState extends State<AdminDashboard> {
       child: Column(
         children: [
           // Header
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 36),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
             child: Row(
               children: [
                 Container(
-                  width: 52,
-                  height: 52,
+                  width: 64,
+                  height: 64,
                   decoration: BoxDecoration(
                     color: const Color(0xFF1E3A8A),
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
                         color: const Color(0xFF1E3A8A).withOpacity(0.3),
-                        blurRadius: 12,
+                        blurRadius: 8,
                         offset: const Offset(0, 4),
                       ),
                     ],
                   ),
-                  child: const Icon(
-                    Icons.admin_panel_settings,
-                    color: Colors.white,
-                    size: 30,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(14),
+                    child: Image.asset(
+                      'assets/logoblue.png',
+                      fit: BoxFit.contain,
+                    ),
                   ),
                 ),
-                const SizedBox(width: 18),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'admin_panel'.tr(),
+                        'EdCona',
                         style: const TextStyle(
-                          fontSize: 21,
+                          fontSize: 20,
                           fontWeight: FontWeight.w700,
                           color: Color(0xFF1D1D1F),
                           letterSpacing: -0.3,
                         ),
                       ),
-                      const SizedBox(height: 5),
+                      const SizedBox(height: 4),
                       Text(
-                        'manage_school'.tr(),
+                        'Manage your school',
                         style: TextStyle(
                           fontSize: 13,
                           color: Colors.grey[600],
@@ -164,6 +205,15 @@ class _AdminDashboardState extends State<AdminDashboard> {
                       ),
                     ],
                   ),
+                ),
+                IconButton(
+                  icon: Icon(
+                    Icons.logout,
+                    color: const Color(0xFF1E3A8A),
+                    size: 22,
+                  ),
+                  onPressed: () => _showLogoutDialog(context),
+                  tooltip: 'Logout',
                 ),
               ],
             ),
@@ -179,11 +229,11 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 final item = _sectionInfo[index];
                 final isSelected = _selectedIndex == index;
 
-                return Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
                   child: Material(
                     color: isSelected
-                        ? const Color(0xFF1E3A8A).withOpacity(0.12)
+                        ? const Color(0xFF1E3A8A).withOpacity(0.1)
                         : Colors.transparent,
                     borderRadius: BorderRadius.circular(12),
                     child: InkWell(
@@ -191,59 +241,41 @@ class _AdminDashboardState extends State<AdminDashboard> {
                         setState(() {
                           _selectedIndex = index;
                         });
-                        if (_isMobile) {
-                          Navigator.pop(context);
-                        }
                       },
                       borderRadius: BorderRadius.circular(12),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                         child: Row(
                           children: [
                             Container(
-                              width: 44,
-                              height: 44,
+                              width: 40,
+                              height: 40,
                               decoration: BoxDecoration(
                                 color: isSelected
                                     ? const Color(0xFF1E3A8A)
                                     : const Color(0xFFF5F5F7),
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(10),
                               ),
-                              child: Center(
-                                child: Icon(
-                                  item['icon'] as IconData,
-                                  size: 24,
-                                  color: isSelected ? Colors.white : const Color(0xFF1E3A8A),
-                                ),
+                              child: Icon(
+                                item['icon'] as IconData,
+                                size: 22,
+                                color: isSelected ? Colors.white : const Color(0xFF1E3A8A),
                               ),
                             ),
-                            const SizedBox(width: 18),
+                            const SizedBox(width: 16),
                             Expanded(
                               child: Text(
                                 (item['title'] as String).tr(),
                                 style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight:
-                                      isSelected ? FontWeight.w600 : FontWeight.w500,
+                                  fontSize: 15,
+                                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                                   color: isSelected
                                       ? const Color(0xFF1E3A8A)
                                       : const Color(0xFF1D1D1F),
-                                  letterSpacing: isSelected ? -0.2 : -0.1,
+                                  letterSpacing: -0.1,
                                 ),
                               ),
                             ),
-                            if (isSelected)
-                              Container(
-                                width: 4,
-                                height: 28,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF1E3A8A),
-                                  borderRadius: BorderRadius.circular(2),
-                                ),
-                              ),
                           ],
                         ),
                       ),
@@ -257,38 +289,38 @@ class _AdminDashboardState extends State<AdminDashboard> {
           // Bottom User Info
           Container(
             margin: const EdgeInsets.all(20),
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: const Color(0xFFF5F5F7),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(14),
             ),
             child: Row(
               children: [
                 CircleAvatar(
                   backgroundColor: const Color(0xFF1E3A8A),
-                  radius: 22,
-                  child: const Icon(Icons.person, color: Colors.white, size: 24),
+                  radius: 20,
+                  child: const Icon(Icons.person, color: Colors.white, size: 22),
                 ),
-                const SizedBox(width: 14),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'admin'.tr(),
+                        'Admin',
                         style: const TextStyle(
-                          fontSize: 15,
+                          fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: Color(0xFF1D1D1F),
                           letterSpacing: -0.1,
                         ),
                       ),
-                      const SizedBox(height: 3),
+                      const SizedBox(height: 2),
                       Text(
-                        'administrator'.tr(),
+                        'Administrator',
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: 11,
                           color: Colors.grey[600],
                           fontWeight: FontWeight.w400,
                         ),
@@ -312,7 +344,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
           // Top Bar (only for desktop/tablet)
           if (!_isMobile)
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
+              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
               decoration: const BoxDecoration(
                 color: Colors.white,
                 border: Border(
@@ -323,9 +355,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 children: [
                   Expanded(
                     child: Text(
-                      (_sectionInfo[_selectedIndex]['title'] as String).tr().toUpperCase(),
+                      _sectionInfo[_selectedIndex]['title'].toString().toUpperCase(),
                       style: const TextStyle(
-                        fontSize: 13,
+                        fontSize: 12,
                         fontWeight: FontWeight.w700,
                         color: Color(0xFF86868B),
                         letterSpacing: 1.5,
@@ -333,8 +365,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     ),
                   ),
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
                       color: const Color(0xFF34C759).withOpacity(0.15),
                       borderRadius: BorderRadius.circular(8),
@@ -342,10 +373,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     child: const Text(
                       'LIVE',
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 11,
                         fontWeight: FontWeight.w700,
                         color: Color(0xFF34C759),
-                        letterSpacing: 0.6,
+                        letterSpacing: 0.5,
                       ),
                     ),
                   ),
@@ -368,65 +399,63 @@ class _AdminDashboardState extends State<AdminDashboard> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 8,
             offset: const Offset(0, -2),
           ),
         ],
       ),
       child: SafeArea(
+        top: false,
         child: Container(
-          height: 65,
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          height: 64,
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: List.generate(_sectionInfo.length, (index) {
               final item = _sectionInfo[index];
               final isSelected = _selectedIndex == index;
 
-              return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _selectedIndex = index;
-                  });
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: isSelected
-                        ? const Color(0xFF1E3A8A).withOpacity(0.12)
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: isSelected
-                              ? const Color(0xFF1E3A8A)
-                              : const Color(0xFFF5F5F7),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Icon(
+              return Flexible(
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _selectedIndex = index;
+                    });
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? const Color(0xFF1E3A8A).withOpacity(0.1)
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
                           item['icon'] as IconData,
-                          size: 22,
-                          color: isSelected ? Colors.white : const Color(0xFF1E3A8A),
+                          size: 20,
+                          color: isSelected ? const Color(0xFF1E3A8A) : Colors.grey[600],
                         ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        (item['title'] as String).tr(),
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                          color: isSelected
-                              ? const Color(0xFF1E3A8A)
-                              : Colors.grey[600],
+                        const SizedBox(height: 4),
+                        Text(
+                          (item['title'] as String).tr(),
+                          textAlign: TextAlign.center,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                            color: isSelected
+                                ? const Color(0xFF1E3A8A)
+                                : Colors.grey[600],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               );
@@ -443,32 +472,32 @@ class _AdminDashboardState extends State<AdminDashboard> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.7,
+        height: MediaQuery.of(context).size.height * 0.6,
         decoration: const BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
         child: Column(
           children: [
             Container(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(20),
               decoration: const BoxDecoration(
                 color: Color(0xFF1E3A8A),
-                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.admin_panel_settings,
-                      color: Colors.white, size: 34),
-                  const SizedBox(width: 16),
-                  const Expanded(
-                    child: Text(
-                      'Admin Panel',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        letterSpacing: -0.3,
+                  const Spacer(),
+                  Expanded(
+                    flex: 4,
+                    child: Center(
+                      child: Transform.translate(
+                        offset: const Offset(50, 0),
+                        child: Image.asset(
+                          'assets/logowhite.png',
+                          height: 128,
+                          width: 128,
+                        ),
                       ),
                     ),
                   ),
@@ -481,43 +510,39 @@ class _AdminDashboardState extends State<AdminDashboard> {
             ),
             Expanded(
               child: ListView.builder(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(12),
                 itemCount: _sectionInfo.length,
                 itemBuilder: (context, index) {
                   final item = _sectionInfo[index];
                   final isSelected = _selectedIndex == index;
 
                   return Container(
-                    margin: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 6),
+                    margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     child: ListTile(
                       leading: Container(
-                        width: 50,
-                        height: 50,
+                        width: 44,
+                        height: 44,
                         decoration: BoxDecoration(
                           color: isSelected
                               ? const Color(0xFF1E3A8A)
                               : const Color(0xFFF5F5F7),
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        child: Center(
-                          child: Icon(
-                            item['icon'] as IconData,
-                            size: 28,
-                            color: isSelected ? Colors.white : const Color(0xFF1E3A8A),
-                          ),
+                        child: Icon(
+                          item['icon'] as IconData,
+                          size: 24,
+                          color: isSelected ? Colors.white : const Color(0xFF1E3A8A),
                         ),
                       ),
                       title: Text(
-                        (item['title'] as String).tr(),
+                        item['title'].toString(),
                         style: TextStyle(
-                          fontSize: 16,
-                          fontWeight:
-                              isSelected ? FontWeight.w600 : FontWeight.w500,
+                          fontSize: 15,
+                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                           color: isSelected
                               ? const Color(0xFF1E3A8A)
                               : const Color(0xFF1D1D1F),
-                          letterSpacing: isSelected ? -0.2 : -0.1,
+                          letterSpacing: -0.1,
                         ),
                       ),
                       onTap: () {
@@ -527,8 +552,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                         Navigator.pop(context);
                       },
                       selected: isSelected,
-                      selectedTileColor:
-                          const Color(0xFF1E3A8A).withOpacity(0.12),
+                      selectedTileColor: const Color(0xFF1E3A8A).withOpacity(0.1),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -543,61 +567,113 @@ class _AdminDashboardState extends State<AdminDashboard> {
     );
   }
 
-  String _getSectionDescription() {
-    final descriptions = {
-      'overview': 'Overview and quick actions for managing your school',
-      'analytics': 'Data visualization and analytics for academic performance',
-      'users': 'Manage students, teachers, and parents. Auto-assignment based on relations',
-      'academic': 'Manage subjects and classes. Start here: Add subjects, then create classes',
-    };
-    return descriptions[_sectionInfo[_selectedIndex]['title']] ?? '';
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          content: const Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.logout,
+                size: 48,
+                color: Color(0xFF1E3A8A),
+              ),
+              SizedBox(height: 16),
+              Text(
+                'Logout?',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Are you sure you want to logout?',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                _performLogout(context);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF1E3A8A),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text(
+                'Logout',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
-  int _getActionSectionIndex() {
-    final currentSection = _sectionInfo[_selectedIndex]['title'];
-    switch (currentSection) {
-      case 'overview':
-        return 1; // Go to Analytics
-      case 'analytics':
-        return 2; // Go to Users
-      case 'users':
-        return 3; // Go to Academic
-      case 'academic':
-        return 0; // Go to Overview
-      default:
-        return 0;
-    }
+  void _performLogout(BuildContext context) async {
+    // Close the dialog
+    Navigator.of(context).pop();
+
+    // Store navigator reference before it's potentially disposed
+    final navigator = Navigator.of(context, rootNavigator: true);
+
+    // Immediately clear local storage to avoid widget tree issues
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+
+    // Navigate immediately to login
+    navigator.pushNamedAndRemoveUntil('/login', (route) => false);
+
+    // Fire and forget the backend logout call (no need to wait or show loading)
+    // This runs in the background and won't affect UI
+    _backgroundLogout();
   }
 
-  IconData _getActionIcon() {
-    final currentSection = _sectionInfo[_selectedIndex]['title'];
-    switch (currentSection) {
-      case 'overview':
-        return Icons.analytics;
-      case 'analytics':
-        return Icons.people;
-      case 'users':
-        return Icons.school;
-      case 'academic':
-        return Icons.dashboard;
-      default:
-        return Icons.arrow_forward;
-    }
-  }
-
-  String _getActionButtonText() {
-    final currentSection = _sectionInfo[_selectedIndex]['title'];
-    switch (currentSection) {
-      case 'overview':
-        return 'View Analytics';
-      case 'analytics':
-        return 'View Users';
-      case 'users':
-        return 'View Academic';
-      case 'academic':
-        return 'View Overview';
-      default:
-        return 'Continue';
-    }
+  void _backgroundLogout() {
+    // This runs independently and doesn't affect the UI flow
+    // We don't await or check the result
+    Future.delayed(const Duration(milliseconds: 100), () async {
+      try {
+        final dio = Dio();
+        dio.options = BaseOptions(
+          baseUrl: 'https://edcon-production.up.railway.app', // Get from config if needed
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+        );
+        await dio.post('/api/auth/logout');
+      } catch (e) {
+        // Silently ignore - we don't care if backend logout fails
+        // because we've already cleared local storage
+      }
+    });
   }
 }

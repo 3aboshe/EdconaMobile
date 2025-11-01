@@ -94,8 +94,7 @@ class _ParentHomeScreenState extends State<ParentHomeScreen>
   }
 
   Future<void> _logout() async {
-    final authService = AuthService();
-    await authService.logout();
+    await AuthService.logout();
     if (mounted) {
       Navigator.pushReplacementNamed(context, '/login');
     }

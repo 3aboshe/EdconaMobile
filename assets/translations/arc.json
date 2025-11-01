@@ -148,7 +148,7 @@
     "academic": "ܦܠܚܢܝܬܐ",
     "users": "ܡܦܠܚ̈ܢ̈ܐ",
     "tools": "ܡܐܩܝ̈ܐ",
-    "welcome_admin": "ܒܘܨܦܬܐ  for Admin Dashboard",
+    "welcome_admin": "ܒܘܨܦܬܐ ܠܘܝܬܐ ܕܐܕܡܝܢ",
     "admin_panel": "ܠܘܝܬܐ ܕܐܕܡܝܢ",
     "manage_school": "ܡܕܒܪܢܘܬܐ ܕܣܝܣܬܐ ܕܡܟܬܒܢܘܬܐ",
     "admin": "ܐܕܡܝܢ",
@@ -156,6 +156,22 @@
     "enrolled_students": "ܬܠܡܕ̈ܐ ܟܬܒ̈ܢ",
     "active_teachers": "ܡܠܦܢ̈ܐ ܚܝ̈ܐ",
     "registered_parents": "ܐܒ̈ܐ ܟܬܒ̈ܢ",
-    "total_classes": "ܟܠ ܦܠܨ̈ܐ"
+    "total_classes": "ܟܠ ܦܠܨ̈ܐ",
+    "overview": "ܫܘܝܐ ܟܠ",
+    "analytics": "ܡܚܫܚܬܐ",
+    "quick_actions": "ܥܒܕ̈ܐ ܒܩܠܗ",
+    "statistics": "ܐܡ̈ܝܪܐ",
+    "performance_overview": "ܫܘܝܐ ܕܫܘܪܝܐ ܕܡܦܠܚܢܘܬܐ",
+    "recent_activity": "ܥܒܕ̈ܐ ܚܕܬ̈ܐ",
+    "add_new_student": "ܐܘܤܦ ܬܠܡܝܕܐ ܚܕܬܐ",
+    "add_new_teacher": "ܐܘܤܦ ܡܠܦܢܐ ܚܕܬܐ",
+    "add_new_parent": "ܐܘܤܦ ܐܒܐ ܚܕܬܐ",
+    "create_class": "ܒܪܝ ܦܠܨܐ",
+    "add_subject": "ܐܘܤܦ ܡܡܠܠܐ",
+    "total_students": "ܟܠ ܬܠܡܕ̈ܐ",
+    "total_teachers": "ܟܠ ܡܠܦܢ̈ܐ",
+    "total_parents": "ܟܠ ܐܒ̈ܐ",
+    "active_homework": "ܦܠܚܐ ܚܝ̈ܐ",
+    "assignments_this_week": "ܦܠܚ̈ܐ ܕܫܒܬܐ ܗܕܐ"
   }
 }

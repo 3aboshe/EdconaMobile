@@ -44,9 +44,41 @@ class AuthService {
     }
   }
 
-  Future<void> logout() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
+  static Future<Map<String, dynamic>> logout() async {
+    try {
+      // Create a Dio instance without interceptors for logout
+      final dio = Dio();
+      dio.options = BaseOptions(
+        baseUrl: ApiService.dio.options.baseUrl,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      );
+
+      // Call backend logout endpoint without auth headers
+      final response = await dio.post(
+        '/api/auth/logout',
+      );
+
+      if (response.statusCode == 200) {
+        return {'success': true};
+      } else {
+        return {'success': false, 'message': 'Logout failed'};
+      }
+    } on DioException catch (e) {
+      String message = 'Network error';
+      if (e.response?.data != null && e.response!.data['message'] != null) {
+        message = e.response!.data['message'];
+      } else if (e.type == DioExceptionType.connectionTimeout) {
+        message = 'Connection timeout';
+      } else if (e.type == DioExceptionType.connectionError) {
+        message = 'No internet connection';
+      }
+      return {'success': false, 'message': message};
+    } catch (e) {
+      return {'success': false, 'message': 'An error occurred: ${e.toString()}'};
+    }
   }
 
   Future<bool> isLoggedIn() async {

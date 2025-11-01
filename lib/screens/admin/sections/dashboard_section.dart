@@ -3,7 +3,12 @@ import 'package:easy_localization/easy_localization.dart';
 import '../../../services/admin_service.dart';
 
 class DashboardSection extends StatefulWidget {
-  const DashboardSection({super.key});
+  const DashboardSection({
+    super.key,
+    required this.onNavigateToUsers,
+  });
+
+  final Function(int tabIndex) onNavigateToUsers;
 
   @override
   State<DashboardSection> createState() => _DashboardSectionState();
@@ -44,6 +49,245 @@ class _DashboardSectionState extends State<DashboardSection> {
         );
       }
     }
+  }
+
+  Future<void> _showCreateClassDialog() async {
+    final formKey = GlobalKey<FormState>();
+    final nameController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Container(
+          padding: const EdgeInsets.all(28),
+          width: MediaQuery.of(context).size.width < 600
+              ? MediaQuery.of(context).size.width * 0.9
+              : 400,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1E3A8A).withOpacity(0.12),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: const Icon(
+                      Icons.class_,
+                      color: Color(0xFF1E3A8A),
+                      size: 28,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  const Expanded(
+                    child: Text(
+                      'Create Class',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF1D1D1F),
+                        letterSpacing: -0.3,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 28),
+              Form(
+                key: formKey,
+                child: Column(
+                  children: [
+                    TextFormField(
+                      controller: nameController,
+                      decoration: InputDecoration(
+                        labelText: 'Class Name *',
+                        hintText: 'Enter class name (e.g., Grade 10-A)',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter a class name';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 28),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text('Cancel'),
+                        ),
+                        const SizedBox(width: 12),
+                        ElevatedButton(
+                          onPressed: () async {
+                            if (formKey.currentState!.validate()) {
+                              final result = await _adminService.createClass(
+                                nameController.text.trim(),
+                                [], // Empty list of subject IDs for now
+                              );
+
+                              if (result['success']) {
+                                Navigator.pop(context);
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Class created successfully!'),
+                                      backgroundColor: Colors.green,
+                                    ),
+                                  );
+                                }
+                              } else {
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                          'Failed to create class: ${result['message']}'),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                }
+                              }
+                            }
+                          },
+                          child: const Text('Create'),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showCreateSubjectDialog() async {
+    final formKey = GlobalKey<FormState>();
+    final nameController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Container(
+          padding: const EdgeInsets.all(28),
+          width: MediaQuery.of(context).size.width < 600
+              ? MediaQuery.of(context).size.width * 0.9
+              : 400,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1E3A8A).withOpacity(0.12),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: const Icon(
+                      Icons.book,
+                      color: Color(0xFF1E3A8A),
+                      size: 28,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  const Expanded(
+                    child: Text(
+                      'Add Subject',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF1D1D1F),
+                        letterSpacing: -0.3,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 28),
+              Form(
+                key: formKey,
+                child: Column(
+                  children: [
+                    TextFormField(
+                      controller: nameController,
+                      decoration: InputDecoration(
+                        labelText: 'Subject Name *',
+                        hintText: 'Enter subject name (e.g., Mathematics)',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter a subject name';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 28),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text('Cancel'),
+                        ),
+                        const SizedBox(width: 12),
+                        ElevatedButton(
+                          onPressed: () async {
+                            if (formKey.currentState!.validate()) {
+                              final result = await _adminService.createSubject(
+                                nameController.text.trim(),
+                              );
+
+                              if (result['success']) {
+                                Navigator.pop(context);
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Subject added successfully!'),
+                                      backgroundColor: Colors.green,
+                                    ),
+                                  );
+                                }
+                              } else {
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                          'Failed to add subject: ${result['message']}'),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                }
+                              }
+                            }
+                          },
+                          child: const Text('Add'),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildStatCard({
@@ -288,7 +532,7 @@ class _DashboardSectionState extends State<DashboardSection> {
                     icon: Icons.person_add,
                     color: const Color(0xFF1E3A8A),
                     onTap: () {
-                      // TODO: Navigate to student creation
+                      widget.onNavigateToUsers(0); // Navigate to Students tab (index 0)
                     },
                   ),
                   _buildQuickActionCard(
@@ -297,7 +541,7 @@ class _DashboardSectionState extends State<DashboardSection> {
                     icon: Icons.people,
                     color: const Color(0xFF1E3A8A),
                     onTap: () {
-                      // TODO: Navigate to teacher creation
+                      widget.onNavigateToUsers(1); // Navigate to Teachers tab (index 1)
                     },
                   ),
                   _buildQuickActionCard(
@@ -306,7 +550,7 @@ class _DashboardSectionState extends State<DashboardSection> {
                     icon: Icons.family_restroom,
                     color: const Color(0xFF1E3A8A),
                     onTap: () {
-                      // TODO: Navigate to parent creation
+                      widget.onNavigateToUsers(2); // Navigate to Parents tab (index 2)
                     },
                   ),
                   _buildQuickActionCard(
@@ -315,7 +559,7 @@ class _DashboardSectionState extends State<DashboardSection> {
                     icon: Icons.class_,
                     color: const Color(0xFF1E3A8A),
                     onTap: () {
-                      // TODO: Navigate to class creation
+                      _showCreateClassDialog();
                     },
                   ),
                   _buildQuickActionCard(
@@ -324,7 +568,7 @@ class _DashboardSectionState extends State<DashboardSection> {
                     icon: Icons.book,
                     color: const Color(0xFF1E3A8A),
                     onTap: () {
-                      // TODO: Navigate to subject creation
+                      _showCreateSubjectDialog();
                     },
                   ),
                 ],
@@ -365,28 +609,28 @@ class _DashboardSectionState extends State<DashboardSection> {
                       value: _analytics!['totalStudents'].toString(),
                       icon: Icons.school,
                       color: const Color(0xFF1E3A8A),
-                      subtitle: 'enrolled_students',
+                      subtitle: 'Enrolled students',
                     ),
                     _buildStatCard(
                       title: 'Total Teachers',
                       value: _analytics!['totalTeachers'].toString(),
                       icon: Icons.person,
                       color: const Color(0xFF2563EB),
-                      subtitle: 'active_teachers',
+                      subtitle: 'Active teachers',
                     ),
                     _buildStatCard(
                       title: 'Total Parents',
                       value: _analytics!['totalParents'].toString(),
                       icon: Icons.family_restroom,
                       color: const Color(0xFF3B82F6),
-                      subtitle: 'registered_parents',
+                      subtitle: 'Registered parents',
                     ),
                     _buildStatCard(
                       title: 'Active Homework',
                       value: '24',
                       icon: Icons.assignment,
                       color: const Color(0xFF60A5FA),
-                      subtitle: 'assignments_this_week',
+                      subtitle: 'Assignments this week',
                     ),
                   ],
                 );

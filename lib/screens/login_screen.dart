@@ -362,7 +362,7 @@ class _LoginScreenState extends State<LoginScreen>
                             ),
                           ),
                           keyboardType: TextInputType.text,
-                          textCapitalization: TextCapitalization.characters,
+                          textCapitalization: TextCapitalization.none,
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,

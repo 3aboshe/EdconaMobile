@@ -301,6 +301,22 @@
     "enrolled_students": "خوێندکاری نوسراو",
     "active_teachers": "مامۆستای چالاك",
     "registered_parents": "باوانی نوسراو",
-    "total_classes": "كۆی پۆلەکان"
+    "total_classes": "كۆی پۆلەکان",
+    "overview": "بینینی گشتی",
+    "analytics": "شیکردنەوە",
+    "quick_actions": "كاركردنی خێرا",
+    "statistics": "ئاماره‌كان",
+    "performance_overview": "بینینی گشتی به‌رژەوه‌ری",
+    "recent_activity": "به‌رژاره‌ی دوایی",
+    "add_new_student": "خوێندکاری نوێ زیادبكه‌",
+    "add_new_teacher": "مامۆستای نوێ زیادبكه‌",
+    "add_new_parent": "باوانی نوێ زیادبكه‌",
+    "create_class": "پۆل دروستبكه‌",
+    "add_subject": "بابه‌ت زیادبكه‌",
+    "total_students": "كۆی گشتی خوێندکاران",
+    "total_teachers": "كۆی گشتی مامۆستایان",
+    "total_parents": "كۆی گشتی باوان",
+    "active_homework": "ئه‌ركی چالاك",
+    "assignments_this_week": "ئه‌ركه‌كانی ئه‌م هه‌فته‌یه‌"
   }
 }

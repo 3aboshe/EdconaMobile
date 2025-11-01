@@ -135,13 +135,17 @@ class _AnalyticsSectionState extends State<AnalyticsSection> {
           const SizedBox(height: 24),
           LayoutBuilder(
             builder: (context, constraints) {
+              final screenWidth = MediaQuery.of(context).size.width;
               final items = gradeDistribution.entries.toList();
+              final crossAxisCount = screenWidth < 600 ? 2 : 5;
               return GridView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: MediaQuery.of(context).size.width < 600 ? 2 : 5,
+                  crossAxisCount: crossAxisCount,
                   childAspectRatio: 1.8,
+                  crossAxisSpacing: 8,
+                  mainAxisSpacing: 8,
                 ),
                 itemCount: items.length,
                 itemBuilder: (context, index) {
@@ -318,7 +322,7 @@ class _AnalyticsSectionState extends State<AnalyticsSection> {
     required Color color,
   }) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -337,30 +341,30 @@ class _AnalyticsSectionState extends State<AnalyticsSection> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: color.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(icon, color: color, size: 24),
+                child: Icon(icon, color: color, size: 22),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
           Text(
             value,
             style: const TextStyle(
-              fontSize: 32,
+              fontSize: 28,
               fontWeight: FontWeight.w700,
               color: Color(0xFF1D1D1F),
               letterSpacing: -0.5,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           Text(
             title,
             style: const TextStyle(
-              fontSize: 14,
+              fontSize: 13,
               fontWeight: FontWeight.w600,
               color: Color(0xFF1D1D1F),
               letterSpacing: -0.2,
@@ -370,7 +374,7 @@ class _AnalyticsSectionState extends State<AnalyticsSection> {
           Text(
             subtitle,
             style: const TextStyle(
-              fontSize: 12,
+              fontSize: 11,
               color: Color(0xFF86868B),
             ),
           ),
@@ -450,7 +454,7 @@ class _AnalyticsSectionState extends State<AnalyticsSection> {
                 physics: const NeverScrollableScrollPhysics(),
                 crossAxisSpacing: isDesktop ? 24 : 16,
                 mainAxisSpacing: isDesktop ? 24 : 16,
-                childAspectRatio: isDesktop ? 1.0 : (crossAxisCount == 1 ? 1.8 : 1.5),
+                childAspectRatio: isDesktop ? 1.0 : (crossAxisCount == 1 ? 1.9 : 1.6),
                 children: [
                   _buildStatCard(
                     title: 'Total Grades',
