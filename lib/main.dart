@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
+import 'screens/admin/admin_dashboard.dart';
 import 'services/language_service.dart';
 import 'services/auth_service.dart';
 import 'utils/locale_delegates.dart';
@@ -100,6 +101,7 @@ class EdConaApp extends StatelessWidget {
       routes: {
         '/login': (context) => const LoginScreen(),
         '/home': (context) => const HomeScreen(),
+        '/admin': (context) => const AdminDashboard(),
       },
     );
   }
@@ -134,7 +136,12 @@ class _AppInitializerState extends State<AppInitializer> {
 
         // Check if user is already logged in and navigate accordingly
         if (isLoggedIn) {
-          Navigator.pushReplacementNamed(context, '/home');
+          final user = await authService.getCurrentUser();
+          if (user != null && user['role'] == 'ADMIN') {
+            Navigator.pushReplacementNamed(context, '/admin');
+          } else {
+            Navigator.pushReplacementNamed(context, '/home');
+          }
         } else {
           Navigator.pushReplacementNamed(context, '/login');
         }

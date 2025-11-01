@@ -141,5 +141,21 @@
     "info": "ܝܕܥܬܐ",
     "all": "ܟܠ",
     "more": "ܝܬܝܪ"
+  },
+  "admin": {
+    "panel_title": "ܠܘܝܬܐ ܕܐܕܡܝܢ",
+    "dashboard": "ܠܘܝܬܐ ܪܝܫܝܐ",
+    "academic": "ܦܠܚܢܝܬܐ",
+    "users": "ܡܦܠܚ̈ܢ̈ܐ",
+    "tools": "ܡܐܩܝ̈ܐ",
+    "welcome_admin": "ܒܘܨܦܬܐ  for Admin Dashboard",
+    "admin_panel": "ܠܘܝܬܐ ܕܐܕܡܝܢ",
+    "manage_school": "ܡܕܒܪܢܘܬܐ ܕܣܝܣܬܐ ܕܡܟܬܒܢܘܬܐ",
+    "admin": "ܐܕܡܝܢ",
+    "administrator": "ܐܕܡܝܢ ܪܝܫܐ",
+    "enrolled_students": "ܬܠܡܕ̈ܐ ܟܬܒ̈ܢ",
+    "active_teachers": "ܡܠܦܢ̈ܐ ܚܝ̈ܐ",
+    "registered_parents": "ܐܒ̈ܐ ܟܬܒ̈ܢ",
+    "total_classes": "ܟܠ ܦܠܨ̈ܐ"
   }
 }

@@ -1267,14 +1267,14 @@ class _SubmissionsScreenState extends State<SubmissionsScreen> {
 
       if (!mounted) return;
 
-      // Clear pending changes
+      // Reload to get the latest data from server FIRST
+      await _loadSubmissions();
+
+      // THEN clear pending changes and update UI
       setState(() {
         _pendingSubmissions.clear();
         _hasUnsavedChanges = false;
       });
-
-      // Reload to get the latest data from server
-      await _loadSubmissions();
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

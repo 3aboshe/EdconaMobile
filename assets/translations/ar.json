@@ -287,5 +287,21 @@
     "info": "معلومات",
     "all": "الكل",
     "more": "المزيد"
+  },
+  "admin": {
+    "panel_title": "لوحة الإدارة",
+    "dashboard": "لوحة التحكم",
+    "academic": "الأكاديمي",
+    "users": "المستخدمون",
+    "tools": "الأدوات",
+    "welcome_admin": "مرحباً بك في لوحة تحكم الإدارة",
+    "admin_panel": "لوحة الإدارة",
+    "manage_school": "إدارة نظام المدرسة",
+    "admin": "مدير",
+    "administrator": "المدير العام",
+    "enrolled_students": "طالب مسجل",
+    "active_teachers": "معلم نشط",
+    "registered_parents": "ولي أمر مسجل",
+    "total_classes": "إجمالي الصفوف"
   }
 }

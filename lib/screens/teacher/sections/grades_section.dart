@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../../services/teacher_service.dart';
+import '../../../services/api_service.dart';
 import 'dart:ui' as ui;
 
 class GradesSection extends StatefulWidget {
@@ -21,6 +22,7 @@ class _GradesSectionState extends State<GradesSection> {
   List<Map<String, dynamic>> _exams = [];
   String? _selectedClassId;
   Map<String, dynamic>? _selectedExam;
+  List<Map<String, dynamic>> _examGrades = [];
 
   @override
   void initState() {
@@ -74,6 +76,25 @@ class _GradesSectionState extends State<GradesSection> {
         setState(() {
           _exams = [];
           _isLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _loadExamGrades(String examId) async {
+    try {
+      final response = await ApiService.dio.get('/api/exams/$examId/grades');
+      if (mounted && response.statusCode == 200) {
+        setState(() {
+          _examGrades = (response.data as List<dynamic>)
+              .map((g) => g as Map<String, dynamic>)
+              .toList();
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _examGrades = [];
         });
       }
     }
@@ -275,10 +296,14 @@ class _GradesSectionState extends State<GradesSection> {
     final isSelected = _selectedExam?['id'] == exam['id'];
 
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
         setState(() {
           _selectedExam = exam;
+          _examGrades = []; // Clear previous grades
         });
+        if (exam['id'] != null) {
+          await _loadExamGrades(exam['id'].toString());
+        }
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
@@ -407,7 +432,19 @@ class _GradesSectionState extends State<GradesSection> {
     );
   }
 
+  Map<String, dynamic>? _getStudentGrade(String studentId) {
+    try {
+      return _examGrades.firstWhere(
+        (grade) => grade['studentId'].toString() == studentId.toString(),
+      );
+    } catch (e) {
+      return null;
+    }
+  }
+
   Widget _buildStudentCard(Map<String, dynamic> student) {
+    final studentGrade = _getStudentGrade(student['id'].toString());
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(20),
@@ -460,13 +497,31 @@ class _GradesSectionState extends State<GradesSection> {
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  'teacher.grades_page.student_name'.tr(),
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey[600],
+                if (studentGrade != null) ...[
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF34C759).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      'Grade: ${studentGrade['marksObtained']}/${studentGrade['maxMarks']}',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF34C759),
+                      ),
+                    ),
                   ),
-                ),
+                ] else ...[
+                  Text(
+                    'teacher.grades_page.student_name'.tr(),
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
@@ -481,15 +536,21 @@ class _GradesSectionState extends State<GradesSection> {
                 );
                 return;
               }
-              _showGradeDialog(student);
+              _showGradeDialog(student, existingGrade: studentGrade);
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF34C759),
+              backgroundColor: studentGrade != null ? const Color(0xFF007AFF) : const Color(0xFF34C759),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            child: Text('teacher.grades_page.assign_grades'.tr()),
+            child: Text(
+              studentGrade != null ? 'Edit Grade' : 'teacher.grades_page.assign_grades'.tr(),
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
         ],
       ),
@@ -642,7 +703,7 @@ class _GradesSectionState extends State<GradesSection> {
     );
   }
 
-  void _showGradeDialog(Map<String, dynamic> student) {
+  void _showGradeDialog(Map<String, dynamic> student, {Map<String, dynamic>? existingGrade}) {
     if (_selectedExam == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -654,10 +715,21 @@ class _GradesSectionState extends State<GradesSection> {
     }
 
     try {
-      final TextEditingController gradeController = TextEditingController();
+      final TextEditingController gradeController = TextEditingController(
+        text: existingGrade?['marksObtained']?.toString() ?? '',
+      );
       final maxScoreValue = _selectedExam?['maxScore'] ?? 100;
       final double maxScore = (maxScoreValue is int ? maxScoreValue.toDouble() : maxScoreValue) as double;
       DateTime gradeDate = DateTime.now();
+
+      // If editing existing grade, parse the date
+      if (existingGrade != null && existingGrade['date'] != null) {
+        try {
+          gradeDate = DateTime.parse(existingGrade['date'].toString());
+        } catch (e) {
+          // Keep default date if parsing fails
+        }
+      }
 
       showDialog(
         context: context,
@@ -668,7 +740,7 @@ class _GradesSectionState extends State<GradesSection> {
             ),
             backgroundColor: Colors.white,
             title: Text(
-              '${'teacher.grades_page.assign_grades'.tr()} - ${student['name'] ?? 'Student'}',
+              '${existingGrade != null ? 'Edit Grade' : 'teacher.grades_page.assign_grades'.tr()} - ${student['name'] ?? 'Student'}',
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -796,6 +868,10 @@ class _GradesSectionState extends State<GradesSection> {
 
                     if (result['success']) {
                       Navigator.pop(context);
+                      // Reload grades for this exam
+                      if (_selectedExam != null && _selectedExam!['id'] != null) {
+                        await _loadExamGrades(_selectedExam!['id'].toString());
+                      }
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text('teacher.grades_page.grades_saved'.tr()),

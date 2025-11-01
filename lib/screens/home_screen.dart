@@ -91,6 +91,10 @@ class _HomeScreenState extends State<HomeScreen>
             ),
           );
         }
+      } else if (user['role'] == 'ADMIN') {
+        if (mounted) {
+          Navigator.pushReplacementNamed(context, '/admin');
+        }
       }
     }
   }

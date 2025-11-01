@@ -286,5 +286,21 @@
     "info": "زانیاری",
     "all": "هه‌موو",
     "more": "زیاتر"
+  },
+  "admin": {
+    "panel_title": "پانێلی سه‌رۆكایه‌تی",
+    "dashboard": "پانێلی سه‌ره‌كی",
+    "academic": "زانستی",
+    "users": "به‌كارهێنه‌ران",
+    "tools": "ئامرازەکان",
+    "welcome_admin": "به‌خێربێیت بۆ پانێلی سه‌رۆكایه‌تی",
+    "admin_panel": "پانێلی سه‌رۆكایه‌تی",
+    "manage_school": "به‌ڕێوەبردنی سیسته‌می قوتابخانه‌",
+    "admin": "سه‌رۆك",
+    "administrator": "سه‌رۆكی جێبه‌جێكه‌ر",
+    "enrolled_students": "خوێندکاری نوسراو",
+    "active_teachers": "مامۆستای چالاك",
+    "registered_parents": "باوانی نوسراو",
+    "total_classes": "كۆی پۆلەکان"
   }
 }

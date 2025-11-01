@@ -124,19 +124,25 @@ class _LoginScreenState extends State<LoginScreen>
     });
 
     if (result['success']) {
-      // Navigate to home screen
+      // Navigate based on user role
       if (mounted) {
+        final userRole = result['user']['role'];
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Welcome, ${result['user']['name']}!'),
-            backgroundColor: Colors.green,
+            content: Text('Welcome, ${result['user']['name']}! (Role: $userRole)'),
+            backgroundColor: userRole == 'ADMIN' ? Colors.blue : Colors.green,
+            duration: Duration(seconds: 3),
           ),
         );
 
-        // Navigate to home screen after a short delay
+        // Navigate to appropriate screen after a short delay
         Future.delayed(const Duration(milliseconds: 1000), () {
           if (mounted) {
-            Navigator.pushReplacementNamed(context, '/home');
+            if (userRole == 'ADMIN') {
+              Navigator.pushReplacementNamed(context, '/admin');
+            } else {
+              Navigator.pushReplacementNamed(context, '/home');
+            }
           }
         });
       }

@@ -25,7 +25,15 @@
       "Read(//Users/abdalrahmanmajed/Desktop/edcon-app/server/**)",
       "Bash(find /Users/abdalrahmanmajed/Desktop/edcon-app/server -path \"*/node_modules\" -prune -o -type f ( -name \"*.js\" -o -name \"*.ts\" ) -print)",
       "Bash(flutter analyze lib/screens/teacher/sections/homework_section.dart lib/screens/teacher/sections/grades_section.dart)",
-      "Bash(flutter analyze lib/screens/teacher/sections/homework_section.dart lib/screens/teacher/sections/grades_section.dart --no-fatal-infos)"
+      "Bash(flutter analyze lib/screens/teacher/sections/homework_section.dart lib/screens/teacher/sections/grades_section.dart --no-fatal-infos)",
+      "Bash(flutter analyze lib/screens/teacher/sections/grades_section.dart --no-fatal-infos)",
+      "Bash(flutter analyze lib/screens/login_screen.dart lib/screens/home_screen.dart)",
+      "Bash(flutter run --release -d 00008140-0014453814DB001C)",
+      "Bash(flutter logs --no-paste)",
+      "Bash(flutter analyze lib/screens/admin/admin_dashboard.dart)",
+      "Bash(curl -s https://edcon-production.up.railway.app/api/auth/users)",
+      "Bash(flutter analyze lib/screens/admin/)",
+      "Read(//Users/abdalrahmanmajed/Desktop/edcon-app/**)"
     ],
     "deny": [],
     "ask": []

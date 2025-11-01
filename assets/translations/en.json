@@ -185,5 +185,21 @@
     "info": "Information",
     "all": "All",
     "more": "More"
+  },
+  "admin": {
+    "panel_title": "Admin Panel",
+    "dashboard": "Dashboard",
+    "academic": "Academic",
+    "users": "Users",
+    "tools": "Tools",
+    "welcome_admin": "Welcome to Admin Dashboard",
+    "admin_panel": "Admin Panel",
+    "manage_school": "Manage your school system",
+    "admin": "Admin",
+    "administrator": "Administrator",
+    "enrolled_students": "enrolled students",
+    "active_teachers": "active teachers",
+    "registered_parents": "registered parents",
+    "total_classes": "total classes"
   }
 }

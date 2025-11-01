@@ -52,6 +52,12 @@ dependencies:
   # For smooth animations
   flutter_staggered_animations: ^1.1.1
 
+  # For charts and graphs
+  fl_chart: ^0.66.2
+
+  # For type-ahead search functionality
+  flutter_typeahead: ^5.2.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

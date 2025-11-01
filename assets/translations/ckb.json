@@ -185,5 +185,21 @@
     "info": "زانیاری",
     "all": "هەموو",
     "more": "زیاتر"
+  },
+  "admin": {
+    "panel_title": "پانێلی سەرۆکایەتی",
+    "dashboard": "پانێلی سەرەکی",
+    "academic": "زانستی",
+    "users": "بەکارهێنەران",
+    "tools": "ئامرازەکان",
+    "welcome_admin": "بەخێربێیت بۆ پانێلی سەرۆکایەتی",
+    "admin_panel": "پانێلی سەرۆکایەتی",
+    "manage_school": "بەڕێوەبردنی سیستەمی قوتابخانە",
+    "admin": "سەرۆک",
+    "administrator": "سەرۆکی جێبەجێکار",
+    "enrolled_students": "خوێندکاری نوسراو",
+    "active_teachers": "مامۆستای چالاک",
+    "registered_parents": "باوانی نوسراو",
+    "total_classes": "کۆی پۆلەکان"
   }
 }
