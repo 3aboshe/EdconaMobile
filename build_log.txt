@@ -1,0 +1,6 @@
+Warning: Building for device with codesigning disabled. You will have to manually codesign before deploying to device.
+Building com.edcon.edconamobile for device (ios-release)...
+Running pod install...                                           1,500ms
+Running Xcode build...                                          
+Xcode build done.                                           52.8s
+✓ Built build/ios/iphoneos/Runner.app (22.2MB)

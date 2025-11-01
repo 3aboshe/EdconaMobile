@@ -8,6 +8,7 @@ import 'sections/homework_section.dart';
 import 'sections/attendance_section.dart';
 import 'sections/announcements_section.dart';
 import 'sections/messages_section.dart';
+import 'dart:ui' as ui;
 
 class ParentDashboard extends StatefulWidget {
   final Map<String, dynamic> selectedChild;
@@ -57,11 +58,14 @@ class _ParentDashboardState extends State<ParentDashboard> {
   Widget build(BuildContext context) {
     final isRTL = _isRTL();
 
-    return Scaffold(
-      backgroundColor: const Color(0xFF0D47A1),
-      appBar: _buildAppBar(isRTL),
-      body: _buildBody(),
-      bottomNavigationBar: _buildBottomNav(),
+    return Directionality(
+      textDirection: isRTL ? ui.TextDirection.rtl : ui.TextDirection.ltr,
+      child: Scaffold(
+        backgroundColor: const Color(0xFF0D47A1),
+        appBar: _buildAppBar(isRTL),
+        body: _buildBody(),
+        bottomNavigationBar: _buildBottomNav(),
+      ),
     );
   }
 
@@ -179,23 +183,23 @@ class _ParentDashboardState extends State<ParentDashboard> {
                 ),
               ],
       ),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: 16),
-          child: CircleAvatar(
-            radius: 18,
-            backgroundColor: Colors.white.withValues(alpha: 0.2),
-            child: Text(
-              widget.selectedChild['name'][0].toUpperCase(),
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ),
-      ],
+      // actions: [
+      //   Padding(
+      //     padding: const EdgeInsets.only(right: 16),
+      //     child: CircleAvatar(
+      //       radius: 18,
+      //       backgroundColor: Colors.white.withValues(alpha: 0.2),
+      //       child: Text(
+      //         widget.selectedChild['name'][0].toUpperCase(),
+      //         style: const TextStyle(
+      //           color: Colors.white,
+      //           fontSize: 16,
+      //           fontWeight: FontWeight.w600,
+      //         ),
+      //       ),
+      //     ),
+      //   ),
+      // ],
     );
   }
 
@@ -234,9 +238,16 @@ class _ParentDashboardState extends State<ParentDashboard> {
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Row(
-            // Reverse icon order for RTL languages
+            // For RTL: Home on right, Chat on left, middle items stay in order
             children: (_isRTL()
-                ? List.generate(6, (index) => 5 - index)
+                ? [
+                    5, // Chat (left)
+                    4, // Announcements
+                    3, // Attendance
+                    2, // Homework
+                    1, // Performance
+                    0, // Home (right)
+                  ]
                 : List.generate(6, (index) => index)
             ).map((iconIndex) {
               final isSelected = _selectedIndex == iconIndex;

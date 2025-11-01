@@ -6,7 +6,21 @@
       "Bash(flutter analyze)",
       "Bash(flutter clean)",
       "Bash(flutter pub get)",
-      "Bash(cat -n /Users/abdalrahmanmajed/Desktop/edconamobile/lib/screens/teacher/teacher_dashboard.dart)"
+      "Bash(cat -n /Users/abdalrahmanmajed/Desktop/edconamobile/lib/screens/teacher/teacher_dashboard.dart)",
+      "Bash(flutter analyze lib/screens/parent/parent_dashboard.dart)",
+      "Bash(flutter build apk)",
+      "Bash(pod install)",
+      "Bash(flutter run --release)",
+      "Bash(flutter doctor -v)",
+      "Bash(cat /Users/abdalrahmanmajed/Desktop/edconamobile/ios/Flutter/Generated.xcconfig)",
+      "Bash(cat /Users/abdalrahmanmajed/Desktop/edconamobile/ios/Flutter/Flutter.podspec)",
+      "Bash(cat /Users/abdalrahmanmajed/Desktop/edconamobile/ios/Flutter/Release.xcconfig)",
+      "Bash(flutter build ios --debug --no-codesign)",
+      "Read(//opt/homebrew/share/flutter/**)",
+      "Bash(flutter precache ios --verbose)",
+      "Bash(cat /opt/homebrew/share/flutter/packages/flutter_tools/bin/flutter_ios_script.sh)",
+      "Bash(cat /opt/homebrew/share/flutter/bin/flutter_ios_script.sh)",
+      "Bash(xcodebuild -project /Users/abdalrahmanmajed/Desktop/edconamobile/ios/Runner.xcodeproj -scheme Runner -configuration Debug -sdk iphoneos -destination generic/platform=iOS -dry-run)"
     ],
     "deny": [],
     "ask": []
