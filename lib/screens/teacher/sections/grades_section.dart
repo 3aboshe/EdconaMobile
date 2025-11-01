@@ -655,7 +655,8 @@ class _GradesSectionState extends State<GradesSection> {
 
     try {
       final TextEditingController gradeController = TextEditingController();
-      final double maxScore = _selectedExam?['maxScore'] ?? 100.0;
+      final maxScoreValue = _selectedExam?['maxScore'] ?? 100;
+      final double maxScore = (maxScoreValue is int ? maxScoreValue.toDouble() : maxScoreValue) as double;
       DateTime gradeDate = DateTime.now();
 
       showDialog(

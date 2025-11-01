@@ -1242,8 +1242,11 @@ class _SubmissionsScreenState extends State<SubmissionsScreen> {
 
   Future<void> _saveAllSubmissions() async {
     try {
+      // Create a copy of the set to avoid concurrent modification
+      final pendingToProcess = _pendingSubmissions.toList();
+
       // Process all pending submissions
-      for (String pending in _pendingSubmissions) {
+      for (String pending in pendingToProcess) {
         if (pending.startsWith('unmarked:')) {
           // This is an unmark operation
           final studentId = pending.substring('unmarked:'.length);

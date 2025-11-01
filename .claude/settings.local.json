@@ -24,7 +24,8 @@
       "Bash(tree /Users/abdalrahmanmajed/Desktop/edconamobile/lib -I '__pycache__|*.pyc|*.py|node_modules' -L 3)",
       "Read(//Users/abdalrahmanmajed/Desktop/edcon-app/server/**)",
       "Bash(find /Users/abdalrahmanmajed/Desktop/edcon-app/server -path \"*/node_modules\" -prune -o -type f ( -name \"*.js\" -o -name \"*.ts\" ) -print)",
-      "Bash(flutter analyze lib/screens/teacher/sections/homework_section.dart lib/screens/teacher/sections/grades_section.dart)"
+      "Bash(flutter analyze lib/screens/teacher/sections/homework_section.dart lib/screens/teacher/sections/grades_section.dart)",
+      "Bash(flutter analyze lib/screens/teacher/sections/homework_section.dart lib/screens/teacher/sections/grades_section.dart --no-fatal-infos)"
     ],
     "deny": [],
     "ask": []
