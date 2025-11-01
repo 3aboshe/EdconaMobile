@@ -888,6 +888,8 @@ class _SubmissionsScreenState extends State<SubmissionsScreen> {
   final TeacherService _teacherService = TeacherService();
   List<Map<String, dynamic>> _students = [];
   bool _isLoading = true;
+  bool _hasUnsavedChanges = false;
+  final Set<String> _pendingSubmissions = {};
 
   @override
   void initState() {
@@ -899,9 +901,29 @@ class _SubmissionsScreenState extends State<SubmissionsScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final students = await _teacherService.getStudentsByClass(widget.homework['classId']);
+      // Get classId from classIds array
+      final classIds = widget.homework['classIds'] as List<dynamic>?;
+      if (classIds == null || classIds.isEmpty) {
+        setState(() {
+          _students = [];
+          _isLoading = false;
+        });
+        return;
+      }
+
+      final students = await _teacherService.getStudentsByClass(classIds[0].toString());
+
+      // Add submission status to each student
+      final submitted = widget.homework['submitted'] as List<dynamic>? ?? [];
+      final studentsWithStatus = students.map((student) {
+        return {
+          ...student,
+          'status': submitted.contains(student['id']) ? 'submitted' : 'not_submitted',
+        };
+      }).toList();
+
       setState(() {
-        _students = students;
+        _students = studentsWithStatus;
         _isLoading = false;
       });
     } catch (e) {
@@ -1007,6 +1029,21 @@ class _SubmissionsScreenState extends State<SubmissionsScreen> {
             widget.homework['title'] ?? 'Homework',
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
           ),
+          actions: [
+            if (_hasUnsavedChanges)
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: ElevatedButton.icon(
+                  onPressed: _saveAllSubmissions,
+                  icon: const Icon(Icons.save, size: 18),
+                  label: const Text('Save All'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF34C759),
+                    foregroundColor: Colors.white,
+                  ),
+                ),
+              ),
+          ],
         ),
         body: _isLoading
             ? const Center(child: CircularProgressIndicator(color: Colors.white))
@@ -1022,8 +1059,24 @@ class _SubmissionsScreenState extends State<SubmissionsScreen> {
     );
   }
 
+  bool _getEffectiveStatus(Map<String, dynamic> student) {
+    final String studentId = student['id'].toString();
+    final bool backendSubmitted = student['status'] == 'submitted';
+
+    if (_pendingSubmissions.contains(studentId)) {
+      return true;
+    } else if (_pendingSubmissions.contains('unmarked:$studentId')) {
+      return false;
+    }
+
+    return backendSubmitted;
+  }
+
   Widget _buildStudentCard(Map<String, dynamic> student) {
-    final bool isSubmitted = student['status'] == 'submitted';
+    final bool effectiveSubmitted = _getEffectiveStatus(student);
+    final String studentId = student['id'].toString();
+    final bool hasPendingChange = _pendingSubmissions.contains(studentId) ||
+                                  _pendingSubmissions.contains('unmarked:$studentId');
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -1039,7 +1092,7 @@ class _SubmissionsScreenState extends State<SubmissionsScreen> {
             height: 50,
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: isSubmitted
+                colors: effectiveSubmitted
                     ? [const Color(0xFF34C759), const Color(0xFF30B0C7)]
                     : [const Color(0xFF007AFF), const Color(0xFF0051D5)],
                 begin: Alignment.topLeft,
@@ -1049,7 +1102,7 @@ class _SubmissionsScreenState extends State<SubmissionsScreen> {
             ),
             child: Center(
               child: Icon(
-                isSubmitted ? CupertinoIcons.check_mark_circled : CupertinoIcons.person,
+                effectiveSubmitted ? CupertinoIcons.check_mark_circled : CupertinoIcons.person,
                 color: Colors.white,
                 size: 24,
               ),
@@ -1060,29 +1113,51 @@ class _SubmissionsScreenState extends State<SubmissionsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  student['name'] ?? 'Unknown',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF0D47A1),
-                  ),
+                Row(
+                  children: [
+                    Text(
+                      student['name'] ?? 'Unknown',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF0D47A1),
+                      ),
+                    ),
+                    if (hasPendingChange) ...[
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFF9500).withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: const Text(
+                          'Pending',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFFFF9500),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
                 const SizedBox(height: 4),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: isSubmitted
+                    color: effectiveSubmitted
                         ? const Color(0xFF34C759).withOpacity(0.1)
                         : const Color(0xFFFF9500).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    isSubmitted ? 'Submitted' : 'Not Submitted',
+                    effectiveSubmitted ? 'Submitted' : 'Not Submitted',
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: isSubmitted ? const Color(0xFF34C759) : const Color(0xFFFF9500),
+                      color: effectiveSubmitted ? const Color(0xFF34C759) : const Color(0xFFFF9500),
                     ),
                   ),
                 ),
@@ -1094,14 +1169,14 @@ class _SubmissionsScreenState extends State<SubmissionsScreen> {
               ElevatedButton(
                 onPressed: () => _toggleSubmissionStatus(student),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: isSubmitted ? const Color(0xFFFF3B30) : const Color(0xFF34C759),
+                  backgroundColor: effectiveSubmitted ? const Color(0xFFFF3B30) : const Color(0xFF34C759),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                 ),
                 child: Text(
-                  isSubmitted ? 'Unmark' : 'Mark Submitted',
+                  effectiveSubmitted ? 'Unmark' : 'Mark Submitted',
                   style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
@@ -1134,30 +1209,81 @@ class _SubmissionsScreenState extends State<SubmissionsScreen> {
   }
 
   Future<void> _toggleSubmissionStatus(Map<String, dynamic> student) async {
-    final bool isSubmitted = student['status'] == 'submitted';
-    final String newStatus = isSubmitted ? 'not_submitted' : 'submitted';
+    final String studentId = student['id'].toString();
+    final bool backendSubmitted = student['status'] == 'submitted';
 
+    setState(() {
+      // Remove any existing pending change for this student
+      _pendingSubmissions.remove(studentId);
+      _pendingSubmissions.remove('unmarked:$studentId');
+
+      // Add new pending change
+      if (backendSubmitted) {
+        // Backend says submitted, so we're unmarking
+        _pendingSubmissions.add('unmarked:$studentId');
+      } else {
+        // Backend says not submitted, so we're marking as submitted
+        _pendingSubmissions.add(studentId);
+      }
+
+      _hasUnsavedChanges = _pendingSubmissions.isNotEmpty;
+    });
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          backendSubmitted ? 'Marked as not submitted (pending save)' : 'Marked as submitted (pending save)',
+        ),
+        backgroundColor: const Color(0xFFFF9500),
+      ),
+    );
+  }
+
+  Future<void> _saveAllSubmissions() async {
     try {
-      await _teacherService.updateHomeworkSubmission(
-        student['id'],
-        widget.homework['id'],
-        newStatus,
-      );
+      // Process all pending submissions
+      for (String pending in _pendingSubmissions) {
+        if (pending.startsWith('unmarked:')) {
+          // This is an unmark operation
+          final studentId = pending.substring('unmarked:'.length);
+          await _teacherService.updateHomeworkSubmission(
+            studentId,
+            widget.homework['id'],
+            'not_submitted',
+          );
+        } else {
+          // This is a mark submitted operation
+          await _teacherService.updateHomeworkSubmission(
+            pending,
+            widget.homework['id'],
+            'submitted',
+          );
+        }
+      }
 
       if (!mounted) return;
+
+      // Clear pending changes
+      setState(() {
+        _pendingSubmissions.clear();
+        _hasUnsavedChanges = false;
+      });
+
+      // Reload to get the latest data from server
+      await _loadSubmissions();
+
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            isSubmitted ? 'Submission unmarked' : 'Submission marked',
-          ),
+        const SnackBar(
+          content: Text('All submissions saved successfully'),
           backgroundColor: Colors.green,
         ),
       );
-      _loadSubmissions();
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error: ${e.toString()}'),
+          content: Text('Error saving submissions: ${e.toString()}'),
           backgroundColor: Colors.red,
         ),
       );

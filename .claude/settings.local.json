@@ -20,7 +20,11 @@
       "Bash(flutter precache ios --verbose)",
       "Bash(cat /opt/homebrew/share/flutter/packages/flutter_tools/bin/flutter_ios_script.sh)",
       "Bash(cat /opt/homebrew/share/flutter/bin/flutter_ios_script.sh)",
-      "Bash(xcodebuild -project /Users/abdalrahmanmajed/Desktop/edconamobile/ios/Runner.xcodeproj -scheme Runner -configuration Debug -sdk iphoneos -destination generic/platform=iOS -dry-run)"
+      "Bash(xcodebuild -project /Users/abdalrahmanmajed/Desktop/edconamobile/ios/Runner.xcodeproj -scheme Runner -configuration Debug -sdk iphoneos -destination generic/platform=iOS -dry-run)",
+      "Bash(tree /Users/abdalrahmanmajed/Desktop/edconamobile/lib -I '__pycache__|*.pyc|*.py|node_modules' -L 3)",
+      "Read(//Users/abdalrahmanmajed/Desktop/edcon-app/server/**)",
+      "Bash(find /Users/abdalrahmanmajed/Desktop/edcon-app/server -path \"*/node_modules\" -prune -o -type f ( -name \"*.js\" -o -name \"*.ts\" ) -print)",
+      "Bash(flutter analyze lib/screens/teacher/sections/homework_section.dart lib/screens/teacher/sections/grades_section.dart)"
     ],
     "deny": [],
     "ask": []

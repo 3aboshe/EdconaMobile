@@ -177,6 +177,33 @@ class TeacherService {
     }
   }
 
+  // Exam Management
+  Future<Map<String, dynamic>> createExam(Map<String, dynamic> examData) async {
+    try {
+      final response = await ApiService.dio.post('/api/exams', data: examData);
+      if (response.statusCode == 201) {
+        return {'success': true, 'exam': response.data};
+      }
+      return {'success': false, 'message': 'Failed to create exam'};
+    } catch (e) {
+      return {'success': false, 'message': 'Error: $e'};
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getExamsByTeacher(String teacherId) async {
+    try {
+      final response = await ApiService.dio.get('/api/exams/teacher/$teacherId');
+      if (response.statusCode == 200) {
+        return (response.data as List<dynamic>)
+            .map((e) => e as Map<String, dynamic>)
+            .toList();
+      }
+      return [];
+    } catch (e) {
+      return [];
+    }
+  }
+
   // Grade Management
   Future<Map<String, dynamic>> addGrade(Map<String, dynamic> gradeData) async {
     try {
@@ -335,19 +362,6 @@ class TeacherService {
     } catch (e) {
 
       return [];
-    }
-  }
-
-  // Create exam
-  Future<Map<String, dynamic>> createExam(Map<String, dynamic> examData) async {
-    try {
-      final response = await ApiService.dio.post('/api/exams', data: examData);
-      if (response.statusCode == 201) {
-        return {'success': true, 'exam': response.data};
-      }
-      return {'success': false, 'message': 'Failed to create exam'};
-    } catch (e) {
-      return {'success': false, 'message': 'Error: $e'};
     }
   }
 

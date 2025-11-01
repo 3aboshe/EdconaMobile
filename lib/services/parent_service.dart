@@ -80,7 +80,8 @@ class ParentService {
         return homework.map((hw) {
           // Calculate status based on due date and submission
           final dueDate = DateTime.tryParse(hw['dueDate'] ?? '');
-          final isSubmitted = hw['submittedDate'] != null;
+          final submitted = hw['submitted'] as List<dynamic>? ?? [];
+          final isSubmitted = submitted.contains(childId);
           String status = 'pending';
 
           if (isSubmitted) {
@@ -96,7 +97,7 @@ class ParentService {
             'description': hw['description'] ?? '',
             'dueDate': hw['dueDate'] ?? '',
             'status': status,
-            'submittedDate': hw['submittedDate'],
+            'isSubmitted': isSubmitted,
             'score': hw['score'],
             'maxScore': hw['maxScore'],
           };

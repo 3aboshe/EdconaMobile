@@ -216,7 +216,47 @@
     "select_recipient": "اختر المستلم",
     "type_message": "اكتب رسالتك...",
     "parent": "ولي الأمر",
-    "parents": "أولياء الأمور"
+    "parents": "أولياء الأمور",
+    "attendance_page": {
+      "select_date": "اختر التاريخ",
+      "change_date": "تغيير التاريخ",
+      "select_class": "اختر الصف",
+      "class": "الصف",
+      "no_students_found": "لم يتم العثور على طلاب",
+      "mark_all_present": "تحديد الكل حاضر",
+      "mark_all_absent": "تحديد الكل غائب",
+      "save_success": "تم حفظ الحضور بنجاح",
+      "save_error": "فشل في حفظ الحضور"
+    },
+    "grades_page": {
+      "create_exam": "إنشاء اختبار",
+      "exam_name": "اسم الاختبار",
+      "exam_date": "تاريخ الاختبار",
+      "subject": "المادة",
+      "max_score": "الدرجة الكاملة",
+      "assign_grades": "تعيين الدرجات",
+      "save_grades": "حفظ الدرجات",
+      "exam_created": "تم إنشاء الاختبار بنجاح",
+      "grades_saved": "تم حفظ الدرجات بنجاح",
+      "create_success": "تم الإنشاء بنجاح",
+      "no_students": "لا يوجد طلاب",
+      "student_name": "اسم الطالب",
+      "score": "النقاط",
+      "select_exam": "اختر الاختبار"
+    },
+    "homework_page": {
+      "create_homework": "إنشاء واجب",
+      "homework_title": "عنوان الواجب",
+      "description": "الوصف",
+      "due_date": "تاريخ التسليم",
+      "create": "إنشاء",
+      "mark_submissions": "تحديد التسليمات",
+      "submitted": "تم التسليم",
+      "not_submitted": "لم يتم التسليم",
+      "homework_created": "تم إنشاء الواجب بنجاح",
+      "homework_title_hint": "أدخل عنوان الواجب",
+      "description_hint": "أدخل وصف الواجب"
+    }
   },
   "common": {
     "ok": "موافق",
@@ -231,6 +271,10 @@
     "delete": "حذف",
     "edit": "تعديل",
     "add": "إضافة",
+    "create": "إنشاء",
+    "name": "الاسم",
+    "class": "الصف",
+    "subject": "المادة",
     "search": "بحث",
     "filter": "تصفية",
     "sort": "ترتيب",
@@ -241,6 +285,7 @@
     "notification": "إشعار",
     "warning": "تحذير",
     "info": "معلومات",
-    "all": "الكل"
+    "all": "الكل",
+    "more": "المزيد"
   }
 }

@@ -223,83 +223,108 @@ class _ParentDashboardState extends State<ParentDashboard> {
   }
 
   Widget _buildBottomNav() {
+    final isRTL = _isRTL();
+
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFF0D47A1),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.2),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
+            blurRadius: 20,
+            offset: const Offset(0, -8),
           ),
         ],
       ),
       child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Container(
+          height: 85,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: Row(
-            // For RTL: Home on right, Chat on left, middle items stay in order
-            children: (_isRTL()
-                ? [
-                    5, // Chat (left)
-                    4, // Announcements
-                    3, // Attendance
-                    2, // Homework
-                    1, // Performance
-                    0, // Home (right)
-                  ]
-                : List.generate(6, (index) => index)
-            ).map((iconIndex) {
-              final isSelected = _selectedIndex == iconIndex;
-              return Expanded(
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _selectedIndex = iconIndex;
-                    });
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 4),
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? Colors.white.withValues(alpha: 0.2)
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          _sectionIcons[iconIndex],
-                          color: isSelected
-                              ? Colors.white
-                              : Colors.white70,
-                          size: 22,
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          _getSectionTitle(iconIndex),
-                          style: TextStyle(
-                            color: isSelected
-                                ? Colors.white
-                                : Colors.white70,
-                            fontSize: 9,
-                            fontWeight: isSelected
-                                ? FontWeight.w600
-                                : FontWeight.w400,
-                          ),
-                          textAlign: TextAlign.center,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            }).toList(),
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: isRTL ? _buildNavItemsReversed() : _buildNavItems(),
           ),
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _buildNavItems() {
+    return [
+      _buildNavItem(1),
+      _buildNavItem(2),
+      _buildNavItem(3),
+      _buildNavItem(0),
+      _buildNavItem(4),
+      _buildNavItem(5),
+    ];
+  }
+
+  List<Widget> _buildNavItemsReversed() {
+    return [
+      _buildNavItem(1),
+      _buildNavItem(2),
+      _buildNavItem(3),
+      _buildNavItem(0),
+      _buildNavItem(4),
+      _buildNavItem(5),
+    ].reversed.toList();
+  }
+
+  Widget _buildNavItem(int iconIndex) {
+    final isSelected = _selectedIndex == iconIndex;
+    final adjustedIndex = iconIndex == 0 ? 0 : iconIndex;
+
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedIndex = iconIndex;
+        });
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            // Icon Container
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: isSelected
+                    ? Colors.white.withValues(alpha: 0.2)
+                    : Colors.transparent,
+              ),
+              child: Icon(
+                _sectionIcons[adjustedIndex],
+                color: isSelected
+                    ? Colors.white
+                    : Colors.white.withValues(alpha: 0.75),
+                size: 22,
+              ),
+            ),
+            // Spacing
+            const SizedBox(height: 4),
+            // Label
+            Text(
+              _getSectionTitle(adjustedIndex),
+              style: TextStyle(
+                color: isSelected
+                    ? Colors.white
+                    : Colors.white.withValues(alpha: 0.75),
+                fontSize: 11,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                letterSpacing: 0.2,
+                height: 1.0,
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
         ),
       ),
     );

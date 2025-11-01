@@ -81,9 +81,9 @@ class _AttendanceSectionState extends State<AttendanceSection> {
         backgroundColor: const Color(0xFF0D47A1),
         foregroundColor: Colors.white,
         elevation: 0,
-        title: const Text(
-          'Attendance',
-          style: TextStyle(
+        title: Text(
+          'teacher.attendance'.tr(),
+          style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
           ),
@@ -153,9 +153,9 @@ class _AttendanceSectionState extends State<AttendanceSection> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Select Date',
-                  style: TextStyle(
+                Text(
+                  'teacher.attendance.select_date'.tr(),
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF0D47A1),
@@ -187,7 +187,7 @@ class _AttendanceSectionState extends State<AttendanceSection> {
               }
             },
             icon: const Icon(Icons.calendar_today, size: 20),
-            label: const Text('Change Date'),
+            label: Text('teacher.attendance.change_date'.tr()),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF0D47A1),
             ),
@@ -214,9 +214,9 @@ class _AttendanceSectionState extends State<AttendanceSection> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Select Class',
-            style: TextStyle(
+          Text(
+            'teacher.attendance.select_class'.tr(),
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: Color(0xFF0D47A1),
@@ -227,7 +227,7 @@ class _AttendanceSectionState extends State<AttendanceSection> {
             child: DropdownButtonFormField<String>(
               value: _selectedClassId,
               decoration: InputDecoration(
-                labelText: 'Class',
+                labelText: 'teacher.attendance.class'.tr(),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -272,9 +272,9 @@ class _AttendanceSectionState extends State<AttendanceSection> {
                 color: Colors.grey[400],
               ),
               const SizedBox(height: 16),
-              const Text(
-                'No Students Found',
-                style: TextStyle(
+              Text(
+                'teacher.attendance.no_students_found'.tr(),
+                style: const TextStyle(
                   fontSize: 16,
                   color: Colors.grey,
                 ),
@@ -296,9 +296,9 @@ class _AttendanceSectionState extends State<AttendanceSection> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildAttendanceButton('Present', const Color(0xFF34C759), 0),
-              _buildAttendanceButton('Absent', const Color(0xFFFF3B30), 1),
-              _buildAttendanceButton('Late', const Color(0xFFFF9500), 2),
+              _buildAttendanceButton('parent.present'.tr(), const Color(0xFF34C759), 0),
+              _buildAttendanceButton('parent.absent'.tr(), const Color(0xFFFF3B30), 1),
+              _buildAttendanceButton('parent.late'.tr(), const Color(0xFFFF9500), 2),
             ],
           ),
         ),
@@ -309,7 +309,7 @@ class _AttendanceSectionState extends State<AttendanceSection> {
               child: ElevatedButton.icon(
                 onPressed: () => _markAllAttendance('0'),
                 icon: const Icon(Icons.check_circle, size: 20),
-                label: const Text('Mark All Present'),
+                label: Text('teacher.attendance.mark_all_present'.tr()),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF34C759),
                   foregroundColor: Colors.white,
@@ -325,7 +325,7 @@ class _AttendanceSectionState extends State<AttendanceSection> {
               child: ElevatedButton.icon(
                 onPressed: () => _markAllAttendance('1'),
                 icon: const Icon(Icons.cancel, size: 20),
-                label: const Text('Mark All Absent'),
+                label: Text('teacher.attendance.mark_all_absent'.tr()),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFFF3B30),
                   foregroundColor: Colors.white,
@@ -375,15 +375,15 @@ class _AttendanceSectionState extends State<AttendanceSection> {
     switch (status) {
       case '0':
         statusColor = const Color(0xFF34C759);
-        statusText = 'Present';
+        statusText = 'parent.present'.tr();
         break;
       case '2':
         statusColor = const Color(0xFFFF9500);
-        statusText = 'Late';
+        statusText = 'parent.late'.tr();
         break;
       default:
         statusColor = const Color(0xFFFF3B30);
-        statusText = 'Absent';
+        statusText = 'parent.absent'.tr();
     }
 
     return Container(
@@ -457,17 +457,17 @@ class _AttendanceSectionState extends State<AttendanceSection> {
               });
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 0,
-                child: Text('Present'),
+                child: Text('parent.present'.tr()),
               ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 1,
-                child: Text('Absent'),
+                child: Text('parent.absent'.tr()),
               ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 2,
-                child: Text('Late'),
+                child: Text('parent.late'.tr()),
               ),
             ],
           ),
@@ -492,7 +492,7 @@ class _AttendanceSectionState extends State<AttendanceSection> {
         return {
           'studentId': student['id'],
           'date': DateFormat('yyyy-MM-dd').format(_selectedDate),
-          'status': status == '0' ? 'present' : status == '2' ? 'late' : 'absent',
+          'status': status == '0' ? 'PRESENT' : status == '2' ? 'LATE' : 'ABSENT',
           'classId': _selectedClassId,
           'teacherId': widget.teacher['id'],
         };
@@ -501,8 +501,8 @@ class _AttendanceSectionState extends State<AttendanceSection> {
       await _teacherService.saveAttendance(records);
       if (mounted) {
         ScaffoldMessenger.of(currentContext).showSnackBar(
-          const SnackBar(
-            content: Text('Attendance saved successfully'),
+          SnackBar(
+            content: Text('teacher.attendance.save_success'.tr()),
             backgroundColor: Colors.green,
           ),
         );
@@ -510,8 +510,8 @@ class _AttendanceSectionState extends State<AttendanceSection> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(currentContext).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to save attendance'),
+          SnackBar(
+            content: Text('teacher.attendance.save_error'.tr()),
             backgroundColor: Colors.red,
           ),
         );
