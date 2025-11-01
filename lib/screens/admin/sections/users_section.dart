@@ -556,96 +556,101 @@ class _UsersSectionState extends State<UsersSection>
     final screenWidth = MediaQuery.of(context).size.width;
     final isDesktop = screenWidth >= 1024;
 
-    return Column(
+    return Stack(
       children: [
-        // Header
-        Container(
-          padding: EdgeInsets.symmetric(
-            horizontal: isDesktop ? 48 : 24,
-            vertical: 24,
-          ),
-          color: Colors.white,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        Column(
+          children: [
+            // Header
+            Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: isDesktop ? 48 : 24,
+                vertical: 24,
+              ),
+              color: Colors.white,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'User Management',
-                        style: TextStyle(
-                          fontSize: isDesktop ? 32 : 28,
-                          fontWeight: FontWeight.w700,
-                          color: const Color(0xFF1D1D1F),
-                          letterSpacing: -0.5,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Manage students, teachers, and parents',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Color(0xFF86868B),
-                          fontWeight: FontWeight.w400,
-                        ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'User Management',
+                            style: TextStyle(
+                              fontSize: isDesktop ? 32 : 28,
+                              fontWeight: FontWeight.w700,
+                              color: const Color(0xFF1D1D1F),
+                              letterSpacing: -0.5,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          const Text(
+                            'Manage students, teachers, and parents',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Color(0xFF86868B),
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
+                  const SizedBox(height: 24),
+                  // Search Bar
+                  TextField(
+                    onChanged: (value) {
+                      setState(() {
+                        _searchQuery = value;
+                      });
+                    },
+                    decoration: InputDecoration(
+                      hintText: 'Search users...',
+                      prefixIcon: const Icon(Icons.search),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
                 ],
               ),
-              const SizedBox(height: 24),
-              // Search Bar
-              TextField(
-                onChanged: (value) {
-                  setState(() {
-                    _searchQuery = value;
-                  });
-                },
-                decoration: InputDecoration(
-                  hintText: 'Search users...',
-                  prefixIcon: const Icon(Icons.search),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+            ),
+            // Tabs
+            Container(
+              color: Colors.white,
+              child: TabBar(
+                controller: _tabController,
+                tabs: const [
+                  Tab(text: 'Students'),
+                  Tab(text: 'Teachers'),
+                  Tab(text: 'Parents'),
+                ],
+              ),
+            ),
+            // Tab Content
+            Expanded(
+              child: Container(
+                color: Colors.transparent,
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    _buildStudentList(),
+                    _buildTeacherList(),
+                    _buildParentList(),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
-        // Tabs
-        Container(
-          color: Colors.white,
-          child: TabBar(
-            controller: _tabController,
-            tabs: const [
-              Tab(text: 'Students'),
-              Tab(text: 'Teachers'),
-              Tab(text: 'Parents'),
-            ],
-          ),
-        ),
-        // Tab Content
-        Expanded(
-          child: Container(
-            color: const Color(0xFFF5F5F7),
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _buildStudentList(),
-                _buildTeacherList(),
-                _buildParentList(),
-              ],
             ),
-          ),
+          ],
         ),
-        // Floating Action Button
+        // Floating Action Button (only on mobile)
         if (!isDesktop)
           Positioned(
-            bottom: 100,
-            right: 24,
+            bottom: 10,
+            left: Directionality.of(context) == TextDirection.rtl ? 14 : null,
+            right: Directionality.of(context) == TextDirection.ltr ? 14 : null,
             child: FloatingActionButton(
               onPressed: () {
                 final currentTab = _tabController.index;

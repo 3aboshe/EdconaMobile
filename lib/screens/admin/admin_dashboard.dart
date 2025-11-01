@@ -74,7 +74,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F7),
+      backgroundColor: Colors.white,
       appBar: _isMobile
           ? AppBar(
               backgroundColor: const Color(0xFF1E3A8A),
@@ -82,11 +82,15 @@ class _AdminDashboardState extends State<AdminDashboard> {
               elevation: 0,
               title: LayoutBuilder(
                 builder: (context, constraints) {
+                  final isArabic = context.locale.languageCode == 'ar';
+                  final logoOffset = isArabic
+                      ? const Offset(-45, 0)
+                      : const Offset(50, 0);
                   return Container(
                     width: double.infinity,
                     alignment: Alignment.center,
                     child: Transform.translate(
-                      offset: const Offset(50, 0),
+                      offset: logoOffset,
                       child: Image.asset(
                         'assets/logowhite.png',
                         height: 128,
@@ -124,16 +128,12 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 ],
               );
             } else {
-              return Column(
-                children: [
-                  Expanded(child: _buildMainContent()),
-                  _buildBottomNavigationBar(),
-                ],
-              );
+              return _buildMainContent();
             }
           },
         ),
       ),
+      bottomNavigationBar: _isMobile ? _buildBottomNavigationBar() : null,
     );
   }
 
@@ -338,7 +338,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
   Widget _buildMainContent() {
     return Container(
-      color: const Color(0xFFF5F5F7),
+      color: Colors.transparent,
       child: Column(
         children: [
           // Top Bar (only for desktop/tablet)
@@ -491,13 +491,21 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   Expanded(
                     flex: 4,
                     child: Center(
-                      child: Transform.translate(
-                        offset: const Offset(50, 0),
-                        child: Image.asset(
-                          'assets/logowhite.png',
-                          height: 128,
-                          width: 128,
-                        ),
+                      child: Builder(
+                        builder: (context) {
+                          final isArabic = context.locale.languageCode == 'ar';
+                          final logoOffset = isArabic
+                              ? const Offset(-45, 0)
+                              : const Offset(50, 0);
+                          return Transform.translate(
+                            offset: logoOffset,
+                            child: Image.asset(
+                              'assets/logowhite.png',
+                              height: 128,
+                              width: 128,
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ),
