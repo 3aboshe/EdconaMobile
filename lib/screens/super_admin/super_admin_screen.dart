@@ -173,88 +173,83 @@ class _SuperAdminScreenState extends State<SuperAdminScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isRTL = _isRTL();
-
-    return Directionality(
-      textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
-      child: Scaffold(
+    return Scaffold(
+      backgroundColor: const Color(0xFF0D47A1),
+      appBar: AppBar(
         backgroundColor: const Color(0xFF0D47A1),
-        appBar: AppBar(
-          backgroundColor: const Color(0xFF0D47A1),
-          elevation: 0,
-          title: Text(
-            'super_admin.title'.tr(),
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.refresh, color: Colors.white),
-              onPressed: _loadStatistics,
-            ),
-            IconButton(
-              icon: const Icon(Icons.logout, color: Colors.white),
-              onPressed: _logout,
-            ),
-          ],
-          bottom: TabBar(
-            controller: _tabController,
-            indicatorColor: Colors.white,
-            labelColor: Colors.white,
-            unselectedLabelColor: Colors.white70,
-            tabs: [
-              Tab(icon: const Icon(Icons.dashboard), text: 'super_admin.dashboard'.tr()),
-              Tab(icon: const Icon(Icons.school), text: 'super_admin.schools'.tr()),
-              Tab(icon: const Icon(Icons.analytics), text: 'super_admin.analytics'.tr()),
-              Tab(icon: const Icon(Icons.settings), text: 'super_admin.system_settings'.tr()),
-            ],
+        elevation: 0,
+        title: Text(
+          'super_admin.title'.tr(),
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
           ),
         ),
-        body: _isLoading
-            ? const Center(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF0D47A1)),
-                ),
-              )
-            : _errorMessage.isNotEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.error, size: 64, color: Colors.red.shade600),
-                        const SizedBox(height: 16),
-                        Text(
-                          _errorMessage,
-                          style: TextStyle(
-                            color: Colors.red.shade600,
-                            fontSize: 16,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 16),
-                        ElevatedButton(
-                          onPressed: _loadStatistics,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF0D47A1),
-                            foregroundColor: Colors.white,
-                          ),
-                          child: Text('common.retry'.tr()),
-                        ),
-                      ],
-                    ),
-                  )
-                : TabBarView(
-                    controller: _tabController,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh, color: Colors.white),
+            onPressed: _loadStatistics,
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.white),
+            onPressed: _logout,
+          ),
+        ],
+        bottom: TabBar(
+          controller: _tabController,
+          indicatorColor: Colors.white,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white70,
+          tabs: [
+            Tab(icon: const Icon(Icons.dashboard), text: 'super_admin.dashboard'.tr()),
+            Tab(icon: const Icon(Icons.school), text: 'super_admin.schools'.tr()),
+            Tab(icon: const Icon(Icons.analytics), text: 'super_admin.analytics'.tr()),
+            Tab(icon: const Icon(Icons.settings), text: 'super_admin.system_settings'.tr()),
+          ],
+        ),
+      ),
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF0D47A1)),
+              ),
+            )
+          : _errorMessage.isNotEmpty
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      _buildDashboardTab(),
-                      _buildSchoolsTab(),
-                      _buildAnalyticsTab(),
-                      _buildSystemSettingsTab(),
+                      Icon(Icons.error, size: 64, color: Colors.red.shade600),
+                      const SizedBox(height: 16),
+                      Text(
+                        _errorMessage,
+                        style: TextStyle(
+                          color: Colors.red.shade600,
+                          fontSize: 16,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: _loadStatistics,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF0D47A1),
+                          foregroundColor: Colors.white,
+                        ),
+                        child: Text('common.retry'.tr()),
+                      ),
                     ],
                   ),
-      ),
+                )
+              : TabBarView(
+                  controller: _tabController,
+                  children: [
+                    _buildDashboardTab(),
+                    _buildSchoolsTab(),
+                    _buildAnalyticsTab(),
+                    _buildSystemSettingsTab(),
+                  ],
+                ),
     );
   }
 

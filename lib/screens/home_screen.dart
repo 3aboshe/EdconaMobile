@@ -74,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen>
 
     // Check user role and navigate to appropriate screen
     if (user != null) {
-      if (user.role == 'PARENT') {
+      if (user.role.name == 'parent') {
         if (mounted) {
           Navigator.pushReplacement(
             context,
@@ -83,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen>
             ),
           );
         }
-      } else if (user.role == 'TEACHER') {
+      } else if (user.role.name == 'teacher') {
         if (mounted) {
           Navigator.pushReplacement(
             context,
@@ -92,7 +92,7 @@ class _HomeScreenState extends State<HomeScreen>
             ),
           );
         }
-      } else if (user.role == 'ADMIN') {
+      } else if (user.role.name == 'admin') {
         if (mounted) {
           Navigator.pushReplacementNamed(context, '/admin');
         }
@@ -196,7 +196,7 @@ class _HomeScreenState extends State<HomeScreen>
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
-                                        _currentUser!.role,
+                                        _currentUser!.role.toString().split('.').last.toUpperCase(),
                                         style: TextStyle(
                                           color: Colors.white.withValues(alpha: 0.9),
                                           fontSize: 14,
@@ -263,7 +263,7 @@ class _HomeScreenState extends State<HomeScreen>
                           const SizedBox(height: 16),
                           _buildInfoRow('User ID', _currentUser!.id),
                           _buildInfoRow('Name', _currentUser!.name),
-                          _buildInfoRow('Role', _currentUser!.role),
+                          _buildInfoRow('Role', _currentUser!.role.toString().split('.').last.toUpperCase()),
                           if (_currentUser!.subject != null)
                             _buildInfoRow('Subject', _currentUser!.subject!),
                           if (_currentUser!.classId != null)
