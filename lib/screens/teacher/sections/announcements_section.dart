@@ -89,7 +89,7 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
                     const SizedBox(height: 16),
                     Material(
                       child: DropdownButtonFormField<String>(
-                        value: priority,
+                        initialValue: priority,
                         decoration: const InputDecoration(
                           labelText: 'Priority',
                           border: OutlineInputBorder(),

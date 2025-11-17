@@ -1,46 +1,206 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/foundation.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'api_service.dart';
+import '../models/auth_response.dart';
+import '../models/user.dart';
 
 class AuthService {
   static void initialize() {
     ApiService.initialize();
   }
 
-  Future<Map<String, dynamic>> login(String code) async {
+  Future<AuthenticationResponse> login({
+    required String code,
+    required String password,
+  }) async {
     try {
+      // Check network connectivity first
+      final connectivityResult = await Connectivity().checkConnectivity();
+      if (connectivityResult == ConnectivityResult.none) {
+        return AuthenticationResponse(
+          success: false,
+          message: 'No internet connection. Please check your network settings and try again.',
+        );
+      }
+      
+      if (kDebugMode) {
+        print('Login attempt with code: $code');
+        print('API endpoint: ${ApiService.dio.options.baseUrl}/api/auth/login');
+        print('Connectivity: $connectivityResult');
+      }
+      
       final response = await ApiService.dio.post(
         '/api/auth/login',
-        data: {'code': code},
+        data: {
+          'code': code,
+          'password': password,
+        },
       );
+
+      if (kDebugMode) {
+        print('Response status: ${response.statusCode}');
+        print('Response data: ${response.data}');
+      }
 
       if (response.statusCode == 200) {
         final data = response.data;
+        final authResponse = AuthenticationResponse.fromJson(data);
 
-        // Store user session (handle both token and no-token cases)
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('user', json.encode(data['user']));
-        await prefs.setString('auth_token', data['token'] ?? 'session_${DateTime.now().millisecondsSinceEpoch}');
-        await prefs.setBool('isLoggedIn', true);
-        await prefs.setString('last_login', DateTime.now().toIso8601String());
+        // Store user session if login is successful
+        if (authResponse.success) {
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('user', json.encode(authResponse.user?.toJson()));
+          await prefs.setString('auth_token', authResponse.token ?? 'session_${DateTime.now().millisecondsSinceEpoch}');
+          await prefs.setBool('isLoggedIn', true);
+          await prefs.setString('last_login', DateTime.now().toIso8601String());
+          // Store school code from user data if available
+          if (authResponse.user?.schoolCode != null) {
+            await prefs.setString('school_code', authResponse.user!.schoolCode!);
+          }
+        }
 
-        return {'success': true, 'user': data['user']};
+        return authResponse;
       } else {
-        return {'success': false, 'message': 'Login failed'};
+        return AuthenticationResponse(
+          success: false,
+          message: 'Login failed with status: ${response.statusCode}',
+        );
       }
     } on DioException catch (e) {
+      if (kDebugMode) {
+        print('DioException type: ${e.type}');
+        print('DioException message: ${e.message}');
+        print('DioException response: ${e.response?.data}');
+        print('DioException error: ${e.error}');
+      }
+      
       String message = 'Network error';
       if (e.response?.data != null && e.response!.data['message'] != null) {
         message = e.response!.data['message'];
       } else if (e.type == DioExceptionType.connectionTimeout) {
-        message = 'Connection timeout. Please check your internet.';
+        message = 'Connection timeout. Please check your internet connection and try again.';
       } else if (e.type == DioExceptionType.connectionError) {
-        message = 'No internet connection.';
+        message = 'No internet connection. Please check your network settings.';
+      } else if (e.type == DioExceptionType.receiveTimeout) {
+        message = 'Server response timeout. Please try again.';
+      } else if (e.type == DioExceptionType.sendTimeout) {
+        message = 'Request timeout. Please check your connection and try again.';
+      } else if (e.type == DioExceptionType.badResponse) {
+        message = 'Server error: ${e.response?.statusCode}. Please try again later.';
+      } else if (e.type == DioExceptionType.cancel) {
+        message = 'Request was cancelled. Please try again.';
+      } else if (e.type == DioExceptionType.unknown) {
+        message = 'Network error: ${e.message}. Please check your connection.';
       }
-      return {'success': false, 'message': message};
+      return AuthenticationResponse(
+        success: false,
+        message: message,
+      );
     } catch (e) {
-      return {'success': false, 'message': 'An error occurred: ${e.toString()}'};
+      if (kDebugMode) {
+        print('Unexpected error: $e');
+        print('Error type: ${e.runtimeType}');
+      }
+      return AuthenticationResponse(
+        success: false,
+        message: 'An unexpected error occurred: ${e.toString()}',
+      );
+    }
+  }
+
+  Future<AuthenticationResponse> changePassword({
+    required String userId,
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    try {
+      // Check network connectivity first
+      final connectivityResult = await Connectivity().checkConnectivity();
+      if (connectivityResult == ConnectivityResult.none) {
+        return AuthenticationResponse(
+          success: false,
+          message: 'No internet connection. Please check your network settings and try again.',
+        );
+      }
+      
+      if (kDebugMode) {
+        print('Password change attempt for user: $userId');
+        print('API endpoint: ${ApiService.dio.options.baseUrl}/api/auth/change-password');
+      }
+      
+      final response = await ApiService.dio.post(
+        '/api/auth/change-password',
+        data: {
+          'userId': userId,
+          'currentPassword': currentPassword,
+          'newPassword': newPassword,
+        },
+      );
+
+      if (kDebugMode) {
+        print('Response status: ${response.statusCode}');
+        print('Response data: ${response.data}');
+      }
+
+      if (response.statusCode == 200) {
+        final data = response.data;
+        final authResponse = AuthenticationResponse.fromJson(data);
+
+        // Update stored user data if password change is successful
+        if (authResponse.success && authResponse.user != null) {
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('user', json.encode(authResponse.user!.toJson()));
+        }
+
+        return authResponse;
+      } else {
+        return AuthenticationResponse(
+          success: false,
+          message: 'Password change failed with status: ${response.statusCode}',
+        );
+      }
+    } on DioException catch (e) {
+      if (kDebugMode) {
+        print('DioException type: ${e.type}');
+        print('DioException message: ${e.message}');
+        print('DioException response: ${e.response?.data}');
+        print('DioException error: ${e.error}');
+      }
+      
+      String message = 'Network error';
+      if (e.response?.data != null && e.response!.data['message'] != null) {
+        message = e.response!.data['message'];
+      } else if (e.type == DioExceptionType.connectionTimeout) {
+        message = 'Connection timeout. Please check your internet connection and try again.';
+      } else if (e.type == DioExceptionType.connectionError) {
+        message = 'No internet connection. Please check your network settings.';
+      } else if (e.type == DioExceptionType.receiveTimeout) {
+        message = 'Server response timeout. Please try again.';
+      } else if (e.type == DioExceptionType.sendTimeout) {
+        message = 'Request timeout. Please check your connection and try again.';
+      } else if (e.type == DioExceptionType.badResponse) {
+        message = 'Server error: ${e.response?.statusCode}. Please try again later.';
+      } else if (e.type == DioExceptionType.cancel) {
+        message = 'Request was cancelled. Please try again.';
+      } else if (e.type == DioExceptionType.unknown) {
+        message = 'Network error: ${e.message}. Please check your connection.';
+      }
+      return AuthenticationResponse(
+        success: false,
+        message: message,
+      );
+    } catch (e) {
+      if (kDebugMode) {
+        print('Unexpected error: $e');
+        print('Error type: ${e.runtimeType}');
+      }
+      return AuthenticationResponse(
+        success: false,
+        message: 'An unexpected error occurred: ${e.toString()}',
+      );
     }
   }
 
@@ -86,12 +246,17 @@ class AuthService {
     return prefs.getBool('isLoggedIn') ?? false;
   }
 
-  Future<Map<String, dynamic>?> getCurrentUser() async {
+  Future<User?> getCurrentUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final userString = prefs.getString('user');
     if (userString != null) {
-      return json.decode(userString);
+      return User.fromJson(json.decode(userString));
     }
     return null;
+  }
+
+  Future<String?> getSchoolCode() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('school_code');
   }
 }

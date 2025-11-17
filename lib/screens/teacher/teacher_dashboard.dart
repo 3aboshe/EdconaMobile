@@ -36,7 +36,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
   Future<void> _loadDashboardStats() async {
     try {
       // Get teacher's classes
-      final classes = await _teacherService.getTeacherClasses(widget.teacher['id']);
+      await _teacherService.getTeacherClasses(widget.teacher['id']);
     } catch (e) {
       // Silently handle errors
     }

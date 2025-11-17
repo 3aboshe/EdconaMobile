@@ -3,6 +3,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../services/message_service.dart';
 import '../services/auth_service.dart';
+import '../models/user.dart';
 
 class MessagesScreen extends StatefulWidget {
   const MessagesScreen({super.key});
@@ -19,7 +20,7 @@ class _MessagesScreenState extends State<MessagesScreen>
   List<Map<String, dynamic>> _conversations = [];
   bool _isLoading = true;
   String? _errorMessage;
-  Map<String, dynamic>? _currentUser;
+  User? _currentUser;
 
   late AnimationController _fabController;
   late AnimationController _listController;
@@ -72,7 +73,7 @@ class _MessagesScreenState extends State<MessagesScreen>
           _currentUser = user;
         });
 
-        if (user['role'] == 'PARENT') {
+        if (_currentUser?.role == 'PARENT') {
           await _loadConversations();
         }
       }
@@ -88,7 +89,7 @@ class _MessagesScreenState extends State<MessagesScreen>
     if (_currentUser == null) return;
 
     try {
-      final conversations = await _messageService.getConversations(_currentUser!['id']);
+      final conversations = await _messageService.getConversations(_currentUser!.id);
       setState(() {
         _conversations = conversations;
         _isLoading = false;
@@ -318,7 +319,7 @@ class _MessagesScreenState extends State<MessagesScreen>
                 context,
                 MaterialPageRoute(
                   builder: (context) => ChatScreen(
-                    currentUser: _currentUser!,
+                    currentUser: _currentUser!.toJson(),
                     otherUser: otherUser,
                     isRTL: isRTL,
                   ),
@@ -433,7 +434,7 @@ class _MessagesScreenState extends State<MessagesScreen>
     showDialog(
       context: context,
       builder: (context) => NewMessageDialog(
-        currentUser: _currentUser!,
+        currentUser: _currentUser!.toJson(),
         isRTL: isRTL,
         onMessageSent: _loadConversations,
       ),

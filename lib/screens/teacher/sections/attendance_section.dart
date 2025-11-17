@@ -225,7 +225,7 @@ class _AttendanceSectionState extends State<AttendanceSection> {
           const SizedBox(height: 16),
           Material(
             child: DropdownButtonFormField<String>(
-              value: _selectedClassId,
+              initialValue: _selectedClassId,
               decoration: InputDecoration(
                 labelText: 'teacher.attendance.class'.tr(),
                 border: OutlineInputBorder(
@@ -339,7 +339,7 @@ class _AttendanceSectionState extends State<AttendanceSection> {
           ],
         ),
         const SizedBox(height: 16),
-        ..._students.map((student) => _buildAttendanceCard(student)).toList(),
+        ..._students.map((student) => _buildAttendanceCard(student)),
       ],
     );
   }

@@ -2,18 +2,21 @@ import 'user.dart';
 
 class Student extends User {
   final int grade;
+  @override
   final String classId;
+  @override
   final String parentId;
+  @override
   final String avatar;
 
   Student({
-    required String id,
-    required String name,
+    required super.id,
+    required super.name,
     required this.grade,
     required this.classId,
     required this.parentId,
     required this.avatar,
-  }) : super(id: id, name: name, role: 'STUDENT');
+  }) : super(role: 'STUDENT');
 
   factory Student.fromJson(Map<String, dynamic> json) {
     return Student(
@@ -26,6 +29,7 @@ class Student extends User {
     );
   }
 
+  @override
   Map<String, dynamic> toJson() {
     return {
       ...super.toJson(),

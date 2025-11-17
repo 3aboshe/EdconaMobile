@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../services/auth_service.dart';
+import '../models/user.dart';
 import 'parent/child_selection_screen.dart';
 import 'teacher/teacher_dashboard.dart';
 
@@ -13,7 +14,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen>
     with TickerProviderStateMixin {
-  Map<String, dynamic>? _currentUser;
+  User? _currentUser;
   late AnimationController _slideController;
   late AnimationController _scaleController;
   late Animation<Offset> _slideAnimation;
@@ -73,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen>
 
     // Check user role and navigate to appropriate screen
     if (user != null) {
-      if (user['role'] == 'PARENT') {
+      if (user.role == 'PARENT') {
         if (mounted) {
           Navigator.pushReplacement(
             context,
@@ -82,16 +83,16 @@ class _HomeScreenState extends State<HomeScreen>
             ),
           );
         }
-      } else if (user['role'] == 'TEACHER') {
+      } else if (user.role == 'TEACHER') {
         if (mounted) {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => TeacherDashboard(teacher: user),
+              builder: (context) => TeacherDashboard(teacher: user.toJson()),
             ),
           );
         }
-      } else if (user['role'] == 'ADMIN') {
+      } else if (user.role == 'ADMIN') {
         if (mounted) {
           Navigator.pushReplacementNamed(context, '/admin');
         }
@@ -137,6 +138,7 @@ class _HomeScreenState extends State<HomeScreen>
           : RefreshIndicator(
               onRefresh: _loadCurrentUser,
               child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -163,71 +165,71 @@ class _HomeScreenState extends State<HomeScreen>
                           ],
                         ),
                         child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              CircleAvatar(
-                                radius: 30,
-                                backgroundColor: Colors.white.withValues(alpha: 0.2),
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                CircleAvatar(
+                                  radius: 30,
+                                  backgroundColor: Colors.white.withValues(alpha: 0.2),
+                                  child: Text(
+                                    _currentUser!.name.toUpperCase(),
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        _currentUser!.name,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        _currentUser!.role,
+                                        style: TextStyle(
+                                          color: Colors.white.withValues(alpha: 0.9),
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            if (_currentUser!.subject != null) ...[
+                              const SizedBox(height: 12),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.2),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
                                 child: Text(
-                                  _currentUser!['name'][0].toString().toUpperCase(),
+                                  'Subject: ${_currentUser!.subject}',
                                   style: const TextStyle(
                                     color: Colors.white,
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      _currentUser!['name'],
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      _currentUser!['role'],
-                                      style: TextStyle(
-                                        color: Colors.white.withValues(alpha: 0.9),
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
                             ],
-                          ),
-                          if (_currentUser!['subject'] != null) ...[
-                            const SizedBox(height: 12),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.2),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Text(
-                                'Subject: ${_currentUser!['subject']}',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
                           ],
-                        ],
+                        ),
                       ),
-                    ),
                     ),
 
                     const SizedBox(height: 24),
@@ -241,7 +243,7 @@ class _HomeScreenState extends State<HomeScreen>
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.05),
+                            color: Colors.black.withOpacity(0.05),
                             blurRadius: 10,
                             offset: const Offset(0, 2),
                           ),
@@ -259,13 +261,13 @@ class _HomeScreenState extends State<HomeScreen>
                             ),
                           ),
                           const SizedBox(height: 16),
-                          _buildInfoRow('User ID', _currentUser!['id']),
-                          _buildInfoRow('Name', _currentUser!['name']),
-                          _buildInfoRow('Role', _currentUser!['role']),
-                          if (_currentUser!['subject'] != null)
-                            _buildInfoRow('Subject', _currentUser!['subject']),
-                          if (_currentUser!['classId'] != null)
-                            _buildInfoRow('Class', _currentUser!['classId']),
+                          _buildInfoRow('User ID', _currentUser!.id),
+                          _buildInfoRow('Name', _currentUser!.name),
+                          _buildInfoRow('Role', _currentUser!.role),
+                          if (_currentUser!.subject != null)
+                            _buildInfoRow('Subject', _currentUser!.subject!),
+                          if (_currentUser!.classId != null)
+                            _buildInfoRow('Class', _currentUser!.classId!),
                         ],
                       ),
                     ),
@@ -281,7 +283,7 @@ class _HomeScreenState extends State<HomeScreen>
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.05),
+                            color: Colors.black.withOpacity(0.05),
                             blurRadius: 10,
                             offset: const Offset(0, 2),
                           ),
@@ -309,49 +311,49 @@ class _HomeScreenState extends State<HomeScreen>
                               crossAxisSpacing: 12,
                               childAspectRatio: 1.2,
                               children: [
-                              _buildActionCard(
-                                icon: Icons.class_,
-                                label: 'Classes',
-                                color: Colors.blue,
-                                onTap: () {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Classes coming soon!')),
-                                  );
-                                },
-                              ),
-                              _buildActionCard(
-                                icon: Icons.assignment,
-                                label: 'Homework',
-                                color: Colors.green,
-                                onTap: () {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Homework coming soon!')),
-                                  );
-                                },
-                              ),
-                              _buildActionCard(
-                                icon: Icons.grade,
-                                label: 'Grades',
-                                color: Colors.orange,
-                                onTap: () {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Grades coming soon!')),
-                                  );
-                                },
-                              ),
-                              _buildActionCard(
-                                icon: Icons.message,
-                                label: 'Messages',
-                                color: Colors.purple,
-                                onTap: () {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Messages coming soon!')),
-                                  );
-                                },
-                              ),
-                            ],
+                                _buildActionCard(
+                                  icon: Icons.class_,
+                                  label: 'Classes',
+                                  color: Colors.blue,
+                                  onTap: () {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Classes coming soon!')),
+                                    );
+                                  },
+                                ),
+                                _buildActionCard(
+                                  icon: Icons.assignment,
+                                  label: 'Homework',
+                                  color: Colors.green,
+                                  onTap: () {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Homework coming soon!')),
+                                    );
+                                  },
+                                ),
+                                _buildActionCard(
+                                  icon: Icons.grade,
+                                  label: 'Grades',
+                                  color: Colors.orange,
+                                  onTap: () {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Grades coming soon!')),
+                                    );
+                                  },
+                                ),
+                                _buildActionCard(
+                                  icon: Icons.message,
+                                  label: 'Messages',
+                                  color: Colors.purple,
+                                  onTap: () {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Messages coming soon!')),
+                                    );
+                                  },
+                                ),
+                              ],
                             ),
-                            ),
+                          ),
                         ],
                       ),
                     ),

@@ -36,6 +36,7 @@ class AdminService {
           'success': true,
           'user': response.data['user'],
           'code': response.data['code'],
+          'temporaryPassword': response.data['temporaryPassword'],
         };
       }
       return {'success': false, 'message': 'Failed to create user'};

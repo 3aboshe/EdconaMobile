@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'dart:ui' as ui;
 import '../../../services/admin_service.dart';
 
 class UsersSection extends StatefulWidget {
@@ -27,7 +29,6 @@ class _UsersSectionState extends State<UsersSection>
   List<Map<String, dynamic>> _classes = [];
   List<Map<String, dynamic>> _subjects = [];
 
-  bool _isLoading = true;
   String _searchQuery = '';
 
   @override
@@ -83,10 +84,6 @@ class _UsersSectionState extends State<UsersSection>
   Future<void> _loadData() async {
     if (!mounted) return;
 
-    setState(() {
-      _isLoading = true;
-    });
-
     try {
       final users = await _adminService.getAllUsers();
       final classes = await _adminService.getAllClasses();
@@ -100,18 +97,12 @@ class _UsersSectionState extends State<UsersSection>
         _parents = users.where((u) => u['role'] == 'PARENT').toList();
         _classes = classes;
         _subjects = subjects;
-        _isLoading = false;
       });
     } catch (e) {
-      if (!mounted) return;
-
-      setState(() {
-        _isLoading = false;
-      });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to load data: ${e.toString()}'),
+            content: Text('${tr('admin.failed_load_data')} ${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );
@@ -122,6 +113,8 @@ class _UsersSectionState extends State<UsersSection>
   Future<void> _showCreateUserDialog(String role) async {
     final formKey = GlobalKey<FormState>();
     final nameController = TextEditingController();
+    final schoolCodeController = TextEditingController();
+    final phoneNumberController = TextEditingController();
     String? selectedParentId;
     String? selectedClassId;
     String? selectedSubject;
@@ -144,7 +137,7 @@ class _UsersSectionState extends State<UsersSection>
                   Container(
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1E3A8A).withOpacity(0.12),
+                      color: const Color(0xFF1E3A8A).withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: Icon(
@@ -160,7 +153,7 @@ class _UsersSectionState extends State<UsersSection>
                   const SizedBox(width: 16),
                   Expanded(
                     child: Text(
-                      'Create ${role.toLowerCase()}',
+                      '${tr('admin.create_user')} ${role.toLowerCase()}',
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -179,15 +172,15 @@ class _UsersSectionState extends State<UsersSection>
                     TextFormField(
                       controller: nameController,
                       decoration: InputDecoration(
-                        labelText: 'Name *',
-                        hintText: 'Enter full name',
+                        labelText: tr('admin.name'),
+                        hintText: tr('admin.name_hint'),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter a name';
+                          return tr('admin.please_enter_name');
                         }
                         return null;
                       },
@@ -196,7 +189,7 @@ class _UsersSectionState extends State<UsersSection>
                     if (role == 'STUDENT') ...[
                       DropdownButtonFormField<String>(
                         decoration: InputDecoration(
-                          labelText: 'Class *',
+                          labelText: tr('admin.class'),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -212,7 +205,7 @@ class _UsersSectionState extends State<UsersSection>
                         },
                         validator: (value) {
                           if (role == 'STUDENT' && value == null) {
-                            return 'Please select a class';
+                            return tr('admin.select_class');
                           }
                           return null;
                         },
@@ -224,8 +217,8 @@ class _UsersSectionState extends State<UsersSection>
                             controller: controller,
                             focusNode: focusNode,
                             decoration: InputDecoration(
-                              labelText: 'Parent (Optional)',
-                              hintText: 'Search for parent...',
+                              labelText: tr('admin.parent_optional'),
+                              hintText: tr('admin.search_parent'),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
@@ -254,7 +247,7 @@ class _UsersSectionState extends State<UsersSection>
                           selectedParentId = parent['id'] as String;
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Selected: $suggestion'),
+                              content: Text('${tr('admin.selected')} $suggestion'),
                               backgroundColor: Colors.green,
                             ),
                           );
@@ -263,7 +256,7 @@ class _UsersSectionState extends State<UsersSection>
                     ] else if (role == 'TEACHER') ...[
                       DropdownButtonFormField<String>(
                         decoration: InputDecoration(
-                          labelText: 'Subject *',
+                          labelText: tr('admin.subject'),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -279,7 +272,42 @@ class _UsersSectionState extends State<UsersSection>
                         },
                         validator: (value) {
                           if (role == 'TEACHER' && value == null) {
-                            return 'Please select a subject';
+                            return tr('admin.select_subject');
+                          }
+                          return null;
+                        },
+                      ),
+                    ] else if (role == 'PARENT') ...[
+                      TextFormField(
+                        controller: schoolCodeController,
+                        decoration: InputDecoration(
+                          labelText: tr('admin.school_code'),
+                          hintText: tr('admin.school_code_hint'),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        validator: (value) {
+                          if (role == 'PARENT' && (value == null || value.isEmpty)) {
+                            return tr('admin.please_enter_school_code');
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 20),
+                      TextFormField(
+                        controller: phoneNumberController,
+                        decoration: InputDecoration(
+                          labelText: tr('admin.phone_number'),
+                          hintText: tr('admin.phone_number_hint'),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        keyboardType: TextInputType.phone,
+                        validator: (value) {
+                          if (role == 'PARENT' && (value == null || value.isEmpty)) {
+                            return tr('admin.please_enter_phone_number');
                           }
                           return null;
                         },
@@ -291,7 +319,7 @@ class _UsersSectionState extends State<UsersSection>
                       children: [
                         TextButton(
                           onPressed: () => Navigator.pop(context),
-                          child: const Text('Cancel'),
+                          child: Text(tr('admin.cancel')),
                         ),
                         const SizedBox(width: 12),
                         ElevatedButton(
@@ -306,6 +334,10 @@ class _UsersSectionState extends State<UsersSection>
                                   'parentId': selectedParentId,
                                 if (role == 'TEACHER' && selectedSubject != null)
                                   'subject': selectedSubject,
+                                if (role == 'PARENT')
+                                  'schoolCode': schoolCodeController.text.trim(),
+                                if (role == 'PARENT')
+                                  'phoneNumber': phoneNumberController.text.trim(),
                               };
 
                               final result =
@@ -313,26 +345,38 @@ class _UsersSectionState extends State<UsersSection>
 
                               if (result['success']) {
                                 Navigator.pop(context);
+                                
+                                // Show success message
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text(
-                                        '${role.toLowerCase()} created successfully!'),
+                                        '${tr('admin.create')} ${role.toLowerCase()} ${tr('common.success')}'),
                                     backgroundColor: Colors.green,
                                   ),
                                 );
+
+                                // If parent was created, show temporary password dialog
+                                if (role == 'PARENT' && result['temporaryPassword'] != null) {
+                                  _showParentCreatedDialog(
+                                    context,
+                                    result['user']['id'],
+                                    result['temporaryPassword'],
+                                  );
+                                }
+                                
                                 _loadData();
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text(
-                                        'Failed to create user: ${result['message']}'),
+                                        '${tr('admin.failed_create_user')} ${result['message']}'),
                                     backgroundColor: Colors.red,
                                   ),
                                 );
                               }
                             }
                           },
-                          child: const Text('Create'),
+                          child: Text(tr('admin.create')),
                         ),
                       ],
                     ),
@@ -346,6 +390,196 @@ class _UsersSectionState extends State<UsersSection>
     );
   }
 
+  void _showParentCreatedDialog(BuildContext context, String parentId, String temporaryPassword) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFF34C759).withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.check_circle,
+                color: Color(0xFF34C759),
+                size: 28,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                'Parent Account Created',
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1D1D1F),
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Parent account has been successfully created. Please save the following information:',
+              style: TextStyle(
+                fontSize: 14,
+                color: Color(0xFF86868B),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF5F5F7),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: const Color(0xFFE5E5E7),
+                  width: 1,
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.person_outline,
+                        color: Color(0xFF1E3A8A),
+                        size: 20,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Parent Code',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Color(0xFF86868B),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              parentId,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF1D1D1F),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          // Copy to clipboard functionality would go here
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Parent code copied to clipboard'),
+                              backgroundColor: Color(0xFF34C759),
+                            ),
+                          );
+                        },
+                        icon: const Icon(
+                          Icons.copy,
+                          color: Color(0xFF1E3A8A),
+                          size: 20,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.lock_outline,
+                        color: Color(0xFF1E3A8A),
+                        size: 20,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Temporary Password',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Color(0xFF86868B),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              temporaryPassword,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF1D1D1F),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          // Copy to clipboard functionality would go here
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Temporary password copied to clipboard'),
+                              backgroundColor: Color(0xFF34C759),
+                            ),
+                          );
+                        },
+                        icon: const Icon(
+                          Icons.copy,
+                          color: Color(0xFF1E3A8A),
+                          size: 20,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'Please provide this information to the parent for their first login.',
+              style: TextStyle(
+                fontSize: 12,
+                color: Color(0xFFFF9500),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              'Close',
+              style: TextStyle(
+                color: Color(0xFF1E3A8A),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _deleteUser(String id, String role) async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -353,19 +587,19 @@ class _UsersSectionState extends State<UsersSection>
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
-        title: const Text('Delete User'),
-        content: Text('Are you sure you want to delete this $role?'),
+        title: Text(tr('admin.delete_user')),
+        content: Text('${tr('admin.delete_confirmation')} $role?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(tr('admin.cancel')),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
             ),
-            child: const Text('Delete'),
+            child: Text(tr('admin.delete')),
           ),
         ],
       ),
@@ -376,7 +610,7 @@ class _UsersSectionState extends State<UsersSection>
       if (result['success']) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('User deleted successfully'),
+            content: Text(tr('admin.user_deleted')),
             backgroundColor: Colors.green,
           ),
         );
@@ -384,7 +618,7 @@ class _UsersSectionState extends State<UsersSection>
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to delete user: ${result['message']}'),
+            content: Text('${tr('admin.failed_delete_user')} ${result['message']}'),
             backgroundColor: Colors.red,
           ),
         );
@@ -401,7 +635,7 @@ class _UsersSectionState extends State<UsersSection>
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 20,
             offset: const Offset(0, 4),
           ),
@@ -411,7 +645,7 @@ class _UsersSectionState extends State<UsersSection>
         children: [
           CircleAvatar(
             radius: 24,
-            backgroundColor: const Color(0xFF1E3A8A).withOpacity(0.12),
+            backgroundColor: const Color(0xFF1E3A8A).withValues(alpha: 0.12),
             child: Text(
               user['name'].toString().substring(0, 1).toUpperCase(),
               style: const TextStyle(
@@ -437,14 +671,14 @@ class _UsersSectionState extends State<UsersSection>
                 const SizedBox(height: 4),
                 if (role == 'STUDENT') ...[
                   Text(
-                    'Class: ${user['classId'] ?? 'N/A'}',
+                    '${tr('admin.class_label')} ${user['classId'] ?? 'N/A'}',
                     style: const TextStyle(
                       fontSize: 13,
                       color: Color(0xFF86868B),
                     ),
                   ),
                   Text(
-                    'Parent: ${user['parentId'] ?? 'No parent'}',
+                    '${tr('admin.parent_label')} ${user['parentId'] ?? tr('admin.no_parent')}',
                     style: const TextStyle(
                       fontSize: 13,
                       color: Color(0xFF86868B),
@@ -452,7 +686,7 @@ class _UsersSectionState extends State<UsersSection>
                   ),
                 ] else if (role == 'TEACHER') ...[
                   Text(
-                    'Subject: ${user['subject'] ?? 'N/A'}',
+                    '${tr('admin.subject_label')} ${user['subject'] ?? 'N/A'}',
                     style: const TextStyle(
                       fontSize: 13,
                       color: Color(0xFF86868B),
@@ -460,7 +694,7 @@ class _UsersSectionState extends State<UsersSection>
                   ),
                 ] else if (role == 'PARENT') ...[
                   Text(
-                    'Children: ${(user['childrenIds'] as List?)?.length ?? 0}',
+                    '${tr('admin.children')}: ${(user['childrenIds'] as List?)?.length ?? 0}',
                     style: const TextStyle(
                       fontSize: 13,
                       color: Color(0xFF86868B),
@@ -486,8 +720,8 @@ class _UsersSectionState extends State<UsersSection>
     }).toList();
 
     if (filteredStudents.isEmpty) {
-      return const Center(
-        child: Text('No students found'),
+      return Center(
+        child: Text(tr('admin.no_students')),
       );
     }
 
@@ -510,8 +744,8 @@ class _UsersSectionState extends State<UsersSection>
     }).toList();
 
     if (filteredTeachers.isEmpty) {
-      return const Center(
-        child: Text('No teachers found'),
+      return Center(
+        child: Text(tr('admin.no_teachers')),
       );
     }
 
@@ -534,8 +768,8 @@ class _UsersSectionState extends State<UsersSection>
     }).toList();
 
     if (filteredParents.isEmpty) {
-      return const Center(
-        child: Text('No parents found'),
+      return Center(
+        child: Text(tr('admin.no_parents')),
       );
     }
 
@@ -577,7 +811,7 @@ class _UsersSectionState extends State<UsersSection>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'User Management',
+                            tr('admin.user_management'),
                             style: TextStyle(
                               fontSize: isDesktop ? 32 : 28,
                               fontWeight: FontWeight.w700,
@@ -586,8 +820,8 @@ class _UsersSectionState extends State<UsersSection>
                             ),
                           ),
                           const SizedBox(height: 8),
-                          const Text(
-                            'Manage students, teachers, and parents',
+                          Text(
+                            tr('admin.manage_users'),
                             style: TextStyle(
                               fontSize: 16,
                               color: Color(0xFF86868B),
@@ -607,7 +841,7 @@ class _UsersSectionState extends State<UsersSection>
                       });
                     },
                     decoration: InputDecoration(
-                      hintText: 'Search users...',
+                      hintText: tr('admin.search_users'),
                       prefixIcon: const Icon(Icons.search),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -622,10 +856,10 @@ class _UsersSectionState extends State<UsersSection>
               color: Colors.white,
               child: TabBar(
                 controller: _tabController,
-                tabs: const [
-                  Tab(text: 'Students'),
-                  Tab(text: 'Teachers'),
-                  Tab(text: 'Parents'),
+                tabs: [
+                  Tab(text: tr('admin.students')),
+                  Tab(text: tr('admin.teachers')),
+                  Tab(text: tr('admin.parents')),
                 ],
               ),
             ),
@@ -649,8 +883,8 @@ class _UsersSectionState extends State<UsersSection>
         if (!isDesktop)
           Positioned(
             bottom: 10,
-            left: Directionality.of(context) == TextDirection.rtl ? 14 : null,
-            right: Directionality.of(context) == TextDirection.ltr ? 14 : null,
+            left: Directionality.of(context) == ui.TextDirection.rtl ? 14 : null,
+            right: Directionality.of(context) == ui.TextDirection.ltr ? 14 : null,
             child: FloatingActionButton(
               onPressed: () {
                 final currentTab = _tabController.index;

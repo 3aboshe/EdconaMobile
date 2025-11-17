@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../services/auth_service.dart';
 import '../../services/parent_service.dart';
+import '../../models/user.dart';
 import 'parent_dashboard.dart';
 
 class ChildSelectionScreen extends StatefulWidget {
@@ -16,7 +17,7 @@ class _ChildSelectionScreenState extends State<ChildSelectionScreen> {
   final ParentService _parentService = ParentService();
   final AuthService _authService = AuthService();
 
-  Map<String, dynamic>? _currentUser;
+  User? _currentUser;
   List<Map<String, dynamic>> _children = [];
   bool _isLoading = true;
   String? _errorMessage;
@@ -31,7 +32,7 @@ class _ChildSelectionScreenState extends State<ChildSelectionScreen> {
     try {
       final user = await _authService.getCurrentUser();
       if (user != null) {
-        final children = await _parentService.getChildren(user['id']);
+        final children = await _parentService.getChildren(user.id);
         setState(() {
           _currentUser = user;
           _children = children;
@@ -182,7 +183,7 @@ class _ChildSelectionScreenState extends State<ChildSelectionScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        _currentUser?['name'] ?? 'Parent',
+                        _currentUser?.name ?? 'Parent',
                         style: TextStyle(
                           color: Colors.white.withValues(alpha: 0.9),
                           fontSize: 18,

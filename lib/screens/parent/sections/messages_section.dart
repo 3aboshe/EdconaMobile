@@ -4,15 +4,11 @@ import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import '../../../services/message_service.dart';
 import '../../../services/api_service.dart';
 import '../../../services/auth_service.dart';
+import '../../../models/user.dart';
 
 
 
 class MessagesSection extends StatefulWidget {
-
-
-// TextDirection constants to work around analyzer issue
-
-
   final Map<String, dynamic> student;
 
   const MessagesSection({
@@ -28,7 +24,7 @@ class _MessagesSectionState extends State<MessagesSection> {
   final AuthService _authService = AuthService();
   bool _isLoading = true;
   List<Map<String, dynamic>> _teachers = [];
-  Map<String, dynamic>? _currentUser;
+  User? _currentUser;
 
   @override
   void initState() {
@@ -288,7 +284,7 @@ class _MessagesSectionState extends State<MessagesSection> {
       context,
       MaterialPageRoute(
         builder: (context) => ChatScreen(
-          currentUser: _currentUser!,
+          currentUser: _currentUser!.toJson(),
           otherUser: teacher,
           student: widget.student,
           isRTL: isRTL,

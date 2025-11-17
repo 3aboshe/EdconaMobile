@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../../services/admin_service.dart';
 
 class AcademicSection extends StatefulWidget {
@@ -50,7 +51,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to load data: ${e.toString()}'),
+            content: Text('${tr('admin.failed_load_data')} ${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );
@@ -79,7 +80,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
                   Container(
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1E3A8A).withOpacity(0.12),
+                      color: const Color(0xFF1E3A8A).withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: const Icon(
@@ -89,9 +90,9 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
                     ),
                   ),
                   const SizedBox(width: 16),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'Create Subject',
+                      tr('admin.create_subject'),
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -106,8 +107,8 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
               TextField(
                 controller: nameController,
                 decoration: InputDecoration(
-                  labelText: 'Subject Name *',
-                  hintText: 'e.g., Mathematics, Science, History',
+                  labelText: tr('admin.subject_name'),
+                  hintText: tr('admin.subject_example'),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -119,7 +120,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
                 children: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text('Cancel'),
+                    child: Text(tr('admin.cancel')),
                   ),
                   const SizedBox(width: 12),
                   ElevatedButton(
@@ -133,7 +134,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
                           Navigator.pop(context);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: const Text('Subject created successfully!'),
+                              content: Text(tr('admin.subject_created')),
                               backgroundColor: Colors.green,
                             ),
                           );
@@ -141,7 +142,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Failed to create subject'),
+                              content: Text(tr('admin.failed_create_subject')),
                               backgroundColor: Colors.red,
                             ),
                           );
@@ -152,8 +153,8 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
                       backgroundColor: const Color(0xFF1E3A8A),
                       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                     ),
-                    child: const Text(
-                      'Create',
+                    child: Text(
+                      tr('admin.create'),
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
@@ -191,7 +192,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
                   Container(
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1E3A8A).withOpacity(0.12),
+                      color: const Color(0xFF1E3A8A).withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: const Icon(
@@ -201,9 +202,9 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
                     ),
                   ),
                   const SizedBox(width: 16),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'Create Class',
+                      tr('admin.create_class_title'),
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -222,22 +223,22 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
                     TextFormField(
                       controller: nameController,
                       decoration: InputDecoration(
-                        labelText: 'Class Name *',
-                        hintText: 'e.g., Grade 5-A, Class 1',
+                        labelText: tr('admin.class_name'),
+                        hintText: tr('admin.class_example'),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter a class name';
+                          return tr('admin.enter_class_name');
                         }
                         return null;
                       },
                     ),
                     const SizedBox(height: 20),
-                    const Text(
-                      'Select Subjects',
+                    Text(
+                      tr('admin.select_subjects'),
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
@@ -288,7 +289,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
                 children: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text('Cancel'),
+                    child: Text(tr('admin.cancel')),
                   ),
                   const SizedBox(width: 12),
                   ElevatedButton(
@@ -303,7 +304,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
                           Navigator.pop(context);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: const Text('Class created successfully!'),
+                              content: Text(tr('admin.class_created_msg')),
                               backgroundColor: Colors.green,
                             ),
                           );
@@ -322,8 +323,8 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
                       backgroundColor: const Color(0xFF1E3A8A),
                       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                     ),
-                    child: const Text(
-                      'Create',
+                    child: Text(
+                      tr('admin.create'),
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
@@ -339,7 +340,6 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final isTablet = screenWidth >= 768;
     final isMobile = screenWidth < 768;
 
     return Column(
@@ -360,8 +360,8 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Academic Management',
+                    Text(
+                      tr('admin.academic_management'),
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -376,7 +376,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
                         ElevatedButton.icon(
                           onPressed: _showCreateSubjectDialog,
                           icon: const Icon(Icons.add, size: 18),
-                          label: const Text('Add Subject'),
+                          label: Text(tr('admin.add_subject')),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF1E3A8A),
                             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -388,7 +388,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
                         ElevatedButton.icon(
                           onPressed: _showCreateClassDialog,
                           icon: const Icon(Icons.add, size: 18),
-                          label: const Text('Add Class'),
+                          label: Text(tr('admin.create_class')),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF2563EB),
                             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -405,8 +405,8 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'Academic Management',
+                    Text(
+                      tr('admin.academic_management'),
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
@@ -418,7 +418,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
                         ElevatedButton.icon(
                           onPressed: _showCreateSubjectDialog,
                           icon: const Icon(Icons.add, size: 20),
-                          label: const Text('Add Subject'),
+                          label: Text(tr('admin.add_subject')),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF1E3A8A),
                             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -431,7 +431,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
                         ElevatedButton.icon(
                           onPressed: _showCreateClassDialog,
                           icon: const Icon(Icons.add, size: 20),
-                          label: const Text('Add Class'),
+                          label: Text(tr('admin.create_class')),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF2563EB),
                             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -458,7 +458,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
                       children: [
                         const Icon(Icons.book, size: 20),
                         const SizedBox(width: 8),
-                        Text('Subjects (${_subjects.length})'),
+                        Text('${tr('admin.academic')} (${_subjects.length})'),
                       ],
                     ),
                   ),
@@ -468,7 +468,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
                       children: [
                         const Icon(Icons.class_, size: 20),
                         const SizedBox(width: 8),
-                        Text('Classes (${_classes.length})'),
+                        Text('${tr('admin.total_classes')} (${_classes.length})'),
                       ],
                     ),
                   ),
@@ -509,7 +509,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
             ),
             const SizedBox(height: 16),
             Text(
-              'No subjects found',
+              tr('admin.no_subjects'),
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.grey[600],
@@ -519,7 +519,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
             ElevatedButton.icon(
               onPressed: _showCreateSubjectDialog,
               icon: const Icon(Icons.add),
-              label: const Text('Add First Subject'),
+              label: Text(tr('admin.add_first_subject')),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF1E3A8A),
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -542,7 +542,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 10,
                 offset: const Offset(0, 2),
               ),
@@ -552,7 +552,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
             contentPadding: const EdgeInsets.all(20),
             leading: CircleAvatar(
               radius: 28,
-              backgroundColor: const Color(0xFF1E3A8A).withOpacity(0.2),
+              backgroundColor: const Color(0xFF1E3A8A).withValues(alpha: 0.2),
               child: const Icon(
                 Icons.book,
                 color: Color(0xFF1E3A8A),
@@ -595,7 +595,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
             ),
             const SizedBox(height: 16),
             Text(
-              'No classes found',
+              tr('admin.no_classes'),
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.grey[600],
@@ -605,7 +605,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
             ElevatedButton.icon(
               onPressed: _showCreateClassDialog,
               icon: const Icon(Icons.add),
-              label: const Text('Add First Class'),
+              label: Text(tr('admin.add_first_class')),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF2563EB),
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -634,7 +634,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 10,
                 offset: const Offset(0, 2),
               ),
@@ -644,7 +644,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
             contentPadding: const EdgeInsets.all(20),
             leading: CircleAvatar(
               radius: 28,
-              backgroundColor: const Color(0xFF1E3A8A).withOpacity(0.2),
+              backgroundColor: const Color(0xFF1E3A8A).withValues(alpha: 0.2),
               child: const Icon(
                 Icons.class_,
                 color: Color(0xFF1E3A8A),
@@ -704,12 +704,12 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Delete Subject'),
-        content: Text('Are you sure you want to delete "${subject['name']}"?'),
+        title: Text(tr('admin.delete_subject')),
+        content: Text('${tr('admin.delete_subject_confirm')} "${subject['name']}"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(tr('admin.cancel')),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -718,7 +718,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
               if (result['success']) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: const Text('Subject deleted successfully'),
+                    content: Text(tr('admin.subject_deleted')),
                     backgroundColor: Colors.green,
                   ),
                 );
@@ -726,14 +726,14 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('Failed to delete subject'),
+                    content: Text(tr('admin.failed_delete_subject')),
                     backgroundColor: Colors.red,
                   ),
                 );
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Delete', style: TextStyle(color: Colors.white)),
+            child: Text(tr('admin.delete'), style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -745,12 +745,12 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Delete Class'),
-        content: Text('Are you sure you want to delete "${classItem['name']}"?'),
+        title: Text(tr('admin.delete_class')),
+        content: Text('${tr('admin.delete_class_confirm')} "${classItem['name']}"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(tr('admin.cancel')),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -759,7 +759,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
               if (result['success']) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: const Text('Class deleted successfully'),
+                    content: Text(tr('admin.class_deleted')),
                     backgroundColor: Colors.green,
                   ),
                 );
@@ -767,14 +767,14 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('Failed to delete class: ${result['message']}'),
+                    content: Text('${tr('admin.failed_delete_class')} ${result['message']}'),
                     backgroundColor: Colors.red,
                   ),
                 );
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Delete', style: TextStyle(color: Colors.white)),
+            child: Text(tr('admin.delete'), style: TextStyle(color: Colors.white)),
           ),
         ],
       ),

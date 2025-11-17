@@ -73,7 +73,7 @@ class _DashboardSectionState extends State<DashboardSection> {
                   Container(
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1E3A8A).withOpacity(0.12),
+                      color: const Color(0xFF1E3A8A).withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: const Icon(
@@ -83,9 +83,9 @@ class _DashboardSectionState extends State<DashboardSection> {
                     ),
                   ),
                   const SizedBox(width: 16),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'Create Class',
+                      tr('admin.create_class'),
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -193,7 +193,7 @@ class _DashboardSectionState extends State<DashboardSection> {
                   Container(
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1E3A8A).withOpacity(0.12),
+                      color: const Color(0xFF1E3A8A).withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: const Icon(
@@ -203,9 +203,9 @@ class _DashboardSectionState extends State<DashboardSection> {
                     ),
                   ),
                   const SizedBox(width: 16),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'Add Subject',
+                      tr('admin.add_subject'),
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -304,7 +304,7 @@ class _DashboardSectionState extends State<DashboardSection> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 30,
             offset: const Offset(0, 8),
           ),
@@ -319,7 +319,7 @@ class _DashboardSectionState extends State<DashboardSection> {
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.12),
+                  color: color.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: Icon(icon, color: color, size: 30),
@@ -327,7 +327,7 @@ class _DashboardSectionState extends State<DashboardSection> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: Colors.green.withOpacity(0.12),
+                  color: Colors.green.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -391,7 +391,7 @@ class _DashboardSectionState extends State<DashboardSection> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 30,
             offset: const Offset(0, 8),
           ),
@@ -410,7 +410,7 @@ class _DashboardSectionState extends State<DashboardSection> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.12),
+                  color: color.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
@@ -505,7 +505,7 @@ class _DashboardSectionState extends State<DashboardSection> {
 
           // Quick Actions
           Text(
-            'Quick Actions',
+            tr('admin.quick_actions'),
             style: TextStyle(
               fontSize: isDesktop ? 28 : 24,
               fontWeight: FontWeight.w700,
@@ -527,8 +527,8 @@ class _DashboardSectionState extends State<DashboardSection> {
                 childAspectRatio: isDesktop ? 2.8 : (constraints.maxWidth / cardHeight),
                 children: [
                   _buildQuickActionCard(
-                    title: 'Add New Student',
-                    description: 'Create a new student account',
+                    title: tr('admin.add_new_student'),
+                    description: tr('admin.add_new_student_desc'),
                     icon: Icons.person_add,
                     color: const Color(0xFF1E3A8A),
                     onTap: () {
@@ -536,8 +536,8 @@ class _DashboardSectionState extends State<DashboardSection> {
                     },
                   ),
                   _buildQuickActionCard(
-                    title: 'Add New Teacher',
-                    description: 'Create a new teacher account',
+                    title: tr('admin.add_new_teacher'),
+                    description: tr('admin.add_new_teacher_desc'),
                     icon: Icons.people,
                     color: const Color(0xFF1E3A8A),
                     onTap: () {
@@ -545,8 +545,8 @@ class _DashboardSectionState extends State<DashboardSection> {
                     },
                   ),
                   _buildQuickActionCard(
-                    title: 'Add New Parent',
-                    description: 'Create a new parent account',
+                    title: tr('admin.add_new_parent'),
+                    description: tr('admin.add_new_parent_desc'),
                     icon: Icons.family_restroom,
                     color: const Color(0xFF1E3A8A),
                     onTap: () {
@@ -554,8 +554,8 @@ class _DashboardSectionState extends State<DashboardSection> {
                     },
                   ),
                   _buildQuickActionCard(
-                    title: 'Create Class',
-                    description: 'Add a new class to the system',
+                    title: tr('admin.create_class'),
+                    description: tr('admin.create_class_desc'),
                     icon: Icons.class_,
                     color: const Color(0xFF1E3A8A),
                     onTap: () {
@@ -563,8 +563,8 @@ class _DashboardSectionState extends State<DashboardSection> {
                     },
                   ),
                   _buildQuickActionCard(
-                    title: 'Add Subject',
-                    description: 'Create a new academic subject',
+                    title: tr('admin.add_subject'),
+                    description: tr('admin.add_subject_desc'),
                     icon: Icons.book,
                     color: const Color(0xFF1E3A8A),
                     onTap: () {
@@ -579,7 +579,7 @@ class _DashboardSectionState extends State<DashboardSection> {
 
           // Statistics Cards
           Text(
-            'Statistics',
+            tr('admin.statistics'),
             style: TextStyle(
               fontSize: isDesktop ? 28 : 24,
               fontWeight: FontWeight.w700,
@@ -605,28 +605,28 @@ class _DashboardSectionState extends State<DashboardSection> {
                   childAspectRatio: isDesktop ? 0.95 : (crossAxisCount == 1 ? 1.5 : 1.8),
                   children: [
                     _buildStatCard(
-                      title: 'Total Students',
+                      title: tr('admin.total_students'),
                       value: _analytics!['totalStudents'].toString(),
                       icon: Icons.school,
                       color: const Color(0xFF1E3A8A),
                       subtitle: 'Enrolled students',
                     ),
                     _buildStatCard(
-                      title: 'Total Teachers',
+                      title: tr('admin.total_teachers'),
                       value: _analytics!['totalTeachers'].toString(),
                       icon: Icons.person,
                       color: const Color(0xFF2563EB),
                       subtitle: 'Active teachers',
                     ),
                     _buildStatCard(
-                      title: 'Total Parents',
+                      title: tr('admin.total_parents'),
                       value: _analytics!['totalParents'].toString(),
                       icon: Icons.family_restroom,
                       color: const Color(0xFF3B82F6),
                       subtitle: 'Registered parents',
                     ),
                     _buildStatCard(
-                      title: 'Active Homework',
+                      title: tr('admin.active_homework'),
                       value: '24',
                       icon: Icons.assignment,
                       color: const Color(0xFF60A5FA),
@@ -641,7 +641,7 @@ class _DashboardSectionState extends State<DashboardSection> {
 
           // Performance Metrics
           Text(
-            'Performance Overview',
+            tr('admin.performance_overview'),
             style: TextStyle(
               fontSize: isDesktop ? 28 : 24,
               fontWeight: FontWeight.w700,
@@ -655,7 +655,7 @@ class _DashboardSectionState extends State<DashboardSection> {
 
           // Recent Activity
           Text(
-            'Recent Activity',
+            tr('admin.recent_activity'),
             style: TextStyle(
               fontSize: isDesktop ? 28 : 24,
               fontWeight: FontWeight.w700,
@@ -679,7 +679,7 @@ class _DashboardSectionState extends State<DashboardSection> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 30,
             offset: const Offset(0, 8),
           ),
@@ -695,7 +695,7 @@ class _DashboardSectionState extends State<DashboardSection> {
                   children: [
                     Expanded(
                       child: _buildProgressMetric(
-                        title: 'Average Grade',
+                        title: tr('admin.average_grade'),
                         value: 87.5,
                         color: const Color(0xFF1E3A8A),
                       ),
@@ -703,7 +703,7 @@ class _DashboardSectionState extends State<DashboardSection> {
                     const SizedBox(width: 24),
                     Expanded(
                       child: _buildProgressMetric(
-                        title: 'Attendance Rate',
+                        title: tr('admin.attendance_rate'),
                         value: 93.2,
                         color: const Color(0xFF2563EB),
                       ),
@@ -711,7 +711,7 @@ class _DashboardSectionState extends State<DashboardSection> {
                     const SizedBox(width: 24),
                     Expanded(
                       child: _buildCountMetric(
-                        title: 'Active Homework',
+                        title: tr('admin.active_homework'),
                         value: '24',
                         icon: Icons.assignment,
                         color: const Color(0xFF3B82F6),
@@ -723,19 +723,19 @@ class _DashboardSectionState extends State<DashboardSection> {
                 return Column(
                   children: [
                     _buildProgressMetric(
-                      title: 'Average Grade',
+                      title: tr('admin.average_grade'),
                       value: 87.5,
                       color: const Color(0xFF1E3A8A),
                     ),
                     const SizedBox(height: 24),
                     _buildProgressMetric(
-                      title: 'Attendance Rate',
+                      title: tr('admin.attendance_rate'),
                       value: 93.2,
                       color: const Color(0xFF2563EB),
                     ),
                     const SizedBox(height: 24),
                     _buildCountMetric(
-                      title: 'Active Homework',
+                      title: tr('admin.active_homework'),
                       value: '24',
                       icon: Icons.assignment,
                       color: const Color(0xFF3B82F6),
@@ -778,7 +778,7 @@ class _DashboardSectionState extends State<DashboardSection> {
               Container(
                 height: 8,
                 decoration: BoxDecoration(
-                  color: Colors.grey.withOpacity(0.2),
+                  color: Colors.grey.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
@@ -855,26 +855,26 @@ class _DashboardSectionState extends State<DashboardSection> {
     final activities = [
       {
         'type': 'homework',
-        'title': 'New homework assigned in Math',
-        'time': '2 hours ago',
+        'title': tr('admin.new_homework_math'),
+        'time': tr('admin.hours_ago'),
         'icon': Icons.assignment,
       },
       {
         'type': 'announcement',
-        'title': 'School meeting announcement',
-        'time': '5 hours ago',
+        'title': tr('admin.school_meeting'),
+        'time': tr('admin.hours_ago_pl'),
         'icon': Icons.campaign,
       },
       {
         'type': 'homework',
-        'title': 'Science project due date',
-        'time': '1 day ago',
+        'title': tr('admin.science_project'),
+        'time': tr('admin.day_ago'),
         'icon': Icons.assignment,
       },
       {
         'type': 'announcement',
-        'title': 'Holiday notice published',
-        'time': '2 days ago',
+        'title': tr('admin.holiday_notice'),
+        'time': tr('admin.days_ago'),
         'icon': Icons.campaign,
       },
     ];
@@ -886,7 +886,7 @@ class _DashboardSectionState extends State<DashboardSection> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 30,
             offset: const Offset(0, 8),
           ),
@@ -898,8 +898,8 @@ class _DashboardSectionState extends State<DashboardSection> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Latest Activities',
+              Text(
+                tr('admin.latest_activities'),
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
@@ -911,7 +911,7 @@ class _DashboardSectionState extends State<DashboardSection> {
                 onPressed: () {
                   // TODO: Navigate to all activities
                 },
-                child: const Text('View All'),
+                child: Text(tr('admin.view_all')),
               ),
             ],
           ),
@@ -928,7 +928,7 @@ class _DashboardSectionState extends State<DashboardSection> {
                 leading: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF1E3A8A).withOpacity(0.12),
+                    color: const Color(0xFF1E3A8A).withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(

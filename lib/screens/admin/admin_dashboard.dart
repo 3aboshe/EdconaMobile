@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart';
-import '../../services/auth_service.dart';
 import 'sections/dashboard_section.dart';
 import 'sections/analytics_section.dart';
 import 'sections/users_section.dart';
@@ -144,7 +143,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 20,
             offset: const Offset(0, 0),
           ),
@@ -165,7 +164,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF1E3A8A).withOpacity(0.3),
+                        color: const Color(0xFF1E3A8A).withValues(alpha: 0.3),
                         blurRadius: 8,
                         offset: const Offset(0, 4),
                       ),
@@ -196,7 +195,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Manage your school',
+                        tr('admin.manage_school'),
                         style: TextStyle(
                           fontSize: 13,
                           color: Colors.grey[600],
@@ -213,7 +212,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     size: 22,
                   ),
                   onPressed: () => _showLogoutDialog(context),
-                  tooltip: 'Logout',
+                  tooltip: tr('admin.logout'),
                 ),
               ],
             ),
@@ -233,7 +232,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
                   child: Material(
                     color: isSelected
-                        ? const Color(0xFF1E3A8A).withOpacity(0.1)
+                        ? const Color(0xFF1E3A8A).withValues(alpha: 0.1)
                         : Colors.transparent,
                     borderRadius: BorderRadius.circular(12),
                     child: InkWell(
@@ -308,7 +307,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'Admin',
+                        tr('admin.admin'),
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -318,7 +317,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Administrator',
+                        tr('admin.administrator'),
                         style: TextStyle(
                           fontSize: 11,
                           color: Colors.grey[600],
@@ -355,7 +354,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 children: [
                   Expanded(
                     child: Text(
-                      _sectionInfo[_selectedIndex]['title'].toString().toUpperCase(),
+                      tr(_sectionInfo[_selectedIndex]['title'].toString()),
                       style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
@@ -367,12 +366,12 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF34C759).withOpacity(0.15),
+                      color: const Color(0xFF34C759).withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Text(
-                      'LIVE',
-                      style: TextStyle(
+                    child: Text(
+                      tr('admin.live'),
+                      style: const TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
                         color: Color(0xFF34C759),
@@ -399,7 +398,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 8,
             offset: const Offset(0, -2),
           ),
@@ -428,7 +427,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     padding: const EdgeInsets.symmetric(vertical: 6),
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? const Color(0xFF1E3A8A).withOpacity(0.1)
+                          ? const Color(0xFF1E3A8A).withValues(alpha: 0.1)
                           : Colors.transparent,
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -560,7 +559,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                         Navigator.pop(context);
                       },
                       selected: isSelected,
-                      selectedTileColor: const Color(0xFF1E3A8A).withOpacity(0.1),
+                      selectedTileColor: const Color(0xFF1E3A8A).withValues(alpha: 0.1),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -583,7 +582,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
-          content: const Column(
+          content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
@@ -593,7 +592,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               ),
               SizedBox(height: 16),
               Text(
-                'Logout?',
+                tr('admin.logout_title'),
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -601,7 +600,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               ),
               SizedBox(height: 8),
               Text(
-                'Are you sure you want to logout?',
+                tr('admin.logout_message'),
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.grey,
@@ -613,9 +612,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text(
-                'Cancel',
-                style: TextStyle(
+              child: Text(
+                tr('admin.cancel'),
+                style: const TextStyle(
                   color: Colors.grey,
                   fontWeight: FontWeight.w600,
                 ),
@@ -632,9 +631,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: const Text(
-                'Logout',
-                style: TextStyle(
+              child: Text(
+                tr('admin.logout'),
+                style: const TextStyle(
                   fontWeight: FontWeight.w600,
                 ),
               ),

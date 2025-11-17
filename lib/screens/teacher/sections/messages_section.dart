@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import '../../../services/message_service.dart';
 import '../../../services/api_service.dart';
 import '../../../services/auth_service.dart';
+import '../../../models/user.dart';
 import 'dart:ui' as ui;
 
 class MessagesSection extends StatefulWidget {
@@ -19,7 +20,7 @@ class _MessagesSectionState extends State<MessagesSection> {
   final AuthService _authService = AuthService();
   bool _isLoading = true;
   List<Map<String, dynamic>> _parents = [];
-  Map<String, dynamic>? _currentUser;
+  User? _currentUser;
 
   @override
   void initState() {
@@ -198,7 +199,7 @@ class _MessagesSectionState extends State<MessagesSection> {
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
+                color: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: const Icon(
@@ -230,7 +231,7 @@ class _MessagesSectionState extends State<MessagesSection> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -296,7 +297,7 @@ class _MessagesSectionState extends State<MessagesSection> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF0D47A1).withOpacity(0.1),
+                    color: const Color(0xFF0D47A1).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(
@@ -320,7 +321,7 @@ class _MessagesSectionState extends State<MessagesSection> {
       context,
       MaterialPageRoute(
         builder: (context) => ChatScreen(
-          currentUser: _currentUser!,
+          currentUser: _currentUser!.toJson(),
           otherUser: parent,
           teacher: widget.teacher,
           isRTL: _isRTL(),
@@ -448,7 +449,7 @@ class _ChatScreenState extends State<ChatScreen> {
             children: [
               CircleAvatar(
                 radius: 20,
-                backgroundColor: Colors.white.withOpacity(0.2),
+                backgroundColor: Colors.white.withValues(alpha: 0.2),
                 backgroundImage: (widget.otherUser['avatar'] != null &&
                         widget.otherUser['avatar'].toString().isNotEmpty)
                     ? NetworkImage(widget.otherUser['avatar'])
@@ -483,7 +484,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           : 'Parent',
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.white.withOpacity(0.9),
+                        color: Colors.white.withValues(alpha: 0.9),
                       ),
                     ),
                   ],
@@ -592,7 +593,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 5,
                     offset: const Offset(0, 1),
                   ),
@@ -615,7 +616,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         : '',
                     style: TextStyle(
                       color: isFromMe
-                          ? Colors.white.withOpacity(0.7)
+                          ? Colors.white.withValues(alpha: 0.7)
                           : Colors.grey[500],
                       fontSize: 11,
                     ),

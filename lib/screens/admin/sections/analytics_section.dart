@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../../services/admin_service.dart';
 
@@ -12,8 +13,6 @@ class AnalyticsSection extends StatefulWidget {
 class _AnalyticsSectionState extends State<AnalyticsSection> {
   final AdminService _adminService = AdminService();
   bool _isLoading = true;
-  Map<String, dynamic>? _analytics;
-  List<Map<String, dynamic>> _grades = [];
 
   @override
   void initState() {
@@ -27,9 +26,8 @@ class _AnalyticsSectionState extends State<AnalyticsSection> {
     });
 
     try {
-      final analytics = await _adminService.getAnalytics();
+      await _adminService.getAnalytics();
       setState(() {
-        _analytics = analytics;
         _isLoading = false;
       });
     } catch (e) {
@@ -39,7 +37,7 @@ class _AnalyticsSectionState extends State<AnalyticsSection> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to load analytics: ${e.toString()}'),
+            content: Text('${tr('admin.failed_load_analytics')} ${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );
@@ -88,7 +86,7 @@ class _AnalyticsSectionState extends State<AnalyticsSection> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 30,
             offset: const Offset(0, 8),
           ),
@@ -97,9 +95,9 @@ class _AnalyticsSectionState extends State<AnalyticsSection> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Grade Distribution',
-            style: TextStyle(
+          Text(
+            tr('admin.grade_distribution'),
+            style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w700,
               color: Color(0xFF1D1D1F),
@@ -112,7 +110,6 @@ class _AnalyticsSectionState extends State<AnalyticsSection> {
             child: PieChart(
               PieChartData(
                 sections: gradeDistribution.entries.map((entry) {
-                  final int index = entry.key.compareTo('A');
                   final double percentage =
                       entry.value / gradeDistribution.values.reduce((a, b) => a + b) * 100;
                   return PieChartSectionData(
@@ -171,7 +168,7 @@ class _AnalyticsSectionState extends State<AnalyticsSection> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              'Grade ${entry.key}',
+                              '${tr('admin.grade_label')} ${entry.key}',
                               style: const TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
@@ -209,7 +206,7 @@ class _AnalyticsSectionState extends State<AnalyticsSection> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 30,
             offset: const Offset(0, 8),
           ),
@@ -218,9 +215,9 @@ class _AnalyticsSectionState extends State<AnalyticsSection> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Attendance Trend (Last 7 Days)',
-            style: TextStyle(
+          Text(
+            tr('admin.attendance_trend'),
+            style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w700,
               color: Color(0xFF1D1D1F),
@@ -243,7 +240,15 @@ class _AnalyticsSectionState extends State<AnalyticsSection> {
                       reservedSize: 30,
                       interval: 1,
                       getTitlesWidget: (value, meta) {
-                        const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                        final days = [
+                          tr('admin.monday'),
+                          tr('admin.tuesday'),
+                          tr('admin.wednesday'),
+                          tr('admin.thursday'),
+                          tr('admin.friday'),
+                          tr('admin.saturday'),
+                          tr('admin.sunday'),
+                        ];
                         if (value.toInt() >= 0 && value.toInt() < days.length) {
                           return SideTitleWidget(
                             axisSide: meta.axisSide,
@@ -299,8 +304,8 @@ class _AnalyticsSectionState extends State<AnalyticsSection> {
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [
-                          const Color(0xFF1E3A8A).withOpacity(0.2),
-                          const Color(0xFF1E3A8A).withOpacity(0.0),
+                          const Color(0xFF1E3A8A).withValues(alpha: 0.2),
+                          const Color(0xFF1E3A8A).withValues(alpha: 0.0),
                         ],
                       ),
                     ),
@@ -328,7 +333,7 @@ class _AnalyticsSectionState extends State<AnalyticsSection> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 20,
             offset: const Offset(0, 4),
           ),
@@ -343,7 +348,7 @@ class _AnalyticsSectionState extends State<AnalyticsSection> {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.12),
+                  color: color.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(icon, color: color, size: 22),
@@ -405,7 +410,7 @@ class _AnalyticsSectionState extends State<AnalyticsSection> {
         children: [
           // Header
           Text(
-            'Analytics',
+            tr('admin.analytics'),
             style: TextStyle(
               fontSize: isDesktop ? 40 : 32,
               fontWeight: FontWeight.w700,
@@ -414,8 +419,8 @@ class _AnalyticsSectionState extends State<AnalyticsSection> {
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Data visualization and performance insights',
+          Text(
+            tr('admin.data_visualization'),
             style: TextStyle(
               fontSize: 16,
               color: Color(0xFF86868B),
@@ -431,8 +436,8 @@ class _AnalyticsSectionState extends State<AnalyticsSection> {
           const SizedBox(height: 32),
 
           // Quick Stats
-          const Text(
-            'Quick Stats',
+          Text(
+            tr('admin.quick_stats'),
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.w700,
@@ -457,30 +462,30 @@ class _AnalyticsSectionState extends State<AnalyticsSection> {
                 childAspectRatio: isDesktop ? 1.0 : (crossAxisCount == 1 ? 1.9 : 1.6),
                 children: [
                   _buildStatCard(
-                    title: 'Total Grades',
+                    title: tr('admin.total_grades'),
                     value: '247',
-                    subtitle: 'All assignments',
+                    subtitle: tr('admin.all_assignments'),
                     icon: Icons.grade,
                     color: const Color(0xFF1E3A8A),
                   ),
                   _buildStatCard(
-                    title: 'Average Score',
+                    title: tr('admin.average_score'),
                     value: '87.5%',
-                    subtitle: 'Across all subjects',
+                    subtitle: tr('admin.across_subjects'),
                     icon: Icons.trending_up,
                     color: const Color(0xFF2563EB),
                   ),
                   _buildStatCard(
-                    title: 'Most Active Teacher',
+                    title: tr('admin.most_active_teacher'),
                     value: 'Mr. Smith',
-                    subtitle: '6 classes this week',
+                    subtitle: tr('admin.classes_this_week'),
                     icon: Icons.person,
                     color: const Color(0xFF3B82F6),
                   ),
                   _buildStatCard(
-                    title: 'Top Class',
+                    title: tr('admin.top_class'),
                     value: 'Class 5A',
-                    subtitle: '94.2% attendance',
+                    subtitle: tr('admin.attendance_rate_label'),
                     icon: Icons.class_,
                     color: const Color(0xFF60A5FA),
                   ),

@@ -3,6 +3,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/admin/admin_dashboard.dart';
+import 'screens/super_admin/super_admin_screen.dart';
+import 'screens/password_change_screen.dart';
 import 'services/language_service.dart';
 import 'services/auth_service.dart';
 import 'utils/locale_delegates.dart';
@@ -102,6 +104,21 @@ class EdConaApp extends StatelessWidget {
         '/login': (context) => const LoginScreen(),
         '/home': (context) => const HomeScreen(),
         '/admin': (context) => const AdminDashboard(),
+        '/super-admin': (context) => const SuperAdminScreen(),
+        '/change-password': (context) {
+          final args = ModalRoute.of(context)?.settings.arguments;
+          if (args is Map<String, dynamic>) {
+            return PasswordChangeScreen(
+              user: args['user'],
+              isForcedChange: args['isForcedChange'] ?? false,
+            );
+          }
+          // Return a placeholder widget if no arguments provided
+          return Scaffold(
+            appBar: AppBar(title: const Text('Change Password')),
+            body: const Center(child: Text('Invalid access')),
+          );
+        },
       },
     );
   }
@@ -137,10 +154,16 @@ class _AppInitializerState extends State<AppInitializer> {
         // Check if user is already logged in and navigate accordingly
         if (isLoggedIn) {
           final user = await authService.getCurrentUser();
-          if (user != null && user['role'] == 'ADMIN') {
-            Navigator.pushReplacementNamed(context, '/admin');
+          if (user != null) {
+            if (user.role.name == 'admin') {
+              Navigator.pushReplacementNamed(context, '/admin');
+            } else if (user.role.name == 'superAdmin') {
+              Navigator.pushReplacementNamed(context, '/super-admin');
+            } else {
+              Navigator.pushReplacementNamed(context, '/home');
+            }
           } else {
-            Navigator.pushReplacementNamed(context, '/home');
+            Navigator.pushReplacementNamed(context, '/login');
           }
         } else {
           Navigator.pushReplacementNamed(context, '/login');

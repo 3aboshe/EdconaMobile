@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../services/auth_service.dart';
 import '../services/parent_service.dart';
+import '../models/user.dart';
 
 class ParentHomeScreen extends StatefulWidget {
   const ParentHomeScreen({super.key});
@@ -12,7 +13,7 @@ class ParentHomeScreen extends StatefulWidget {
 
 class _ParentHomeScreenState extends State<ParentHomeScreen>
     with TickerProviderStateMixin {
-  Map<String, dynamic>? _currentUser;
+  User? _currentUser;
   List<Map<String, dynamic>> _children = [];
   bool _isLoading = true;
   String? _errorMessage;
@@ -72,14 +73,15 @@ class _ParentHomeScreenState extends State<ParentHomeScreen>
       final authService = AuthService();
       final parentService = ParentService();
 
-      final user = await authService.getCurrentUser();
-      if (user != null) {
+      final userMap = await authService.getCurrentUser();
+      if (userMap != null) {
+        final user = User.fromJson(userMap);
         setState(() {
           _currentUser = user;
         });
 
         // Get parent's children
-        final children = await parentService.getChildren(user['id']);
+        final children = await parentService.getChildren(user.id);
         setState(() {
           _children = children;
           _isLoading = false;
@@ -136,7 +138,7 @@ class _ParentHomeScreenState extends State<ParentHomeScreen>
             ),
             const SizedBox(width: 16),
             Text(
-              _currentUser != null ? _currentUser!['name'] : 'Parent Portal',
+              _currentUser != null ? _currentUser!.name : 'Parent Portal',
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -240,8 +242,8 @@ class _ParentHomeScreenState extends State<ParentHomeScreen>
                               const SizedBox(height: 8),
                               Text(
                                 isRTL
-                                    ? 'مرحباً بك ${_currentUser!['name']}'
-                                    : 'Welcome, ${_currentUser!['name']}',
+                                    ? 'مرحباً بك ${_currentUser!.name}'
+                                    : 'Welcome, ${_currentUser!.name}',
                                 style: TextStyle(
                                   color: Colors.white.withValues(alpha: 0.9),
                                   fontSize: 16,

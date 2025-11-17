@@ -49,6 +49,9 @@ dependencies:
   # For better HTTP management with cookies and interceptors
   dio: ^5.4.3+1
 
+  # For network connectivity checking
+  connectivity_plus: ^5.0.2
+
   # For smooth animations
   flutter_staggered_animations: ^1.1.1
 

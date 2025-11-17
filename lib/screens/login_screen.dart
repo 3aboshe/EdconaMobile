@@ -13,8 +13,10 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen>
     with TickerProviderStateMixin {
   final TextEditingController _codeController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   final AuthService _authService = AuthService();
   bool _isLoading = false;
+  bool _obscurePassword = true;
   String _errorMessage = '';
   String? _selectedLanguageCode;
 
@@ -97,6 +99,7 @@ class _LoginScreenState extends State<LoginScreen>
   @override
   void dispose() {
     _codeController.dispose();
+    _passwordController.dispose();
     _logoController.dispose();
     _fadeController.dispose();
     super.dispose();
@@ -104,8 +107,9 @@ class _LoginScreenState extends State<LoginScreen>
 
   Future<void> _login() async {
     final code = _codeController.text.trim();
+    final password = _passwordController.text.trim();
 
-    if (code.isEmpty) {
+    if (code.isEmpty || password.isEmpty) {
       setState(() {
         _errorMessage = 'login.error_required'.tr();
       });
@@ -117,40 +121,70 @@ class _LoginScreenState extends State<LoginScreen>
       _errorMessage = '';
     });
 
-    final result = await _authService.login(code);
+    try {
+      final result = await _authService.login(
+        code: code,
+        password: password,
+      );
 
-    setState(() {
-      _isLoading = false;
-    });
+      setState(() {
+        _isLoading = false;
+      });
 
-    if (result['success']) {
-      // Navigate based on user role
-      if (mounted) {
-        final userRole = result['user']['role'];
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Welcome, ${result['user']['name']}! (Role: $userRole)'),
-            backgroundColor: userRole == 'ADMIN' ? Colors.blue : Colors.green,
-            duration: Duration(seconds: 3),
-          ),
-        );
-
-        // Navigate to appropriate screen after a short delay
-        Future.delayed(const Duration(milliseconds: 1000), () {
+      if (result.success) {
+        // Check if password change is required
+        if (result.requiresPasswordChange) {
           if (mounted) {
-            if (userRole == 'ADMIN') {
-              Navigator.pushReplacementNamed(context, '/admin');
-            } else {
-              Navigator.pushReplacementNamed(context, '/home');
-            }
+            Navigator.pushReplacementNamed(
+              context,
+              '/change-password',
+              arguments: {
+                'user': result.user!,
+                'isForcedChange': true,
+              },
+            );
           }
+        } else {
+          // Navigate based on user role
+          if (mounted) {
+            final userRole = result.user!.role;
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Welcome, ${result.user!.name}! (Role: ${userRole.toString().split('.').last.toUpperCase()})'),
+                backgroundColor: userRole.name == 'admin' ? Colors.blue : Colors.green,
+                duration: Duration(seconds: 3),
+              ),
+            );
+
+            // Navigate to appropriate screen after a short delay
+            Future.delayed(const Duration(milliseconds: 1000), () {
+              if (mounted) {
+                if (userRole.name == 'admin') {
+                  Navigator.pushReplacementNamed(context, '/admin');
+                } else if (userRole.name == 'superAdmin') {
+                  Navigator.pushReplacementNamed(context, '/super-admin');
+                } else {
+                  Navigator.pushReplacementNamed(context, '/home');
+                }
+              }
+            });
+          }
+        }
+      } else {
+        setState(() {
+          _errorMessage = result.message ?? 'Login failed';
         });
       }
-    } else {
+    } catch (e) {
       setState(() {
-        _errorMessage = result['message'];
+        _isLoading = false;
+        _errorMessage = 'Login failed: ${e.toString()}';
       });
     }
+  }
+
+  Future<void> _retryLogin() async {
+    await _login();
   }
 
   bool _isRTL() {
@@ -367,12 +401,86 @@ class _LoginScreenState extends State<LoginScreen>
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
                           ),
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        // Password Input Field
+                        TextField(
+                          controller: _passwordController,
+                          obscureText: _obscurePassword,
+                          decoration: InputDecoration(
+                            labelText: 'login.password'.tr(),
+                            hintText: 'login.password_hint'.tr(),
+                            labelStyle: const TextStyle(
+                              color: Color(0xFF0D47A1),
+                              fontWeight: FontWeight.w500,
+                            ),
+                            hintStyle: TextStyle(
+                              color: Colors.grey.withValues(alpha: 0.5),
+                            ),
+                            // Icon position based on RTL
+                            prefixIcon: isRTL ? null : const Icon(
+                              Icons.lock_outline,
+                              color: Color(0xFF0D47A1),
+                            ),
+                            suffixIcon: isRTL
+                                ? const Icon(
+                                    Icons.lock_outline,
+                                    color: Color(0xFF0D47A1),
+                                  )
+                                : IconButton(
+                                    icon: Icon(
+                                      _obscurePassword
+                                          ? Icons.visibility_off
+                                          : Icons.visibility,
+                                      color: const Color(0xFF0D47A1),
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        _obscurePassword = !_obscurePassword;
+                                      });
+                                    },
+                                  ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                color: Colors.grey.withValues(alpha: 0.3),
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                color: Colors.grey.withValues(alpha: 0.3),
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(
+                                color: Color(0xFF0D47A1),
+                                width: 2,
+                              ),
+                            ),
+                            filled: true,
+                            fillColor: Colors.grey.withValues(alpha: 0.02),
+                            contentPadding: EdgeInsets.only(
+                              left: isRTL ? 16 : 16,
+                              right: isRTL ? 16 : 48,
+                              top: 16,
+                              bottom: 16,
+                            ),
+                          ),
+                          keyboardType: TextInputType.visiblePassword,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
                           onSubmitted: (_) => _login(),
                         ),
 
                         const SizedBox(height: 16),
 
-                        // Error Message with animation
+                        // Error Message with animation and retry button
                         AnimatedSwitcher(
                           duration: const Duration(milliseconds: 300),
                           child: _errorMessage.isNotEmpty
@@ -387,24 +495,51 @@ class _LoginScreenState extends State<LoginScreen>
                                       width: 1,
                                     ),
                                   ),
-                                  child: Row(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Icon(
-                                        Icons.info_outline,
-                                        color: Colors.red.shade600,
-                                        size: 18,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Expanded(
-                                        child: Text(
-                                          _errorMessage,
-                                          style: TextStyle(
+                                      Row(
+                                        children: [
+                                          Icon(
+                                            Icons.info_outline,
                                             color: Colors.red.shade600,
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.w500,
+                                            size: 18,
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Expanded(
+                                            child: Text(
+                                              _errorMessage,
+                                              style: TextStyle(
+                                                color: Colors.red.shade600,
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      if (_errorMessage.contains('connection') ||
+                                          _errorMessage.contains('network') ||
+                                          _errorMessage.contains('timeout'))
+                                        Padding(
+                                          padding: const EdgeInsets.only(top: 8),
+                                          child: TextButton(
+                                            onPressed: _isLoading ? null : _retryLogin,
+                                            style: TextButton.styleFrom(
+                                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                                              minimumSize: Size.zero,
+                                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                            ),
+                                            child: Text(
+                                              'Retry',
+                                              style: TextStyle(
+                                                color: Colors.red.shade600,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
                                           ),
                                         ),
-                                      ),
                                     ],
                                   ),
                                 )
