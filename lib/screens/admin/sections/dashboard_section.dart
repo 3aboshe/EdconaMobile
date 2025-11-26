@@ -505,7 +505,7 @@ class _DashboardSectionState extends State<DashboardSection> {
 
           // Quick Actions
           Text(
-            'Quick Actions',
+            'admin.quick_actions'.tr(),
             style: TextStyle(
               fontSize: isDesktop ? 28 : 24,
               fontWeight: FontWeight.w700,
@@ -527,8 +527,8 @@ class _DashboardSectionState extends State<DashboardSection> {
                 childAspectRatio: isDesktop ? 2.8 : (constraints.maxWidth / cardHeight),
                 children: [
                   _buildQuickActionCard(
-                    title: 'Add New Student',
-                    description: 'Create a new student account',
+                    title: 'admin.add_new_student'.tr(),
+                    description: 'admin.add_new_student_desc'.tr(),
                     icon: Icons.person_add,
                     color: const Color(0xFF1E3A8A),
                     onTap: () {
@@ -536,8 +536,8 @@ class _DashboardSectionState extends State<DashboardSection> {
                     },
                   ),
                   _buildQuickActionCard(
-                    title: 'Add New Teacher',
-                    description: 'Create a new teacher account',
+                    title: 'admin.add_new_teacher'.tr(),
+                    description: 'admin.add_new_teacher_desc'.tr(),
                     icon: Icons.people,
                     color: const Color(0xFF1E3A8A),
                     onTap: () {
@@ -545,8 +545,8 @@ class _DashboardSectionState extends State<DashboardSection> {
                     },
                   ),
                   _buildQuickActionCard(
-                    title: 'Add New Parent',
-                    description: 'Create a new parent account',
+                    title: 'admin.add_new_parent'.tr(),
+                    description: 'admin.add_new_parent_desc'.tr(),
                     icon: Icons.family_restroom,
                     color: const Color(0xFF1E3A8A),
                     onTap: () {
@@ -554,8 +554,8 @@ class _DashboardSectionState extends State<DashboardSection> {
                     },
                   ),
                   _buildQuickActionCard(
-                    title: 'Create Class',
-                    description: 'Add a new class to the system',
+                    title: 'admin.create_class'.tr(),
+                    description: 'admin.create_class_desc'.tr(),
                     icon: Icons.class_,
                     color: const Color(0xFF1E3A8A),
                     onTap: () {
@@ -563,8 +563,8 @@ class _DashboardSectionState extends State<DashboardSection> {
                     },
                   ),
                   _buildQuickActionCard(
-                    title: 'Add Subject',
-                    description: 'Create a new academic subject',
+                    title: 'admin.add_subject'.tr(),
+                    description: 'admin.add_subject_desc'.tr(),
                     icon: Icons.book,
                     color: const Color(0xFF1E3A8A),
                     onTap: () {
@@ -579,7 +579,7 @@ class _DashboardSectionState extends State<DashboardSection> {
 
           // Statistics Cards
           Text(
-            'Statistics',
+            'admin.statistics'.tr(),
             style: TextStyle(
               fontSize: isDesktop ? 28 : 24,
               fontWeight: FontWeight.w700,
@@ -703,7 +703,7 @@ class _DashboardSectionState extends State<DashboardSection> {
                     const SizedBox(width: 24),
                     Expanded(
                       child: _buildProgressMetric(
-                        title: 'Attendance Rate',
+                        title: 'admin.attendance_rate'.tr(),
                         value: 93.2,
                         color: const Color(0xFF2563EB),
                       ),
@@ -729,7 +729,7 @@ class _DashboardSectionState extends State<DashboardSection> {
                     ),
                     const SizedBox(height: 24),
                     _buildProgressMetric(
-                      title: 'Attendance Rate',
+                      title: 'admin.attendance_rate'.tr(),
                       value: 93.2,
                       color: const Color(0xFF2563EB),
                     ),

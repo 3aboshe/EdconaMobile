@@ -431,7 +431,18 @@
     "failed_load_schools": "فشل في تحميل المدارس: ",
     "manage_your_school": "إدارة مدرستك",
     "logout": "تسجيل الخروج",
-    "failed_load_analytics": "فشل في تحميل التحليلات: "
+    "failed_load_analytics": "فشل في تحميل التحليلات: ",
+    "add_new_student_desc": "إنشاء حساب طالب جديد",
+    "add_new_teacher_desc": "إنشاء حساب معلم جديد",
+    "add_new_parent_desc": "إنشاء حساب ولي أمر جديد",
+    "create_class_desc": "إضافة صف جديد إلى النظام",
+    "add_subject_desc": "إنشاء مادة دراسية جديدة",
+    "attendance_rate": "نسبة الحضور",
+    "user_created_title": "تم إنشاء {} بنجاح",
+    "save_credentials_warning": "⚠️ هام: احفظ بيانات الدخول هذه الآن. لن يتم عرضها مرة أخرى!",
+    "access_code": "رمز الدخول",
+    "temporary_password": "كلمة المرور المؤقتة",
+    "copied_to_clipboard": "تم النسخ إلى الحافظة"
   },
   "days": {
     "mon": "الإثنين",
@@ -514,6 +525,17 @@
     "delete_notification": "حذف الإشعار",
     "delete_notification_confirm": "هل أنت متأكد من حذف هذا الإشعار؟",
     "notification_deleted": "تم حذف الإشعار بنجاح",
-    "failed_delete_notification": "فشل في حذف الإشعار"
+    "failed_delete_notification": "فشل في حذف الإشعار",
+    "send_global_notification": "إرسال إشعار عام",
+    "notification_description": "إرسال إشعار لجميع المستخدمين أو جميع مدراء المدارس عبر المنصة",
+    "target_audience": "الجمهور المستهدف",
+    "all_users": "جميع المستخدمين",
+    "school_admins_only": "مدراء المدارس فقط",
+    "notification_content": "المحتوى",
+    "notification_title_placeholder": "عنوان الإشعار",
+    "notification_content_placeholder": "محتوى الإشعار...",
+    "fill_all_fields": "يرجى ملء جميع الحقول",
+    "notification_failed": "فشل في إرسال الإشعار",
+    "search_schools": "البحث عن المدارس..."
   }
 }

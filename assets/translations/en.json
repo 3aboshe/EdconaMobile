@@ -331,7 +331,18 @@
     "most_active_teacher": "Most Active Teacher",
     "classes_this_week": "classes this week",
     "top_class": "Top Class",
-    "attendance_percent": "attendance"
+    "attendance_percent": "attendance",
+    "add_new_student_desc": "Create a new student account",
+    "add_new_teacher_desc": "Create a new teacher account",
+    "add_new_parent_desc": "Create a new parent account",
+    "create_class_desc": "Add a new class to the system",
+    "add_subject_desc": "Create a new academic subject",
+    "attendance_rate": "Attendance Rate",
+    "user_created_title": "{} Created Successfully",
+    "save_credentials_warning": "⚠️ Important: Save these credentials now. They will not be shown again!",
+    "access_code": "Access Code",
+    "temporary_password": "Temporary Password",
+    "copied_to_clipboard": "Copied to clipboard"
   },
   "system": {
     "title": "System Settings & Maintenance",
@@ -411,7 +422,18 @@
     "delete_notification": "Delete Notification",
     "delete_notification_confirm": "Are you sure you want to delete this notification?",
     "notification_deleted": "Notification deleted successfully",
-    "failed_delete_notification": "Failed to delete notification"
+    "failed_delete_notification": "Failed to delete notification",
+    "send_global_notification": "Send Global Notification",
+    "notification_description": "Send a notification to all users or all school admins across the platform",
+    "target_audience": "Target Audience",
+    "all_users": "All Users",
+    "school_admins_only": "School Admins Only",
+    "notification_content": "Content",
+    "notification_title_placeholder": "Notification Title",
+    "notification_content_placeholder": "Notification Content...",
+    "fill_all_fields": "Please fill in all fields",
+    "notification_failed": "Failed to send notification",
+    "search_schools": "Search schools..."
   },
   "days": {
     "mon": "Mon",

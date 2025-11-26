@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../../services/admin_service.dart';
+import '../../../services/global_notification_service.dart';
 
 class SchoolsSection extends StatefulWidget {
   const SchoolsSection({super.key});
@@ -11,6 +12,7 @@ class SchoolsSection extends StatefulWidget {
 
 class _SchoolsSectionState extends State<SchoolsSection> {
   final AdminService _adminService = AdminService();
+  final GlobalNotificationService _notificationService = GlobalNotificationService();
   bool _isLoading = true;
   List<Map<String, dynamic>> _schools = [];
   List<Map<String, dynamic>> _filteredSchools = [];
@@ -253,6 +255,302 @@ class _SchoolsSectionState extends State<SchoolsSection> {
     );
   }
 
+  Future<void> _showGlobalNotificationDialog() async {
+    final titleController = TextEditingController();
+    final contentController = TextEditingController();
+    String selectedTarget = 'ALL_USERS';
+    bool isSending = false;
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setModalState) => Container(
+          height: MediaQuery.of(context).size.height * 0.75,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          padding: EdgeInsets.fromLTRB(24, 24, 24, MediaQuery.of(context).viewInsets.bottom + 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    tr('super_admin.send_global_notification'),
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF5856D6).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFF5856D6).withOpacity(0.2)),
+                ),
+                child: Text(
+                  tr('super_admin.notification_description'),
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: const Color(0xFF5856D6).withOpacity(0.8),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        tr('super_admin.target_audience'),
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: InkWell(
+                              onTap: () => setModalState(() => selectedTarget = 'ALL_USERS'),
+                              child: Container(
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: selectedTarget == 'ALL_USERS' 
+                                      ? const Color(0xFF5856D6).withOpacity(0.1)
+                                      : Colors.grey[50],
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: selectedTarget == 'ALL_USERS'
+                                        ? const Color(0xFF5856D6)
+                                        : Colors.grey[200]!,
+                                    width: 2,
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      selectedTarget == 'ALL_USERS' 
+                                          ? Icons.radio_button_checked 
+                                          : Icons.radio_button_unchecked,
+                                      color: selectedTarget == 'ALL_USERS'
+                                          ? const Color(0xFF5856D6)
+                                          : Colors.grey,
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Text(
+                                      tr('super_admin.all_users'),
+                                      style: TextStyle(
+                                        fontWeight: selectedTarget == 'ALL_USERS'
+                                            ? FontWeight.w600
+                                            : FontWeight.normal,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: InkWell(
+                              onTap: () => setModalState(() => selectedTarget = 'SCHOOL_ADMINS'),
+                              child: Container(
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: selectedTarget == 'SCHOOL_ADMINS'
+                                      ? const Color(0xFF5856D6).withOpacity(0.1)
+                                      : Colors.grey[50],
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: selectedTarget == 'SCHOOL_ADMINS'
+                                        ? const Color(0xFF5856D6)
+                                        : Colors.grey[200]!,
+                                    width: 2,
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      selectedTarget == 'SCHOOL_ADMINS'
+                                          ? Icons.radio_button_checked
+                                          : Icons.radio_button_unchecked,
+                                      color: selectedTarget == 'SCHOOL_ADMINS'
+                                          ? const Color(0xFF5856D6)
+                                          : Colors.grey,
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Flexible(
+                                      child: Text(
+                                        tr('super_admin.school_admins_only'),
+                                        style: TextStyle(
+                                          fontWeight: selectedTarget == 'SCHOOL_ADMINS'
+                                              ? FontWeight.w600
+                                              : FontWeight.normal,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+                      _buildTextField(
+                        tr('super_admin.notification_title'),
+                        titleController,
+                        tr('super_admin.notification_title_placeholder'),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        tr('super_admin.notification_content'),
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextField(
+                        controller: contentController,
+                        maxLines: 5,
+                        decoration: InputDecoration(
+                          hintText: tr('super_admin.notification_content_placeholder'),
+                          hintStyle: TextStyle(color: Colors.grey[400]),
+                          filled: true,
+                          fillColor: Colors.grey[50],
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.grey[200]!),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.grey[200]!),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(color: Color(0xFF5856D6)),
+                          ),
+                          contentPadding: const EdgeInsets.all(16),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(tr('super_admin.cancel')),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: isSending ? null : () async {
+                        if (titleController.text.trim().isEmpty || contentController.text.trim().isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(tr('super_admin.fill_all_fields'))),
+                          );
+                          return;
+                        }
+
+                        setModalState(() => isSending = true);
+                        
+                        try {
+                          final result = await _notificationService.sendGlobalNotification(
+                            title: titleController.text.trim(),
+                            content: contentController.text.trim(),
+                            target: selectedTarget,
+                          );
+
+                          if (mounted) {
+                            Navigator.pop(context);
+                            if (result['success'] == true) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(result['message'] ?? tr('super_admin.notification_sent')),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(result['message'] ?? tr('super_admin.notification_failed')),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                          }
+                        } catch (e) {
+                          if (mounted) {
+                            Navigator.pop(context);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(tr('super_admin.notification_failed')),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        } finally {
+                          setModalState(() => isSending = false);
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF5856D6),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: isSending
+                          ? const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                            )
+                          : Text(
+                              tr('super_admin.send_notification'),
+                              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                            ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildTextField(String label, TextEditingController controller, String placeholder, {TextInputType? keyboardType}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -322,6 +620,18 @@ class _SchoolsSectionState extends State<SchoolsSection> {
                 ),
               ),
               const SizedBox(width: 12),
+              ElevatedButton(
+                onPressed: _showGlobalNotificationDialog,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF5856D6),
+                  foregroundColor: Colors.white,
+                  shape: const CircleBorder(),
+                  padding: const EdgeInsets.all(12),
+                  elevation: 0,
+                ),
+                child: const Icon(Icons.notifications),
+              ),
+              const SizedBox(width: 8),
               ElevatedButton(
                 onPressed: _showCreateSchoolDialog,
                 style: ElevatedButton.styleFrom(

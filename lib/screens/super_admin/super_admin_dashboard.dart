@@ -4,7 +4,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'sections/overview_section.dart';
 import 'sections/schools_section.dart';
 import 'sections/activity_section.dart';
-import 'sections/global_notifications_section.dart';
 import '../../services/auth_service.dart';
 
 class SuperAdminDashboard extends StatefulWidget {
@@ -20,7 +19,6 @@ class _SuperAdminDashboardState extends State<SuperAdminDashboard> {
   final List<Widget> _sections = [
     const OverviewSection(),
     const SchoolsSection(),
-    const GlobalNotificationsSection(),
     const ActivitySection(),
   ];
 
@@ -100,11 +98,6 @@ class _SuperAdminDashboardState extends State<SuperAdminDashboard> {
               icon: const Icon(Icons.school_outlined),
               activeIcon: const Icon(Icons.school),
               label: tr('super_admin.schools'),
-            ),
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.notifications_outlined),
-              activeIcon: const Icon(Icons.notifications),
-              label: tr('super_admin.notifications'),
             ),
             BottomNavigationBarItem(
               icon: const Icon(Icons.history),

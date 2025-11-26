@@ -42,12 +42,15 @@ class AdminService {
   // Create user (student, teacher, parent, admin)
   Future<Map<String, dynamic>> createUser(Map<String, dynamic> userData) async {
     try {
-      final response = await ApiService.dio.post('/api/auth/create', data: userData);
-      if (response.statusCode == 201) {
+      final response = await ApiService.dio.post('/api/users', data: userData);
+      if (response.statusCode == 201 || response.statusCode == 200) {
         return {
           'success': true,
           'user': response.data['user'],
-          'code': response.data['code'],
+          'credentials': response.data['credentials'] ?? {
+            'accessCode': response.data['accessCode'],
+            'temporaryPassword': response.data['temporaryPassword'],
+          },
         };
       }
       return {'success': false, 'message': 'Failed to create user'};
