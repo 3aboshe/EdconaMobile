@@ -509,6 +509,248 @@ class _UsersSectionState extends State<UsersSection>
     );
   }
 
+  Future<void> _showUserCredentialsDialog(Map<String, dynamic> user) async {
+    bool isLoading = true;
+    Map<String, dynamic>? credentials;
+    String? errorMessage;
+
+    await showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) {
+          if (isLoading) {
+            _adminService.getUserCredentials(user['id']).then((result) {
+              if (mounted) {
+                setState(() {
+                  isLoading = false;
+                  if (result['success']) {
+                    credentials = result['credentials'];
+                  } else {
+                    errorMessage = result['message'];
+                  }
+                });
+              }
+            });
+          }
+
+          return AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            title: Row(
+              children: [
+                CircleAvatar(
+                  radius: 20,
+                  backgroundColor: const Color(0xFF1E3A8A).withValues(alpha: 0.12),
+                  child: Text(
+                    user['name'].toString().substring(0, 1).toUpperCase(),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1E3A8A),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        user['name'],
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        user['role'],
+                        style: const TextStyle(fontSize: 12, color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            content: isLoading
+                ? const SizedBox(
+                    height: 100,
+                    child: Center(child: CircularProgressIndicator()),
+                  )
+                : errorMessage != null
+                    ? Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.error_outline, color: Colors.red, size: 48),
+                          const SizedBox(height: 16),
+                          Text(errorMessage!),
+                        ],
+                      )
+                    : SingleChildScrollView(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.blue.shade50,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: Colors.blue.shade200),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'admin.access_code'.tr(),
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey[600],
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.copy, size: 18),
+                                        onPressed: () {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(
+                                              content: Text('admin.copied_to_clipboard'.tr()),
+                                              duration: const Duration(seconds: 1),
+                                            ),
+                                          );
+                                        },
+                                        padding: EdgeInsets.zero,
+                                        constraints: const BoxConstraints(),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 4),
+                                  SelectableText(
+                                    credentials?['accessCode'] ?? 'N/A',
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'Courier',
+                                      letterSpacing: 1.2,
+                                    ),
+                                  ),
+                                  if (credentials?['temporaryPassword'] != null) ...[
+                                    const Divider(height: 24),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          'admin.temporary_password'.tr(),
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.grey[600],
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        IconButton(
+                                          icon: const Icon(Icons.copy, size: 18),
+                                          onPressed: () {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              SnackBar(
+                                                content: Text('admin.copied_to_clipboard'.tr()),
+                                                duration: const Duration(seconds: 1),
+                                              ),
+                                            );
+                                          },
+                                          padding: EdgeInsets.zero,
+                                          constraints: const BoxConstraints(),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 4),
+                                    SelectableText(
+                                      credentials?['temporaryPassword'] ?? 'N/A',
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'Courier',
+                                        letterSpacing: 1.2,
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            if (user['role'] == 'TEACHER' || user['role'] == 'PARENT')
+                              ElevatedButton.icon(
+                                onPressed: () async {
+                                  final confirm = await showDialog<bool>(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: Text('admin.reset_password_title'.tr()),
+                                      content: Text('admin.reset_password_confirm'.tr()),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () => Navigator.pop(context, false),
+                                          child: Text('admin.cancel'.tr()),
+                                        ),
+                                        ElevatedButton(
+                                          onPressed: () => Navigator.pop(context, true),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.orange,
+                                          ),
+                                          child: Text('admin.reset_password_button'.tr()),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+
+                                  if (confirm == true) {
+                                    setState(() => isLoading = true);
+                                    final result = await _adminService.resetUserPassword(user['id']);
+                                    if (mounted) {
+                                      setState(() {
+                                        isLoading = false;
+                                        if (result['success']) {
+                                          credentials?['temporaryPassword'] = result['newPassword'];
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(
+                                              content: Text('admin.password_reset_success'.tr()),
+                                              backgroundColor: Colors.green,
+                                            ),
+                                          );
+                                        } else {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(
+                                              content: Text(result['message'] ?? 'admin.password_reset_failed'.tr()),
+                                              backgroundColor: Colors.red,
+                                            ),
+                                          );
+                                        }
+                                      });
+                                    }
+                                  }
+                                },
+                                icon: const Icon(Icons.lock_reset, size: 18),
+                                label: Text('admin.reset_password_button'.tr()),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.orange,
+                                  foregroundColor: Colors.white,
+                                  minimumSize: const Size(double.infinity, 44),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('admin.close'.tr()),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
   Future<void> _deleteUser(String id, String role) async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -557,20 +799,22 @@ class _UsersSectionState extends State<UsersSection>
 
   Widget _buildUserCard(Map<String, dynamic> user) {
     final String role = user['role'] as String;
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
+    return GestureDetector(
+      onTap: () => _showUserCredentialsDialog(user),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 20,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
         children: [
           CircleAvatar(
             radius: 24,
@@ -639,6 +883,7 @@ class _UsersSectionState extends State<UsersSection>
           ),
         ],
       ),
+    ),
     );
   }
 

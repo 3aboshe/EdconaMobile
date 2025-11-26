@@ -442,7 +442,13 @@
     "save_credentials_warning": "⚠️ هام: احفظ بيانات الدخول هذه الآن. لن يتم عرضها مرة أخرى!",
     "access_code": "رمز الدخول",
     "temporary_password": "كلمة المرور المؤقتة",
-    "copied_to_clipboard": "تم النسخ إلى الحافظة"
+    "copied_to_clipboard": "تم النسخ إلى الحافظة",
+    "reset_password_title": "إعادة تعيين كلمة المرور",
+    "reset_password_confirm": "هل أنت متأكد من إعادة تعيين كلمة مرور هذا المستخدم؟ سيتم إنشاء كلمة مرور مؤقتة جديدة.",
+    "reset_password_button": "إعادة تعيين كلمة المرور",
+    "password_reset_success": "تمت إعادة تعيين كلمة المرور بنجاح! تم إنشاء كلمة مرور مؤقتة جديدة.",
+    "password_reset_failed": "فشل في إعادة تعيين كلمة المرور",
+    "close": "إغلاق"
   },
   "days": {
     "mon": "الإثنين",

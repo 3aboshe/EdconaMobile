@@ -85,6 +85,39 @@ class AdminService {
     }
   }
 
+  // Get user credentials (for super admin)
+  Future<Map<String, dynamic>> getUserCredentials(String userId) async {
+    try {
+      final response = await ApiService.dio.get('/api/users/$userId/credentials');
+      if (response.statusCode == 200) {
+        return {
+          'success': true,
+          'credentials': response.data,
+        };
+      }
+      return {'success': false, 'message': 'Failed to get credentials'};
+    } catch (e) {
+      return {'success': false, 'message': e.toString()};
+    }
+  }
+
+  // Reset user password (for super admin when user forgets password)
+  Future<Map<String, dynamic>> resetUserPassword(String userId) async {
+    try {
+      final response = await ApiService.dio.post('/api/users/$userId/reset-password');
+      if (response.statusCode == 200) {
+        return {
+          'success': true,
+          'newPassword': response.data['temporaryPassword'],
+          'message': response.data['message'] ?? 'Password reset successfully',
+        };
+      }
+      return {'success': false, 'message': 'Failed to reset password'};
+    } catch (e) {
+      return {'success': false, 'message': e.toString()};
+    }
+  }
+
   // Subject Management
   Future<List<Map<String, dynamic>>> getAllSubjects() async {
     try {

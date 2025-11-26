@@ -340,7 +340,13 @@
     "save_credentials_warning": "⚠️ ܪܒܐ: ܢܛܪ ܦܪܨܘܦܐ ܕܥܐܠܬܐ ܗܫܐ. ܠܐ ܡܬܚܙܐ ܬܘܒ!",
     "access_code": "ܩܘܕܐ ܕܥܐܠܬܐ",
     "temporary_password": "ܦܬܓܡܐ ܙܒܢܝܐ",
-    "copied_to_clipboard": "ܐܬܢܣܚ ܠܠܘܚܐ"
+    "copied_to_clipboard": "ܐܬܢܣܚ ܠܠܘܚܐ",
+    "reset_password_title": "ܬܘܕܬܐ ܕܦܬܓܡܐ",
+    "reset_password_confirm": "ܚܢܬ ܒܬܩܚܐ ܠܬܘܕܬܐ ܦܬܓܡܐ ܕܚܕܬܘܫܢܐ؟ ܬܫܪܝܬܐ ܦܬܓܡܐ ܚܕܬܐ ܙܒܢܝܐ.",
+    "reset_password_button": "ܬܘܕܬܐ ܦܬܓܡܐ",
+    "password_reset_success": "ܦܬܓܡܐ ܒܫܠܡܐ ܬܫܩܚ! ܦܬܓܡܐ ܚܕܬܐ ܙܒܢܝܐ ܐܬܒܪܝ.",
+    "password_reset_failed": "ܚܛܐ ܒܬܘܕܬܐ ܕܦܬܓܡܐ",
+    "close": "ܣܚܝܪܐ"
   },
   "days": {
     "mon": "ܬܪܝܢ",

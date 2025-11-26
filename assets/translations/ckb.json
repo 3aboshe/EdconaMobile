@@ -315,7 +315,13 @@
     "save_credentials_warning": "⚠️ گرنگ: ئەم زانیاریانە ئێستا خەزن بکە. دووبارە پیشان نادرێن!",
     "access_code": "کۆدی چوونەژوورەوە",
     "temporary_password": "وشەی نهێنی کاتی",
-    "copied_to_clipboard": "کۆپی کرا"
+    "copied_to_clipboard": "کۆپی کرا",
+    "reset_password_title": "رێسێتکردنەوەی وشەی نهێنی",
+    "reset_password_confirm": "دڵنیایت لە رێسێتکردنەوەی وشەی نهێنی ئەم بەکارهێنەرە؟ وشەی نهێنییەکی نوێی کاتی دروست دەکرێت.",
+    "reset_password_button": "رێسێتکردنەوەی وشەی نهێنی",
+    "password_reset_success": "وشەی نهێنی بە سەرکەوتوویی رێسێت کرا! وشەی نهێنیی نوێی کاتی دروست کرا.",
+    "password_reset_failed": "شکستی لە رێسێتکردنەوەی وشەی نهێنی",
+    "close": "داخستن"
   },
   "days": {
     "mon": "دووشەممە",
