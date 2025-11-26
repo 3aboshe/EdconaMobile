@@ -329,7 +329,18 @@
     "failed_load_schools": "ܚܛܐ ܒܥܐܕܐ ܕܡܕܪ̈ܫܐ: ",
     "manage_your_school": "ܡܕܒܪܢܘܬܐ ܕܡܕܪܫܬܟ",
     "logout": "ܦܘܩ",
-    "failed_load_analytics": "ܚܛܐ ܒܥܐܕܐ ܕܡܚܫܚܬܐ: "
+    "failed_load_analytics": "ܚܛܐ ܒܥܐܕܐ ܕܡܚܫܚܬܐ: ",
+    "add_new_student_desc": "ܒܪܝܬܐ ܕܚܘܫܒܢܐ ܕܝܠܦܐ ܚܕܬܐ",
+    "add_new_teacher_desc": "ܒܪܝܬܐ ܕܚܘܫܒܢܐ ܕܡܠܦܢܐ ܚܕܬܐ",
+    "add_new_parent_desc": "ܒܪܝܬܐ ܕܚܘܫܒܢܐ ܕܐܒܐ ܚܕܬܐ",
+    "create_class_desc": "ܬܘܣܦܬܐ ܕܟܬܐ ܚܕܬܐ ܠܢܛܘܪܐ",
+    "add_subject_desc": "ܒܪܝܬܐ ܕܡܕܥܐ ܚܕܬܐ",
+    "attendance_rate": "ܦܣܐ ܕܚܕܪܘܬܐ",
+    "user_created_title": "{} ܐܬܒܪܝ ܒܫܠܡܐ",
+    "save_credentials_warning": "⚠️ ܪܒܐ: ܢܛܪ ܦܪܨܘܦܐ ܕܥܐܠܬܐ ܗܫܐ. ܠܐ ܡܬܚܙܐ ܬܘܒ!",
+    "access_code": "ܩܘܕܐ ܕܥܐܠܬܐ",
+    "temporary_password": "ܦܬܓܡܐ ܙܒܢܝܐ",
+    "copied_to_clipboard": "ܐܬܢܣܚ ܠܠܘܚܐ"
   },
   "days": {
     "mon": "ܬܪܝܢ",
@@ -418,6 +429,17 @@
     "delete_notification": "ܫܢܝ ܐܘܕܥܬܐ",
     "delete_notification_confirm": "ܐܝܬܝܟ ܡܘܕܝܢ ܕܨܒܐ ܠܡܫܢܝ ܗܕܐ ܐܘܕܥܬܐ؟",
     "notification_deleted": "ܐܘܕܥܬܐ ܐܫܬܢܝ ܒܫܘܬܦܘܬܐ",
-    "failed_delete_notification": "ܚܛܐ ܒܫܢܝܬܐ ܕܐܘܕܥܬܐ"
+    "failed_delete_notification": "ܚܛܐ ܒܫܢܝܬܐ ܕܐܘܕܥܬܐ",
+    "send_global_notification": "ܫܕܩܐ ܕܐܘܕܥܬܐ ܓܘܢܝܐ",
+    "notification_description": "ܫܕܩܐ ܕܐܘܕܥܬܐ ܠܟܠܐ ܚܕܬܘܫܢܐ ܐܘ ܠܟܠܐ ܡܕܒܪܢܐ ܕܟܝܕܐܬܐ",
+    "target_audience": "ܬܡܥܐ ܚܕܬܐ",
+    "all_users": "ܟܠܐ ܚܕܬܘܫܢܐ",
+    "school_admins_only": "ܡܕܒܪܢܐ ܕܟܝܕܐܬܐ ܒܠܚܘܕ",
+    "notification_content": "ܡܚܬܪܐ",
+    "notification_title_placeholder": "ܪܝܫܐ ܕܐܘܕܥܬܐ",
+    "notification_content_placeholder": "ܡܚܬܪܐ ܕܐܘܕܥܬܐ...",
+    "fill_all_fields": "ܢܝܬ ܟܠܐ ܚܩܐܬܐ",
+    "notification_failed": "ܚܛܐ ܒܫܕܩܐ ܕܐܘܕܥܬܐ",
+    "search_schools": "ܒܥܝܐ ܕܟܝܕܐܬܐ..."
   }
 }

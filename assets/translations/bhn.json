@@ -423,7 +423,18 @@
     "failed_load_schools": "شکستی هێنا له‌ خوێندنەوەی قوتابخانه‌كان: ",
     "manage_your_school": "به‌ڕێوەبردنی قوتابخانه‌که‌ت",
     "logout": "چوونەدەرەوە",
-    "failed_load_analytics": "شکستی هێنا له‌ خوێندنەوەی شیکردنەوە: "
+    "failed_load_analytics": "شکستی هێنا له‌ خوێندنەوەی شیکردنەوە: ",
+    "add_new_student_desc": "دروستکردنی ئەژمێری قوتابی نوێ",
+    "add_new_teacher_desc": "دروستکردنی ئەژمێری مامۆستا نوێ",
+    "add_new_parent_desc": "دروستکردنی ئەژمێری باوان نوێ",
+    "create_class_desc": "زێدەکردنی پۆلی نوێ بۆ سیستەم",
+    "add_subject_desc": "دروستکردنی وانەیەکی نوێ",
+    "attendance_rate": "ڕێژەی ئامادەبوون",
+    "user_created_title": "{} بە سەرکەوتوویی دروستکرا",
+    "save_credentials_warning": "⚠️ گرنگ: ئەم زانیاریانە ئێستا خەزن بکە. دووبارە پیشان نادرێن!",
+    "access_code": "کۆدی چوونەژوورەوە",
+    "temporary_password": "وشەی نهێنی کاتی",
+    "copied_to_clipboard": "کۆپی کرا"
   },
   "days": {
     "mon": "دووشه‌ممه‌",
@@ -512,6 +523,17 @@
     "delete_notification": "سڕینەوەی ئاگاداری",
     "delete_notification_confirm": "دڵنیایت له‌ سڕینەوەی ئەم ئاگادارییە؟",
     "notification_deleted": "ئاگاداری به‌ سه‌رکه‌وتوویی سڕایەوە",
-    "failed_delete_notification": "شکستی هێنا له‌ سڕینەوەی ئاگاداری"
+    "failed_delete_notification": "شکستی له‌ سڕینەوەی ئاگاداری",
+    "send_global_notification": "ناردنی ئاگاداری گشتی",
+    "notification_description": "ناردنی ئاگاداری بۆ هەموو بەکارهێنەران یان هەموو بەڕێوەبەرانی قوتابخانەکان",
+    "target_audience": "ئامانجی مەبەست",
+    "all_users": "هەموو بەکارهێنەران",
+    "school_admins_only": "بەڕێوەبەرانی قوتابخانە تەنها",
+    "notification_content": "ناوەڕۆک",
+    "notification_title_placeholder": "ناونیشانی ئاگاداری",
+    "notification_content_placeholder": "ناوەڕۆکی ئاگاداری...",
+    "fill_all_fields": "تکایە هەموو خانەکان پڕ بکەرەوە",
+    "notification_failed": "شکستی لە ناردنی ئاگاداری",
+    "search_schools": "گەڕان لەدوای قوتابخانەکان..."
   }
 }
