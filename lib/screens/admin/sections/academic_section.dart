@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../../services/admin_service.dart';
 
 class AcademicSection extends StatefulWidget {
@@ -201,10 +202,10 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
                     ),
                   ),
                   const SizedBox(width: 16),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'Create Class',
-                      style: TextStyle(
+                      'admin.create_class_title'.tr(),
+                      style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF1D1D1F),
@@ -222,23 +223,23 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
                     TextFormField(
                       controller: nameController,
                       decoration: InputDecoration(
-                        labelText: 'Class Name *',
-                        hintText: 'e.g., Grade 5-A, Class 1',
+                        labelText: 'admin.class_name_label'.tr(),
+                        hintText: 'admin.class_name_hint'.tr(),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter a class name';
+                          return 'admin.class_name_error'.tr();
                         }
                         return null;
                       },
                     ),
                     const SizedBox(height: 20),
-                    const Text(
-                      'Select Subjects',
-                      style: TextStyle(
+                    Text(
+                      'admin.select_subjects'.tr(),
+                      style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
                         color: Color(0xFF1D1D1F),
@@ -288,7 +289,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
                 children: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text('Cancel'),
+                    child: Text('admin.cancel'.tr()),
                   ),
                   const SizedBox(width: 12),
                   ElevatedButton(

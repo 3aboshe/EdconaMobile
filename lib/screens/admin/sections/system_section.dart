@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../../services/admin_service.dart';
 
 class SystemSection extends StatefulWidget {
@@ -20,18 +21,18 @@ class _SystemSectionState extends State<SystemSection> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'System Settings & Maintenance',
-            style: TextStyle(
+          Text(
+            'system.title'.tr(),
+            style: const TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.bold,
               color: Color(0xFF1D1D1F),
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Manage system settings and perform maintenance tasks',
-            style: TextStyle(
+          Text(
+            'system.subtitle'.tr(),
+            style: const TextStyle(
               fontSize: 16,
               color: Color(0xFF86868B),
             ),
@@ -77,17 +78,17 @@ class _SystemSectionState extends State<SystemSection> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Database Relation Checker',
-                              style: TextStyle(
+                              'system.relation_checker_title'.tr(),
+                              style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                                 color: Color(0xFF1D1D1F),
                               ),
                             ),
-                            SizedBox(height: 4),
+                            const SizedBox(height: 4),
                             Text(
-                              'Automatically detect and fix data inconsistencies',
-                              style: TextStyle(
+                              'system.relation_checker_subtitle'.tr(),
+                              style: const TextStyle(
                                 fontSize: 14,
                                 color: Color(0xFF86868B),
                               ),
@@ -103,19 +104,19 @@ class _SystemSectionState extends State<SystemSection> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'This tool will:',
-                        style: TextStyle(
+                      Text(
+                        'system.tool_description'.tr(),
+                        style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: Color(0xFF1D1D1F),
                         ),
                       ),
                       const SizedBox(height: 12),
-                      _buildCheckListItem('Check parent-child relationships'),
-                      _buildCheckListItem('Verify student-class associations'),
-                      _buildCheckListItem('Validate teacher-subject assignments'),
-                      _buildCheckListItem('Ensure all references are valid'),
+                      _buildCheckListItem('system.check_parent_child'.tr()),
+                      _buildCheckListItem('system.check_student_class'.tr()),
+                      _buildCheckListItem('system.check_teacher_subject'.tr()),
+                      _buildCheckListItem('system.check_references'.tr()),
                       const SizedBox(height: 24),
                       SizedBox(
                         width: double.infinity,
@@ -131,7 +132,7 @@ class _SystemSectionState extends State<SystemSection> {
                                   ),
                                 )
                               : const Icon(Icons.play_arrow, size: 20),
-                          label: Text(_isChecking ? 'Checking...' : 'Run Checker'),
+                          label: Text(_isChecking ? 'system.checking'.tr() : 'system.run_checker'.tr()),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF1E3A8A),
                             padding: const EdgeInsets.symmetric(vertical: 16),
@@ -176,7 +177,7 @@ class _SystemSectionState extends State<SystemSection> {
                         ),
                         const SizedBox(width: 12),
                         Text(
-                          _checkResult!['success'] ? 'Check Completed' : 'Check Failed',
+                          _checkResult!['success'] ? 'system.check_completed'.tr() : 'system.check_failed'.tr(),
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -187,7 +188,7 @@ class _SystemSectionState extends State<SystemSection> {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Total Issues Found: ${_checkResult!['totalIssues']}',
+                      '${'system.total_issues'.tr()}${_checkResult!['totalIssues']}',
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -196,7 +197,7 @@ class _SystemSectionState extends State<SystemSection> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Total Fixes Applied: ${_checkResult!['totalFixes']}',
+                      '${'system.total_fixes'.tr()}${_checkResult!['totalFixes']}',
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -205,9 +206,9 @@ class _SystemSectionState extends State<SystemSection> {
                     ),
                     if (_checkResult!['issues'].isNotEmpty) ...[
                       const SizedBox(height: 16),
-                      const Text(
-                        'Issues Found:',
-                        style: TextStyle(
+                      Text(
+                        'system.issues_found'.tr(),
+                        style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: Color(0xFF1D1D1F),
@@ -238,9 +239,9 @@ class _SystemSectionState extends State<SystemSection> {
                     ],
                     if (_checkResult!['fixes'].isNotEmpty) ...[
                       const SizedBox(height: 16),
-                      const Text(
-                        'Fixes Applied:',
-                        style: TextStyle(
+                      Text(
+                        'system.fixes_applied'.tr(),
+                        style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: Color(0xFF1D1D1F),

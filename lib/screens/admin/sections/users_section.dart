@@ -1,4 +1,6 @@
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import '../../../services/admin_service.dart';
 
@@ -653,8 +655,8 @@ class _UsersSectionState extends State<UsersSection>
         if (!isDesktop)
           Positioned(
             bottom: 10,
-            left: Directionality.of(context) == TextDirection.rtl ? 14 : null,
-            right: Directionality.of(context) == TextDirection.ltr ? 14 : null,
+            left: Directionality.of(context) == ui.TextDirection.rtl ? 14 : null,
+            right: Directionality.of(context) == ui.TextDirection.ltr ? 14 : null,
             child: FloatingActionButton(
               onPressed: () {
                 final currentTab = _tabController.index;
