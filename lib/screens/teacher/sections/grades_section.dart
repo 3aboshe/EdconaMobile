@@ -185,7 +185,7 @@ class _GradesSectionState extends State<GradesSection> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -240,7 +240,7 @@ class _GradesSectionState extends State<GradesSection> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -310,7 +310,7 @@ class _GradesSectionState extends State<GradesSection> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: isSelected
-              ? const Color(0xFF007AFF).withOpacity(0.1)
+              ? const Color(0xFF007AFF).withValues(alpha: 0.1)
               : Colors.grey[50],
           border: Border.all(
             color: isSelected
@@ -367,7 +367,7 @@ class _GradesSectionState extends State<GradesSection> {
               decoration: BoxDecoration(
                 color: isSelected
                     ? const Color(0xFF007AFF)
-                    : const Color(0xFF0D47A1).withOpacity(0.1),
+                    : const Color(0xFF0D47A1).withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
@@ -453,7 +453,7 @@ class _GradesSectionState extends State<GradesSection> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -501,7 +501,7 @@ class _GradesSectionState extends State<GradesSection> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF34C759).withOpacity(0.1),
+                      color: const Color(0xFF34C759).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(

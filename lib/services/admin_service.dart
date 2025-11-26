@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'api_service.dart';
 
 class AdminService {
@@ -6,7 +8,12 @@ class AdminService {
     try {
       final response = await ApiService.dio.get('/api/auth/users');
       if (response.statusCode == 200) {
-        return List<Map<String, dynamic>>.from(response.data);
+        // Handle both response formats: { success: true, data: [...] } or [...]
+        if (response.data is Map && response.data['data'] != null) {
+          return List<Map<String, dynamic>>.from(response.data['data']);
+        } else if (response.data is List) {
+          return List<Map<String, dynamic>>.from(response.data);
+        }
       }
       return [];
     } catch (e) {
@@ -19,7 +26,12 @@ class AdminService {
     try {
       final response = await ApiService.dio.get('/api/auth/codes', queryParameters: {'role': role});
       if (response.statusCode == 200) {
-        return List<Map<String, dynamic>>.from(response.data);
+        // Handle both response formats: { success: true, data: [...] } or [...]
+        if (response.data is Map && response.data['data'] != null) {
+          return List<Map<String, dynamic>>.from(response.data['data']);
+        } else if (response.data is List) {
+          return List<Map<String, dynamic>>.from(response.data);
+        }
       }
       return [];
     } catch (e) {
@@ -276,4 +288,115 @@ class AdminService {
       };
     }
   }
+
+  // Get all schools (for SUPER_ADMIN)
+  Future<List<Map<String, dynamic>>> getAllSchools() async {
+    try {
+      final response = await ApiService.dio.get('/api/schools');
+      if (response.statusCode == 200) {
+        // Handle both response formats
+        if (response.data is Map && response.data['data'] != null) {
+          return List<Map<String, dynamic>>.from(response.data['data']);
+        } else if (response.data is List) {
+          return List<Map<String, dynamic>>.from(response.data);
+        }
+      }
+      return [];
+    } catch (e) {
+      throw Exception('Failed to load schools: ${e.toString()}');
+    }
+  }
+
+  // Set school context for SUPER_ADMIN
+  Future<void> setSchoolContext(String schoolCode) async {
+    // This will be added to the header via the interceptor
+    // We just need to store it in the user data
+    final prefs = await SharedPreferences.getInstance();
+    final userString = prefs.getString('user');
+    if (userString != null) {
+      final user = json.decode(userString);
+      user['schoolCode'] = schoolCode;
+      await prefs.setString('user', json.encode(user));
+    }
+  }
+
+  // Super Admin Methods
+  Future<Map<String, dynamic>> getSuperAdminMetrics() async {
+    try {
+      final response = await ApiService.dio.get('/api/analytics/super-admin');
+      if (response.statusCode == 200) {
+        final data = response.data;
+        if (data is Map && data['data'] != null) {
+          return Map<String, dynamic>.from(data['data']);
+        }
+        return data is Map ? Map<String, dynamic>.from(data) : {};
+      }
+      return {};
+    } catch (e) {
+      throw Exception('Failed to load metrics: ${e.toString()}');
+    }
+  }
+
+  Future<Map<String, dynamic>> createSchool(Map<String, dynamic> data) async {
+    try {
+      final response = await ApiService.dio.post('/api/schools', data: data);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return {'success': true, 'data': response.data};
+      }
+      return {'success': false, 'message': 'Failed to create school'};
+    } catch (e) {
+      return {'success': false, 'message': e.toString()};
+    }
+  }
+
+  Future<Map<String, dynamic>> deleteSchool(String schoolId) async {
+    try {
+      final response = await ApiService.dio.delete('/api/schools/$schoolId');
+      if (response.statusCode == 200) {
+        return {'success': true, 'message': 'School deleted successfully'};
+      }
+      return {'success': false, 'message': 'Failed to delete school'};
+    } catch (e) {
+      return {'success': false, 'message': e.toString()};
+    }
+  }
+
+  Future<Map<String, dynamic>> addSchoolAdmin(String schoolId, Map<String, dynamic> data) async {
+    try {
+      final response = await ApiService.dio.post('/api/schools/$schoolId/admins', data: data);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return {'success': true, 'data': response.data};
+      }
+      return {'success': false, 'message': 'Failed to add admin'};
+    } catch (e) {
+      return {'success': false, 'message': e.toString()};
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getRecentActivity() async {
+    try {
+      final response = await ApiService.dio.get('/api/analytics/activity');
+      if (response.statusCode == 200) {
+        if (response.data is List) {
+          return List<Map<String, dynamic>>.from(response.data);
+        } else if (response.data is Map && response.data['data'] != null) {
+          return List<Map<String, dynamic>>.from(response.data['data']);
+        }
+      }
+      return [];
+    } catch (e) {
+      throw Exception('Failed to load activity: ${e.toString()}');
+    }
+  }
+
+  // Create Backup
+  Future<bool> createBackup() async {
+    try {
+      final response = await ApiService.dio.post('/api/backup/create');
+      return response.statusCode == 200;
+    } catch (e) {
+      return false;
+    }
+  }
 }
+

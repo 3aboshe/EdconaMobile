@@ -111,7 +111,7 @@ class _UsersSectionState extends State<UsersSection>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to load data: ${e.toString()}'),
+            content: Text('${'admin.failed_load_data'.tr()}${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );
@@ -144,7 +144,7 @@ class _UsersSectionState extends State<UsersSection>
                   Container(
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1E3A8A).withOpacity(0.12),
+                      color: const Color(0xFF1E3A8A).withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: Icon(
@@ -160,7 +160,11 @@ class _UsersSectionState extends State<UsersSection>
                   const SizedBox(width: 16),
                   Expanded(
                     child: Text(
-                      'Create ${role.toLowerCase()}',
+                      role == 'STUDENT'
+                          ? 'admin.create_student'.tr()
+                          : role == 'TEACHER'
+                              ? 'admin.create_teacher'.tr()
+                              : 'admin.create_parent'.tr(),
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -179,15 +183,15 @@ class _UsersSectionState extends State<UsersSection>
                     TextFormField(
                       controller: nameController,
                       decoration: InputDecoration(
-                        labelText: 'Name *',
-                        hintText: 'Enter full name',
+                        labelText: 'admin.name_label'.tr(),
+                        hintText: 'admin.name_hint'.tr(),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter a name';
+                          return 'admin.name_error'.tr();
                         }
                         return null;
                       },
@@ -196,7 +200,7 @@ class _UsersSectionState extends State<UsersSection>
                     if (role == 'STUDENT') ...[
                       DropdownButtonFormField<String>(
                         decoration: InputDecoration(
-                          labelText: 'Class *',
+                          labelText: 'admin.class_label'.tr(),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -212,7 +216,7 @@ class _UsersSectionState extends State<UsersSection>
                         },
                         validator: (value) {
                           if (role == 'STUDENT' && value == null) {
-                            return 'Please select a class';
+                            return 'admin.class_select_error'.tr();
                           }
                           return null;
                         },
@@ -224,8 +228,8 @@ class _UsersSectionState extends State<UsersSection>
                             controller: controller,
                             focusNode: focusNode,
                             decoration: InputDecoration(
-                              labelText: 'Parent (Optional)',
-                              hintText: 'Search for parent...',
+                              labelText: 'admin.parent_optional_label'.tr(),
+                              hintText: 'admin.parent_search_hint'.tr(),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
@@ -254,7 +258,7 @@ class _UsersSectionState extends State<UsersSection>
                           selectedParentId = parent['id'] as String;
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Selected: $suggestion'),
+                              content: Text('${'admin.selected_prefix'.tr()}$suggestion'),
                               backgroundColor: Colors.green,
                             ),
                           );
@@ -263,7 +267,7 @@ class _UsersSectionState extends State<UsersSection>
                     ] else if (role == 'TEACHER') ...[
                       DropdownButtonFormField<String>(
                         decoration: InputDecoration(
-                          labelText: 'Subject *',
+                          labelText: 'admin.subject_label'.tr(),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -279,7 +283,7 @@ class _UsersSectionState extends State<UsersSection>
                         },
                         validator: (value) {
                           if (role == 'TEACHER' && value == null) {
-                            return 'Please select a subject';
+                            return 'admin.subject_select_error'.tr();
                           }
                           return null;
                         },
@@ -291,7 +295,7 @@ class _UsersSectionState extends State<UsersSection>
                       children: [
                         TextButton(
                           onPressed: () => Navigator.pop(context),
-                          child: const Text('Cancel'),
+                          child: Text('admin.cancel'.tr()),
                         ),
                         const SizedBox(width: 12),
                         ElevatedButton(
@@ -316,7 +320,7 @@ class _UsersSectionState extends State<UsersSection>
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text(
-                                        '${role.toLowerCase()} created successfully!'),
+                                        'admin.user_created_success'.tr(args: [role.toLowerCase()])),
                                     backgroundColor: Colors.green,
                                   ),
                                 );
@@ -325,14 +329,14 @@ class _UsersSectionState extends State<UsersSection>
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text(
-                                        'Failed to create user: ${result['message']}'),
+                                        '${'admin.create_user_error'.tr()}${result['message']}'),
                                     backgroundColor: Colors.red,
                                   ),
                                 );
                               }
                             }
                           },
-                          child: const Text('Create'),
+                          child: Text('admin.create_button'.tr()),
                         ),
                       ],
                     ),
@@ -353,19 +357,19 @@ class _UsersSectionState extends State<UsersSection>
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
-        title: const Text('Delete User'),
-        content: Text('Are you sure you want to delete this $role?'),
+        title: Text('admin.delete_user_title'.tr()),
+        content: Text('admin.delete_user_confirm'.tr(args: [role])),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text('admin.cancel'.tr()),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
             ),
-            child: const Text('Delete'),
+            child: Text('admin.delete_button'.tr()),
           ),
         ],
       ),
@@ -376,7 +380,7 @@ class _UsersSectionState extends State<UsersSection>
       if (result['success']) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('User deleted successfully'),
+            content: Text('admin.user_deleted_success'.tr()),
             backgroundColor: Colors.green,
           ),
         );
@@ -384,7 +388,7 @@ class _UsersSectionState extends State<UsersSection>
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to delete user: ${result['message']}'),
+            content: Text('${'admin.delete_user_error'.tr()}${result['message']}'),
             backgroundColor: Colors.red,
           ),
         );
@@ -401,7 +405,7 @@ class _UsersSectionState extends State<UsersSection>
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 20,
             offset: const Offset(0, 4),
           ),
@@ -411,7 +415,7 @@ class _UsersSectionState extends State<UsersSection>
         children: [
           CircleAvatar(
             radius: 24,
-            backgroundColor: const Color(0xFF1E3A8A).withOpacity(0.12),
+            backgroundColor: const Color(0xFF1E3A8A).withValues(alpha: 0.12),
             child: Text(
               user['name'].toString().substring(0, 1).toUpperCase(),
               style: const TextStyle(
@@ -437,14 +441,14 @@ class _UsersSectionState extends State<UsersSection>
                 const SizedBox(height: 4),
                 if (role == 'STUDENT') ...[
                   Text(
-                    'Class: ${user['classId'] ?? 'N/A'}',
+                    '${'admin.class_prefix'.tr()}${user['classId'] ?? 'admin.na'.tr()}',
                     style: const TextStyle(
                       fontSize: 13,
                       color: Color(0xFF86868B),
                     ),
                   ),
                   Text(
-                    'Parent: ${user['parentId'] ?? 'No parent'}',
+                    '${'admin.parent_prefix'.tr()}${user['parentId'] ?? 'admin.no_parent'.tr()}',
                     style: const TextStyle(
                       fontSize: 13,
                       color: Color(0xFF86868B),
@@ -452,7 +456,7 @@ class _UsersSectionState extends State<UsersSection>
                   ),
                 ] else if (role == 'TEACHER') ...[
                   Text(
-                    'Subject: ${user['subject'] ?? 'N/A'}',
+                    '${'admin.subject_prefix'.tr()}${user['subject'] ?? 'admin.na'.tr()}',
                     style: const TextStyle(
                       fontSize: 13,
                       color: Color(0xFF86868B),
@@ -460,7 +464,7 @@ class _UsersSectionState extends State<UsersSection>
                   ),
                 ] else if (role == 'PARENT') ...[
                   Text(
-                    'Children: ${(user['childrenIds'] as List?)?.length ?? 0}',
+                    '${'admin.children_prefix'.tr()}${(user['childrenIds'] as List?)?.length ?? 0}',
                     style: const TextStyle(
                       fontSize: 13,
                       color: Color(0xFF86868B),
@@ -486,8 +490,8 @@ class _UsersSectionState extends State<UsersSection>
     }).toList();
 
     if (filteredStudents.isEmpty) {
-      return const Center(
-        child: Text('No students found'),
+      return Center(
+        child: Text('admin.no_students_found'.tr()),
       );
     }
 
@@ -510,8 +514,8 @@ class _UsersSectionState extends State<UsersSection>
     }).toList();
 
     if (filteredTeachers.isEmpty) {
-      return const Center(
-        child: Text('No teachers found'),
+      return Center(
+        child: Text('admin.no_teachers_found'.tr()),
       );
     }
 
@@ -534,8 +538,8 @@ class _UsersSectionState extends State<UsersSection>
     }).toList();
 
     if (filteredParents.isEmpty) {
-      return const Center(
-        child: Text('No parents found'),
+      return Center(
+        child: Text('admin.no_parents_found'.tr()),
       );
     }
 
@@ -577,7 +581,7 @@ class _UsersSectionState extends State<UsersSection>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'User Management',
+                            'admin.user_management_title'.tr(),
                             style: TextStyle(
                               fontSize: isDesktop ? 32 : 28,
                               fontWeight: FontWeight.w700,
@@ -586,9 +590,9 @@ class _UsersSectionState extends State<UsersSection>
                             ),
                           ),
                           const SizedBox(height: 8),
-                          const Text(
-                            'Manage students, teachers, and parents',
-                            style: TextStyle(
+                          Text(
+                            'admin.user_management_subtitle'.tr(),
+                            style: const TextStyle(
                               fontSize: 16,
                               color: Color(0xFF86868B),
                               fontWeight: FontWeight.w400,
@@ -607,7 +611,7 @@ class _UsersSectionState extends State<UsersSection>
                       });
                     },
                     decoration: InputDecoration(
-                      hintText: 'Search users...',
+                      hintText: 'admin.search_users_hint'.tr(),
                       prefixIcon: const Icon(Icons.search),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -622,10 +626,10 @@ class _UsersSectionState extends State<UsersSection>
               color: Colors.white,
               child: TabBar(
                 controller: _tabController,
-                tabs: const [
-                  Tab(text: 'Students'),
-                  Tab(text: 'Teachers'),
-                  Tab(text: 'Parents'),
+                tabs: [
+                  Tab(text: 'admin.tab_students'.tr()),
+                  Tab(text: 'admin.tab_teachers'.tr()),
+                  Tab(text: 'admin.tab_parents'.tr()),
                 ],
               ),
             ),

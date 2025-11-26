@@ -9,9 +9,12 @@
     "subtitle": "ܐܬܒ ܩܘܕܐ ܕܥܠܬܐ ܠܐܬܪܐ",
     "access_code": "ܩܘܕܐ ܕܥܠܬܐ",
     "access_code_hint": "ܐܬܒ ܩܘܕܟ (ܡܬܠܐ: S123456)",
+    "password": "ܡܠܬܐ ܕܥܒܪܐ",
+    "password_hint": "ܐܬܒ ܡܠܬܐ ܕܥܒܪܐ",
     "login_button": "ܥܠܐ",
     "help_text": "ܐܣܟܪܝܐ: S123456 | ܡܠܦܢܐ: T123 | ܐܒܐ ܘܐܡܐ: P123",
     "error_required": "ܐܬܒ ܩܘܕܟ",
+    "error_password_required": "ܐܬܒ ܡܠܬܐ ܕܥܒܪܐ",
     "error_invalid": "ܩܘܕܐ ܚܛܐ"
   },
   "parent": {
@@ -114,7 +117,47 @@
     "present_today": "ܐܝܬܘܗܝ ܝܘܡܐ",
     "pending_homework": "ܥܒܕ̈ܐ ܡܣܟܝ̈ܐ",
     "unread_messages": "ܐܓܪ̈ܬܐ ܕܠܐ ܐܬܩܪܝ̈ܢ",
-    "no_classes": "ܠܐ ܐܝܬ ܕܪܓܝ̈ܐ"
+    "no_classes": "ܠܐ ܐܝܬ ܕܪܓܝ̈ܐ",
+    "attendance_page": {
+      "select_date": "ܓܠܐ ܝܘܡܐ",
+      "change_date": "ܚܠܦ ܝܘܡܐ",
+      "select_class": "ܓܠܐ ܕܪܓܐ",
+      "class": "ܕܪܓܐ",
+      "no_students_found": "ܠܐ ܐܫܬܟܚܘ ܐܣܟܪܝ̈ܐ",
+      "mark_all_present": "ܣܝܡ ܟܠܗܘܢ ܐܝܬܝܗܘܢ",
+      "mark_all_absent": "ܣܝܡ ܟܠܗܘܢ ܠܝܬܝܗܘܢ",
+      "save_success": "ܥܘܕܪܢܐ ܐܬܦܝܫ ܒܫܘܬܦܝܐ",
+      "save_error": "ܚܛܐ ܒܦܘܫܝܐ ܕܥܘܕܪܢܐ"
+    },
+    "grades_page": {
+      "create_exam": "ܒܪܝ ܒܘܚܢܐ",
+      "exam_name": "ܫܡܐ ܕܒܘܚܢܐ",
+      "exam_date": "ܝܘܡܐ ܕܒܘܚܢܐ",
+      "subject": "ܡܕܥܐ",
+      "max_score": "ܢܩܘܕܐ ܪܒܐ",
+      "assign_grades": "ܦܠܓ ܢܩܘܕ̈ܐ",
+      "save_grades": "ܦܝܫ ܢܩܘܕ̈ܐ",
+      "exam_created": "ܒܘܚܢܐ ܐܬܒܪܝ ܒܫܘܬܦܝܐ",
+      "grades_saved": "ܢܩܘܕ̈ܐ ܐܬܦܝܫܘ ܒܫܘܬܦܝܐ",
+      "create_success": "ܐܬܒܪܝ ܒܫܘܬܦܝܐ",
+      "no_students": "ܠܐ ܐܝܬ ܐܣܟܪܝ̈ܐ",
+      "student_name": "ܫܡܐ ܕܐܣܟܪܝܐ",
+      "score": "ܢܩܘܕܐ",
+      "select_exam": "ܓܠܐ ܒܘܚܢܐ"
+    },
+    "homework_page": {
+      "create_homework": "ܒܪܝ ܥܒܕܐ ܕܒܝܬܐ",
+      "homework_title": "ܫܡܐ ܕܥܒܕܐ",
+      "description": "ܦܘܫܩܐ",
+      "due_date": "ܝܘܡܐ ܕܙܒܢܐ",
+      "create": "ܒܪܐ",
+      "mark_submissions": "ܣܝܡ ܫܕܪ̈ܐ",
+      "submitted": "ܐܫܬܕܪ",
+      "not_submitted": "ܠܐ ܐܫܬܕܪ",
+      "homework_created": "ܥܒܕܐ ܐܬܒܪܝ ܒܫܘܬܦܝܐ",
+      "homework_title_hint": "ܐܬܒ ܫܡܐ ܕܥܒܕܐ",
+      "description_hint": "ܐܬܒ ܦܘܫܩܐ ܕܥܒܕܐ"
+    }
   },
   "common": {
     "ok": "ܛܒ",
@@ -129,6 +172,10 @@
     "delete": "ܫܢܝ",
     "edit": "ܚܠܦ",
     "add": "ܐܘܤܦ",
+    "create": "ܒܪܐ",
+    "name": "ܫܡܐ",
+    "class": "ܕܪܓܐ",
+    "subject": "ܡܕܥܐ",
     "search": "ܒܥܝ",
     "filter": "ܡܪܝܪ",
     "sort": "ܡܚܘܬ",

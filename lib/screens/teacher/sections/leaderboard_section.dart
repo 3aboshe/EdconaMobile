@@ -195,7 +195,7 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
                 Text(
                   _getLocalizedText('select_class'),
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.8),
+                    color: Colors.white.withValues(alpha: 0.8),
                     fontSize: 14,
                   ),
                 ),
@@ -205,7 +205,7 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(16),
             ),
             child: const Icon(
@@ -228,7 +228,7 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -289,7 +289,7 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
               Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFFD60A).withOpacity(0.2),
+                  color: const Color(0xFFFFD60A).withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: const Icon(
@@ -344,7 +344,7 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -377,14 +377,14 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
           height: 72,
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [color, color.withOpacity(0.7)],
+              colors: [color, color.withValues(alpha: 0.7)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: color.withOpacity(0.3),
+                color: color.withValues(alpha: 0.3),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
@@ -405,7 +405,7 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.2),
+            color: color.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(
@@ -442,7 +442,7 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -467,7 +467,7 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
             final rank = index + 1;
 
             return _buildStudentRankCard(rank, student, score);
-          }).toList(),
+          }),
         ],
       ),
     );
@@ -496,7 +496,7 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
         color: Colors.grey[50],
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: rank <= 3 ? rankColor.withOpacity(0.3) : Colors.grey[300]!,
+          color: rank <= 3 ? rankColor.withValues(alpha: 0.3) : Colors.grey[300]!,
           width: 2,
         ),
       ),
@@ -507,7 +507,7 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
             height: 48,
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [rankColor, rankColor.withOpacity(0.7)],
+                colors: [rankColor, rankColor.withValues(alpha: 0.7)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -551,7 +551,7 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: rankColor.withOpacity(0.1),
+              color: rankColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(

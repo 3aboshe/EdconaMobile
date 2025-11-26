@@ -13,8 +13,10 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen>
     with TickerProviderStateMixin {
   final TextEditingController _codeController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   final AuthService _authService = AuthService();
   bool _isLoading = false;
+  bool _obscurePassword = true;
   String _errorMessage = '';
   String? _selectedLanguageCode;
 
@@ -97,6 +99,7 @@ class _LoginScreenState extends State<LoginScreen>
   @override
   void dispose() {
     _codeController.dispose();
+    _passwordController.dispose();
     _logoController.dispose();
     _fadeController.dispose();
     super.dispose();
@@ -104,10 +107,18 @@ class _LoginScreenState extends State<LoginScreen>
 
   Future<void> _login() async {
     final code = _codeController.text.trim();
+    final password = _passwordController.text;
 
     if (code.isEmpty) {
       setState(() {
         _errorMessage = 'login.error_required'.tr();
+      });
+      return;
+    }
+
+    if (password.isEmpty) {
+      setState(() {
+        _errorMessage = 'login.error_password_required'.tr();
       });
       return;
     }
@@ -117,7 +128,7 @@ class _LoginScreenState extends State<LoginScreen>
       _errorMessage = '';
     });
 
-    final result = await _authService.login(code);
+    final result = await _authService.login(code, password);
 
     setState(() {
       _isLoading = false;
@@ -127,10 +138,18 @@ class _LoginScreenState extends State<LoginScreen>
       // Navigate based on user role
       if (mounted) {
         final userRole = result['user']['role'];
+        final requiresPasswordReset = result['requiresPasswordReset'] ?? false;
+        
+        // Handle password reset requirement
+        if (requiresPasswordReset) {
+          Navigator.pushReplacementNamed(context, '/reset-password');
+          return;
+        }
+        
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Welcome, ${result['user']['name']}! (Role: $userRole)'),
-            backgroundColor: userRole == 'ADMIN' ? Colors.blue : Colors.green,
+            backgroundColor: (userRole == 'ADMIN' || userRole == 'SUPER_ADMIN' || userRole == 'SCHOOL_ADMIN') ? Colors.blue : Colors.green,
             duration: Duration(seconds: 3),
           ),
         );
@@ -138,7 +157,9 @@ class _LoginScreenState extends State<LoginScreen>
         // Navigate to appropriate screen after a short delay
         Future.delayed(const Duration(milliseconds: 1000), () {
           if (mounted) {
-            if (userRole == 'ADMIN') {
+            if (userRole == 'SUPER_ADMIN') {
+              Navigator.pushReplacementNamed(context, '/super_admin');
+            } else if (userRole == 'ADMIN' || userRole == 'SCHOOL_ADMIN') {
               Navigator.pushReplacementNamed(context, '/admin');
             } else {
               Navigator.pushReplacementNamed(context, '/home');
@@ -363,6 +384,100 @@ class _LoginScreenState extends State<LoginScreen>
                           ),
                           keyboardType: TextInputType.text,
                           textCapitalization: TextCapitalization.none,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          onSubmitted: (_) => _login(),
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        // Password Input Field
+                        TextField(
+                          controller: _passwordController,
+                          obscureText: _obscurePassword,
+                          decoration: InputDecoration(
+                            labelText: 'login.password'.tr(),
+                            hintText: 'login.password_hint'.tr(),
+                            labelStyle: const TextStyle(
+                              color: Color(0xFF0D47A1),
+                              fontWeight: FontWeight.w500,
+                            ),
+                            hintStyle: TextStyle(
+                              color: Colors.grey.withValues(alpha: 0.5),
+                            ),
+                            // Icon position based on RTL
+                            prefixIcon: isRTL ? null : const Icon(
+                              Icons.lock_outline,
+                              color: Color(0xFF0D47A1),
+                            ),
+                            suffixIcon: isRTL
+                                ? Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      IconButton(
+                                        icon: Icon(
+                                          _obscurePassword
+                                              ? Icons.visibility_outlined
+                                              : Icons.visibility_off_outlined,
+                                          color: Color(0xFF0D47A1),
+                                        ),
+                                        onPressed: () {
+                                          setState(() {
+                                            _obscurePassword = !_obscurePassword;
+                                          });
+                                        },
+                                      ),
+                                      const Icon(
+                                        Icons.lock_outline,
+                                        color: Color(0xFF0D47A1),
+                                      ),
+                                      const SizedBox(width: 12),
+                                    ],
+                                  )
+                                : IconButton(
+                                    icon: Icon(
+                                      _obscurePassword
+                                          ? Icons.visibility_outlined
+                                          : Icons.visibility_off_outlined,
+                                      color: Color(0xFF0D47A1),
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        _obscurePassword = !_obscurePassword;
+                                      });
+                                    },
+                                  ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                color: Colors.grey.withValues(alpha: 0.3),
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                color: Colors.grey.withValues(alpha: 0.3),
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(
+                                color: Color(0xFF0D47A1),
+                                width: 2,
+                              ),
+                            ),
+                            filled: true,
+                            fillColor: Colors.grey.withValues(alpha: 0.02),
+                            contentPadding: EdgeInsets.only(
+                              left: isRTL ? 16 : 16,
+                              right: isRTL ? 16 : 48,
+                              top: 16,
+                              bottom: 16,
+                            ),
+                          ),
+                          keyboardType: TextInputType.visiblePassword,
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,

@@ -4,7 +4,7 @@ import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import '../../../services/message_service.dart';
 import '../../../services/api_service.dart';
 import '../../../services/auth_service.dart';
-
+import 'package:edconamobile/models/message.dart';
 
 
 class MessagesSection extends StatefulWidget {
@@ -322,7 +322,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
-  List<Map<String, dynamic>> _messages = [];
+  List<Message> _messages = [];
   bool _isLoading = true;
 
   @override
@@ -334,8 +334,8 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<void> _loadMessages() async {
     try {
       final messages = await _messageService.getMessages(
-        senderId: widget.currentUser['id'],
-        receiverId: widget.otherUser['id'],
+        userId: widget.currentUser['id'],
+        otherUserId: widget.otherUser['id'],
       );
 
       setState(() {
@@ -365,18 +365,22 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<void> _sendMessage() async {
-    final message = _messageController.text.trim();
-    if (message.isEmpty) return;
+    final messageContent = _messageController.text.trim();
+    if (messageContent.isEmpty) return;
 
     try {
-      final result = await _messageService.sendMessage(
-        senderId: widget.currentUser['id'],
-        receiverId: widget.otherUser['id'],
-        message: message,
-        childId: widget.student['id'],
-      );
+      final messageData = {
+        'senderId': widget.currentUser['id'],
+        'receiverId': widget.otherUser['id'],
+        'content': messageContent,
+        'type': 'TEXT',
+        'schoolId': widget.currentUser['schoolId'] ?? 'default_school',
+        'childId': widget.student['id'],
+      };
 
-      if (result['success']) {
+      final result = await _messageService.sendMessage(messageData);
+
+      if (result != null) {
         _messageController.clear();
         if (mounted) {
           _loadMessages();
@@ -384,8 +388,8 @@ class _ChatScreenState extends State<ChatScreen> {
       } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(result['message'] ?? 'Failed to send message'),
+            const SnackBar(
+              content: Text('Failed to send message'),
               backgroundColor: Colors.red,
             ),
           );
@@ -517,23 +521,15 @@ class _ChatScreenState extends State<ChatScreen> {
       itemCount: _messages.length,
       itemBuilder: (context, index) {
         final message = _messages[index];
-        final isFromMe = message['senderId'] == widget.currentUser['id'];
+        final isFromMe = message.senderId == widget.currentUser['id'];
 
         return _buildMessageBubble(message, isFromMe);
       },
     );
   }
 
-  Widget _buildMessageBubble(Map<String, dynamic> message, bool isFromMe) {
-    final timestamp = message['timestamp'] as String?;
-    DateTime? messageTime;
-    if (timestamp != null) {
-      try {
-        messageTime = DateTime.parse(timestamp);
-      } catch (e) {
-        messageTime = null;
-      }
-    }
+  Widget _buildMessageBubble(Message message, bool isFromMe) {
+    final messageTime = message.timestamp;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
@@ -575,7 +571,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    message['message'] ?? '',
+                    message.content ?? '',
                     style: TextStyle(
                       color: isFromMe ? Colors.white : Colors.black87,
                       fontSize: 16,
@@ -583,9 +579,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    messageTime != null
-                        ? '${messageTime.hour.toString().padLeft(2, '0')}:${messageTime.minute.toString().padLeft(2, '0')}'
-                        : '',
+                    _formatTime(messageTime),
                     style: TextStyle(
                       color: isFromMe
                           ? Colors.white.withValues(alpha: 0.7)
@@ -601,6 +595,11 @@ class _ChatScreenState extends State<ChatScreen> {
         ],
       ),
     );
+  }
+
+  String _formatTime(DateTime? time) {
+    if (time == null) return '';
+    return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
   }
 
   Widget _buildMessageInput() {

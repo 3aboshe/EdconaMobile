@@ -50,7 +50,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to load data: ${e.toString()}'),
+            content: Text('${'admin.failed_load_data'.tr()}${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );
@@ -79,7 +79,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
                   Container(
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1E3A8A).withOpacity(0.12),
+                      color: const Color(0xFF1E3A8A).withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: const Icon(
@@ -89,10 +89,10 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
                     ),
                   ),
                   const SizedBox(width: 16),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'Create Subject',
-                      style: TextStyle(
+                      'admin.create_subject_title'.tr(),
+                      style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF1D1D1F),
@@ -106,8 +106,8 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
               TextField(
                 controller: nameController,
                 decoration: InputDecoration(
-                  labelText: 'Subject Name *',
-                  hintText: 'e.g., Mathematics, Science, History',
+                  labelText: 'admin.subject_name_label'.tr(),
+                  hintText: 'admin.subject_name_hint_2'.tr(),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -119,7 +119,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
                 children: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text('Cancel'),
+                    child: Text('admin.cancel'.tr()),
                   ),
                   const SizedBox(width: 12),
                   ElevatedButton(
@@ -133,7 +133,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
                           Navigator.pop(context);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: const Text('Subject created successfully!'),
+                              content: Text('admin.subject_created_success'.tr()),
                               backgroundColor: Colors.green,
                             ),
                           );
@@ -141,7 +141,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Failed to create subject'),
+                              content: Text('admin.subject_create_error_simple'.tr()),
                               backgroundColor: Colors.red,
                             ),
                           );
@@ -152,9 +152,9 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
                       backgroundColor: const Color(0xFF1E3A8A),
                       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                     ),
-                    child: const Text(
-                      'Create',
-                      style: TextStyle(color: Colors.white),
+                    child: Text(
+                      'admin.create_button'.tr(),
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                 ],
@@ -191,7 +191,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
                   Container(
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1E3A8A).withOpacity(0.12),
+                      color: const Color(0xFF1E3A8A).withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: const Icon(
@@ -542,7 +542,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 10,
                 offset: const Offset(0, 2),
               ),
@@ -552,7 +552,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
             contentPadding: const EdgeInsets.all(20),
             leading: CircleAvatar(
               radius: 28,
-              backgroundColor: const Color(0xFF1E3A8A).withOpacity(0.2),
+              backgroundColor: const Color(0xFF1E3A8A).withValues(alpha: 0.2),
               child: const Icon(
                 Icons.book,
                 color: Color(0xFF1E3A8A),
@@ -634,7 +634,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 10,
                 offset: const Offset(0, 2),
               ),
@@ -644,7 +644,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
             contentPadding: const EdgeInsets.all(20),
             leading: CircleAvatar(
               radius: 28,
-              backgroundColor: const Color(0xFF1E3A8A).withOpacity(0.2),
+              backgroundColor: const Color(0xFF1E3A8A).withValues(alpha: 0.2),
               child: const Icon(
                 Icons.class_,
                 color: Color(0xFF1E3A8A),

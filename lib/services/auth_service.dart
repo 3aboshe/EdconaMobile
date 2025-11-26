@@ -8,11 +8,14 @@ class AuthService {
     ApiService.initialize();
   }
 
-  Future<Map<String, dynamic>> login(String code) async {
+  Future<Map<String, dynamic>> login(String code, String password) async {
     try {
       final response = await ApiService.dio.post(
         '/api/auth/login',
-        data: {'code': code},
+        data: {
+          'accessCode': code,
+          'password': password,
+        },
       );
 
       if (response.statusCode == 200) {
@@ -25,7 +28,11 @@ class AuthService {
         await prefs.setBool('isLoggedIn', true);
         await prefs.setString('last_login', DateTime.now().toIso8601String());
 
-        return {'success': true, 'user': data['user']};
+        return {
+          'success': true,
+          'user': data['user'],
+          'requiresPasswordReset': data['requiresPasswordReset'] ?? false,
+        };
       } else {
         return {'success': false, 'message': 'Login failed'};
       }

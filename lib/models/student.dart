@@ -9,20 +9,36 @@ class Student extends User {
   Student({
     required String id,
     required String name,
+    required String accessCode,
+    required DateTime createdAt,
+    required DateTime updatedAt,
     required this.grade,
     required this.classId,
     required this.parentId,
     required this.avatar,
-  }) : super(id: id, name: name, role: 'STUDENT');
+  }) : super(
+          id: id,
+          name: name,
+          accessCode: accessCode,
+          role: UserRole.STUDENT,
+          createdAt: createdAt,
+          updatedAt: updatedAt,
+          avatar: avatar,
+          classId: classId,
+          parentId: parentId,
+        );
 
   factory Student.fromJson(Map<String, dynamic> json) {
     return Student(
       id: json['id'] as String,
       name: json['name'] as String,
-      grade: json['grade'] as int,
-      classId: json['classId'] as String,
-      parentId: json['parentId'] as String,
-      avatar: json['avatar'] as String,
+      accessCode: json['accessCode'] as String? ?? '',
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      updatedAt: DateTime.parse(json['updatedAt'] as String),
+      grade: json['grade'] as int? ?? 0,
+      classId: json['classId'] as String? ?? '',
+      parentId: json['parentId'] as String? ?? '',
+      avatar: json['avatar'] as String? ?? '',
     );
   }
 

@@ -46,7 +46,7 @@ class _SystemSectionState extends State<SystemSection> {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 20,
                   offset: const Offset(0, 4),
                 ),
@@ -58,7 +58,7 @@ class _SystemSectionState extends State<SystemSection> {
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF1E3A8A).withOpacity(0.1),
+                    color: const Color(0xFF1E3A8A).withValues(alpha: 0.1),
                     borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(16),
                       topRight: Radius.circular(16),
@@ -155,7 +155,7 @@ class _SystemSectionState extends State<SystemSection> {
             Container(
               width: double.infinity,
               decoration: BoxDecoration(
-                color: _checkResult!['success'] ? Colors.green.withOpacity(0.1) : Colors.red.withOpacity(0.1),
+                color: _checkResult!['success'] ? Colors.green.withValues(alpha: 0.1) : Colors.red.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
                   color: _checkResult!['success'] ? Colors.green : Colors.red,
@@ -284,7 +284,7 @@ class _SystemSectionState extends State<SystemSection> {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 20,
                   offset: const Offset(0, 4),
                 ),
@@ -296,7 +296,7 @@ class _SystemSectionState extends State<SystemSection> {
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF0D47A1).withOpacity(0.1),
+                    color: const Color(0xFF0D47A1).withValues(alpha: 0.1),
                     borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(16),
                       topRight: Radius.circular(16),
@@ -368,7 +368,7 @@ class _SystemSectionState extends State<SystemSection> {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 20,
                   offset: const Offset(0, 4),
                 ),
@@ -380,7 +380,7 @@ class _SystemSectionState extends State<SystemSection> {
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF5856D6).withOpacity(0.1),
+                    color: const Color(0xFF5856D6).withValues(alpha: 0.1),
                     borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(16),
                       topRight: Radius.circular(16),

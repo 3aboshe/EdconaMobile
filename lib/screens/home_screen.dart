@@ -91,7 +91,11 @@ class _HomeScreenState extends State<HomeScreen>
             ),
           );
         }
-      } else if (user['role'] == 'ADMIN') {
+      } else if (user['role'] == 'SUPER_ADMIN') {
+        if (mounted) {
+          Navigator.pushReplacementNamed(context, '/super_admin');
+        }
+      } else if (user['role'] == 'ADMIN' || user['role'] == 'SCHOOL_ADMIN') {
         if (mounted) {
           Navigator.pushReplacementNamed(context, '/admin');
         }

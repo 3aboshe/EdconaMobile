@@ -262,7 +262,7 @@ class _ProfileSectionState extends State<ProfileSection> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
+                color: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: const Icon(
@@ -286,7 +286,7 @@ class _ProfileSectionState extends State<ProfileSection> {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -306,7 +306,7 @@ class _ProfileSectionState extends State<ProfileSection> {
               borderRadius: BorderRadius.circular(50),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF007AFF).withOpacity(0.3),
+                  color: const Color(0xFF007AFF).withValues(alpha: 0.3),
                   blurRadius: 20,
                   offset: const Offset(0, 8),
                 ),
@@ -345,8 +345,8 @@ class _ProfileSectionState extends State<ProfileSection> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
               color: isAvailable
-                  ? const Color(0xFF34C759).withOpacity(0.1)
-                  : const Color(0xFFFF9500).withOpacity(0.1),
+                  ? const Color(0xFF34C759).withValues(alpha: 0.1)
+                  : const Color(0xFFFF9500).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Row(
@@ -387,7 +387,7 @@ class _ProfileSectionState extends State<ProfileSection> {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -433,7 +433,7 @@ class _ProfileSectionState extends State<ProfileSection> {
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: const Color(0xFF007AFF).withOpacity(0.1),
+            color: const Color(0xFF007AFF).withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(icon, color: const Color(0xFF007AFF), size: 24),
@@ -478,7 +478,7 @@ class _ProfileSectionState extends State<ProfileSection> {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -492,7 +492,7 @@ class _ProfileSectionState extends State<ProfileSection> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF007AFF).withOpacity(0.1),
+                  color: const Color(0xFF007AFF).withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(CupertinoIcons.clock, color: Color(0xFF007AFF), size: 24),

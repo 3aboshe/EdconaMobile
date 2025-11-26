@@ -6,13 +6,16 @@
   },
   "login": {
     "welcome": "مرحباً بك في إدكونا",
-    "subtitle": "أدخل رمز الوصول للمتابعة",
-    "access_code": "رمز الوصول",
-    "access_code_hint": "أدخل رمزك (مثال: S123456)",
-    "login_button": "دخول",
+    "subtitle": "أدخل رمز الدخول الخاص بك للمتابعة",
+    "access_code": "رمز الدخول",
+    "access_code_hint": "أدخل الرمز الخاص بك (مثال: S123456)",
+    "password": "كلمة المرور",
+    "password_hint": "أدخل كلمة المرور",
+    "login_button": "تسجيل الدخول",
     "help_text": "الطلاب: S123456 | المعلمون: T123 | أولياء الأمور: P123",
-    "error_required": "الرجاء إدخال الرمز",
-    "error_invalid": "رمز غير صالح"
+    "error_required": "يرجى إدخال الرمز الخاص بك",
+    "error_password_required": "يرجى إدخال كلمة المرور",
+    "error_invalid": "رمز غير صحيح"
   },
   "parent": {
     "welcome": "أهلاً بك في بوابة ولي الأمر",

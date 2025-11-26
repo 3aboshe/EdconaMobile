@@ -242,7 +242,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
+                color: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: const Icon(
@@ -265,7 +265,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
               _getLocalizedText('tap_create'),
               style: TextStyle(
                 fontSize: 14,
-                color: Colors.white.withOpacity(0.8),
+                color: Colors.white.withValues(alpha: 0.8),
               ),
               textAlign: TextAlign.center,
             ),
@@ -288,7 +288,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -330,8 +330,8 @@ class _HomeworkSectionState extends State<HomeworkSection> {
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
                         color: isOverdue
-                            ? const Color(0xFFFF3B30).withOpacity(0.1)
-                            : const Color(0xFF34C759).withOpacity(0.1),
+                            ? const Color(0xFFFF3B30).withValues(alpha: 0.1)
+                            : const Color(0xFF34C759).withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
@@ -434,7 +434,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Row(
@@ -1128,7 +1128,7 @@ class _SubmissionsScreenState extends State<SubmissionsScreen> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFFF9500).withOpacity(0.2),
+                          color: const Color(0xFFFF9500).withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: const Text(
@@ -1148,8 +1148,8 @@ class _SubmissionsScreenState extends State<SubmissionsScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: effectiveSubmitted
-                        ? const Color(0xFF34C759).withOpacity(0.1)
-                        : const Color(0xFFFF9500).withOpacity(0.1),
+                        ? const Color(0xFF34C759).withValues(alpha: 0.1)
+                        : const Color(0xFFFF9500).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(

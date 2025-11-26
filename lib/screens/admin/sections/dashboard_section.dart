@@ -43,7 +43,7 @@ class _DashboardSectionState extends State<DashboardSection> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to load analytics: ${e.toString()}'),
+            content: Text('${'admin.failed_load_analytics'.tr()}${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );
@@ -73,7 +73,7 @@ class _DashboardSectionState extends State<DashboardSection> {
                   Container(
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1E3A8A).withOpacity(0.12),
+                      color: const Color(0xFF1E3A8A).withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: const Icon(
@@ -83,10 +83,10 @@ class _DashboardSectionState extends State<DashboardSection> {
                     ),
                   ),
                   const SizedBox(width: 16),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'Create Class',
-                      style: TextStyle(
+                      'admin.create_class'.tr(),
+                      style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF1D1D1F),
@@ -104,15 +104,15 @@ class _DashboardSectionState extends State<DashboardSection> {
                     TextFormField(
                       controller: nameController,
                       decoration: InputDecoration(
-                        labelText: 'Class Name *',
-                        hintText: 'Enter class name (e.g., Grade 10-A)',
+                        labelText: 'admin.class_name_label'.tr(),
+                        hintText: 'admin.class_name_hint'.tr(),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter a class name';
+                          return 'admin.class_name_error'.tr();
                         }
                         return null;
                       },
@@ -123,7 +123,7 @@ class _DashboardSectionState extends State<DashboardSection> {
                       children: [
                         TextButton(
                           onPressed: () => Navigator.pop(context),
-                          child: const Text('Cancel'),
+                          child: Text('admin.cancel'.tr()),
                         ),
                         const SizedBox(width: 12),
                         ElevatedButton(
@@ -138,8 +138,8 @@ class _DashboardSectionState extends State<DashboardSection> {
                                 Navigator.pop(context);
                                 if (mounted) {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Class created successfully!'),
+                                    SnackBar(
+                                      content: Text('admin.class_created_success'.tr()),
                                       backgroundColor: Colors.green,
                                     ),
                                   );
@@ -149,7 +149,7 @@ class _DashboardSectionState extends State<DashboardSection> {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       content: Text(
-                                          'Failed to create class: ${result['message']}'),
+                                          '${'admin.class_create_error'.tr()}${result['message']}'),
                                       backgroundColor: Colors.red,
                                     ),
                                   );
@@ -157,7 +157,7 @@ class _DashboardSectionState extends State<DashboardSection> {
                               }
                             }
                           },
-                          child: const Text('Create'),
+                          child: Text('admin.create'.tr()),
                         ),
                       ],
                     ),
@@ -193,7 +193,7 @@ class _DashboardSectionState extends State<DashboardSection> {
                   Container(
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1E3A8A).withOpacity(0.12),
+                      color: const Color(0xFF1E3A8A).withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: const Icon(
@@ -203,10 +203,10 @@ class _DashboardSectionState extends State<DashboardSection> {
                     ),
                   ),
                   const SizedBox(width: 16),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'Add Subject',
-                      style: TextStyle(
+                      'admin.add_subject'.tr(),
+                      style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF1D1D1F),
@@ -224,15 +224,15 @@ class _DashboardSectionState extends State<DashboardSection> {
                     TextFormField(
                       controller: nameController,
                       decoration: InputDecoration(
-                        labelText: 'Subject Name *',
-                        hintText: 'Enter subject name (e.g., Mathematics)',
+                        labelText: 'admin.subject_name_label'.tr(),
+                        hintText: 'admin.subject_name_hint'.tr(),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter a subject name';
+                          return 'admin.subject_name_error'.tr();
                         }
                         return null;
                       },
@@ -243,7 +243,7 @@ class _DashboardSectionState extends State<DashboardSection> {
                       children: [
                         TextButton(
                           onPressed: () => Navigator.pop(context),
-                          child: const Text('Cancel'),
+                          child: Text('admin.cancel'.tr()),
                         ),
                         const SizedBox(width: 12),
                         ElevatedButton(
@@ -257,8 +257,8 @@ class _DashboardSectionState extends State<DashboardSection> {
                                 Navigator.pop(context);
                                 if (mounted) {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Subject added successfully!'),
+                                    SnackBar(
+                                      content: Text('admin.subject_added_success'.tr()),
                                       backgroundColor: Colors.green,
                                     ),
                                   );
@@ -268,7 +268,7 @@ class _DashboardSectionState extends State<DashboardSection> {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       content: Text(
-                                          'Failed to add subject: ${result['message']}'),
+                                          '${'admin.subject_add_error'.tr()}${result['message']}'),
                                       backgroundColor: Colors.red,
                                     ),
                                   );
@@ -276,7 +276,7 @@ class _DashboardSectionState extends State<DashboardSection> {
                               }
                             }
                           },
-                          child: const Text('Add'),
+                          child: Text('admin.add'.tr()),
                         ),
                       ],
                     ),
@@ -304,7 +304,7 @@ class _DashboardSectionState extends State<DashboardSection> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 30,
             offset: const Offset(0, 8),
           ),
@@ -319,7 +319,7 @@ class _DashboardSectionState extends State<DashboardSection> {
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.12),
+                  color: color.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: Icon(icon, color: color, size: 30),
@@ -327,7 +327,7 @@ class _DashboardSectionState extends State<DashboardSection> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: Colors.green.withOpacity(0.12),
+                  color: Colors.green.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -391,7 +391,7 @@ class _DashboardSectionState extends State<DashboardSection> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 30,
             offset: const Offset(0, 8),
           ),
@@ -410,7 +410,7 @@ class _DashboardSectionState extends State<DashboardSection> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.12),
+                  color: color.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
@@ -679,7 +679,7 @@ class _DashboardSectionState extends State<DashboardSection> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 30,
             offset: const Offset(0, 8),
           ),
@@ -778,7 +778,7 @@ class _DashboardSectionState extends State<DashboardSection> {
               Container(
                 height: 8,
                 decoration: BoxDecoration(
-                  color: Colors.grey.withOpacity(0.2),
+                  color: Colors.grey.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
@@ -886,7 +886,7 @@ class _DashboardSectionState extends State<DashboardSection> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 30,
             offset: const Offset(0, 8),
           ),
@@ -928,7 +928,7 @@ class _DashboardSectionState extends State<DashboardSection> {
                 leading: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF1E3A8A).withOpacity(0.12),
+                    color: const Color(0xFF1E3A8A).withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(

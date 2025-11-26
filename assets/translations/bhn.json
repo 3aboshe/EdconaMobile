@@ -9,9 +9,12 @@
     "subtitle": "کۆدی دەستپێکردن بنووسە بۆ بەردەوام بوون",
     "access_code": "کۆدی دەستپێکردن",
     "access_code_hint": "کۆدی خۆت بنووسە (نمونە: S123456)",
+    "password": "وشەی نهێنی",
+    "password_hint": "وشەی نهێنی بنووسە",
     "login_button": "چوونەژوورەوە",
     "help_text": "خوێندکاران: S123456 | مامۆستایان: T123 | دایک و باوک: P123",
     "error_required": "تکایە کۆد بنووسە",
+    "error_password_required": "تکایە وشەی نهێنی بنووسە",
     "error_invalid": "کۆدی ھەڵە"
   },
   "parent": {

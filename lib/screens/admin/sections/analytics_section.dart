@@ -39,7 +39,7 @@ class _AnalyticsSectionState extends State<AnalyticsSection> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to load analytics: ${e.toString()}'),
+            content: Text('${'admin.failed_load_analytics'.tr()}${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );
@@ -88,7 +88,7 @@ class _AnalyticsSectionState extends State<AnalyticsSection> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 30,
             offset: const Offset(0, 8),
           ),
@@ -97,9 +97,9 @@ class _AnalyticsSectionState extends State<AnalyticsSection> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Grade Distribution',
-            style: TextStyle(
+          Text(
+            'admin.grade_distribution'.tr(),
+            style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w700,
               color: Color(0xFF1D1D1F),
@@ -171,7 +171,7 @@ class _AnalyticsSectionState extends State<AnalyticsSection> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              'Grade ${entry.key}',
+                              '${'admin.grade_prefix'.tr()}${entry.key}',
                               style: const TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
@@ -209,7 +209,7 @@ class _AnalyticsSectionState extends State<AnalyticsSection> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 30,
             offset: const Offset(0, 8),
           ),
@@ -218,9 +218,9 @@ class _AnalyticsSectionState extends State<AnalyticsSection> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Attendance Trend (Last 7 Days)',
-            style: TextStyle(
+          Text(
+            'admin.attendance_trend'.tr(),
+            style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w700,
               color: Color(0xFF1D1D1F),
@@ -243,7 +243,15 @@ class _AnalyticsSectionState extends State<AnalyticsSection> {
                       reservedSize: 30,
                       interval: 1,
                       getTitlesWidget: (value, meta) {
-                        const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                        final days = [
+                          'days.mon'.tr(),
+                          'days.tue'.tr(),
+                          'days.wed'.tr(),
+                          'days.thu'.tr(),
+                          'days.fri'.tr(),
+                          'days.sat'.tr(),
+                          'days.sun'.tr()
+                        ];
                         if (value.toInt() >= 0 && value.toInt() < days.length) {
                           return SideTitleWidget(
                             axisSide: meta.axisSide,
@@ -299,8 +307,8 @@ class _AnalyticsSectionState extends State<AnalyticsSection> {
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [
-                          const Color(0xFF1E3A8A).withOpacity(0.2),
-                          const Color(0xFF1E3A8A).withOpacity(0.0),
+                          const Color(0xFF1E3A8A).withValues(alpha: 0.2),
+                          const Color(0xFF1E3A8A).withValues(alpha: 0.0),
                         ],
                       ),
                     ),
@@ -328,7 +336,7 @@ class _AnalyticsSectionState extends State<AnalyticsSection> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 20,
             offset: const Offset(0, 4),
           ),
@@ -343,7 +351,7 @@ class _AnalyticsSectionState extends State<AnalyticsSection> {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.12),
+                  color: color.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(icon, color: color, size: 22),

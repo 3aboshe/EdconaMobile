@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/config.dart';
@@ -26,6 +27,20 @@ class ApiService {
         if (token != null && token != '') {
           options.headers['Authorization'] = 'Bearer $token';
         }
+        
+        // Add school code header for SUPER_ADMIN users
+        final userString = prefs.getString('user');
+        if (userString != null) {
+          try {
+            final user = json.decode(userString);
+            if (user['role'] == 'SUPER_ADMIN' && user['schoolCode'] != null) {
+              options.headers['x-edcon-school-code'] = user['schoolCode'];
+            }
+          } catch (e) {
+            // Ignore JSON decode errors
+          }
+        }
+        
         handler.next(options);
       },
       onError: (error, handler) async {

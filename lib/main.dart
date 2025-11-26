@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/admin/admin_dashboard.dart';
+import 'screens/super_admin/super_admin_dashboard.dart';
 import 'services/language_service.dart';
 import 'services/auth_service.dart';
 import 'utils/locale_delegates.dart';
@@ -102,6 +103,7 @@ class EdConaApp extends StatelessWidget {
         '/login': (context) => const LoginScreen(),
         '/home': (context) => const HomeScreen(),
         '/admin': (context) => const AdminDashboard(),
+        '/super_admin': (context) => const SuperAdminDashboard(),
       },
     );
   }
@@ -137,10 +139,14 @@ class _AppInitializerState extends State<AppInitializer> {
         // Check if user is already logged in and navigate accordingly
         if (isLoggedIn) {
           final user = await authService.getCurrentUser();
-          if (user != null && user['role'] == 'ADMIN') {
-            Navigator.pushReplacementNamed(context, '/admin');
-          } else {
-            Navigator.pushReplacementNamed(context, '/home');
+          if (user != null) {
+            if (user['role'] == 'SUPER_ADMIN') {
+              Navigator.pushReplacementNamed(context, '/super_admin');
+            } else if (user['role'] == 'ADMIN' || user['role'] == 'SCHOOL_ADMIN') {
+              Navigator.pushReplacementNamed(context, '/admin');
+            } else {
+              Navigator.pushReplacementNamed(context, '/home');
+            }
           }
         } else {
           Navigator.pushReplacementNamed(context, '/login');

@@ -1,20 +1,34 @@
+enum GradeType {
+  QUIZ,
+  TEST,
+  HOMEWORK,
+  PROJECT,
+  EXAM,
+}
+
 class Grade {
+  final String id;
   final String studentId;
+  final String schoolId;
   final String subject;
   final String assignment;
   final double marksObtained;
   final double maxMarks;
   final DateTime date;
-  final String type;
+  final GradeType type;
+  final String? examId;
 
   Grade({
+    required this.id,
     required this.studentId,
+    required this.schoolId,
     required this.subject,
     required this.assignment,
     required this.marksObtained,
     required this.maxMarks,
     required this.date,
     required this.type,
+    this.examId,
   });
 
   double get percentage => (marksObtained / maxMarks) * 100;
@@ -30,25 +44,39 @@ class Grade {
 
   factory Grade.fromJson(Map<String, dynamic> json) {
     return Grade(
+      id: json['id'] as String,
       studentId: json['studentId'] as String,
+      schoolId: json['schoolId'] as String,
       subject: json['subject'] as String,
       assignment: json['assignment'] as String,
       marksObtained: (json['marksObtained'] as num).toDouble(),
       maxMarks: (json['maxMarks'] as num).toDouble(),
       date: DateTime.parse(json['date'] as String),
-      type: json['type'] as String,
+      type: _parseType(json['type'] as String?),
+      examId: json['examId'] as String?,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'studentId': studentId,
+      'schoolId': schoolId,
       'subject': subject,
       'assignment': assignment,
       'marksObtained': marksObtained,
       'maxMarks': maxMarks,
       'date': date.toIso8601String(),
-      'type': type,
+      'type': type.toString().split('.').last,
+      'examId': examId,
     };
+  }
+
+  static GradeType _parseType(String? type) {
+    if (type == null) return GradeType.QUIZ;
+    return GradeType.values.firstWhere(
+      (e) => e.toString().split('.').last == type,
+      orElse: () => GradeType.QUIZ,
+    );
   }
 }

@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart';
-import '../../services/auth_service.dart';
+import 'dart:convert';
 import 'sections/dashboard_section.dart';
 import 'sections/analytics_section.dart';
 import 'sections/users_section.dart';
 import 'sections/academic_section.dart';
+import '../../services/admin_service.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
@@ -59,9 +60,82 @@ class _AdminDashboardState extends State<AdminDashboard> {
   @override
   void initState() {
     super.initState();
+    _checkSchoolContext();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkScreenSize();
     });
+  }
+
+  Future<void> _checkSchoolContext() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userString = prefs.getString('user');
+    if (userString != null) {
+      final user = json.decode(userString);
+      if (user['role'] == 'SUPER_ADMIN' && (user['schoolCode'] == null || user['schoolCode'] == '')) {
+        // Show school selector for SUPER_ADMIN without schoolCode
+        if (mounted) {
+          _showSchoolSelector();
+        }
+      }
+    }
+  }
+
+  Future<void> _showSchoolSelector() async {
+    final adminService = AdminService();
+    try {
+      final schools = await adminService.getAllSchools();
+      if (schools.isEmpty) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('admin.no_schools_found'.tr()),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        return;
+      }
+
+      if (mounted) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => AlertDialog(
+            title: Text('admin.select_school'.tr()),
+            content: SizedBox(
+              width: double.maxFinite,
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: schools.length,
+                itemBuilder: (context, index) {
+                  final school = schools[index];
+                  return ListTile(
+                    title: Text(school['name'] ?? 'admin.unknown_school'.tr()),
+                    subtitle: Text('${'admin.school_code_prefix'.tr()}${school['code'] ?? 'admin.na'.tr()}'),
+                    onTap: () async {
+                      await adminService.setSchoolContext(school['code']);
+                      if (mounted) {
+                        Navigator.pop(context);
+                        setState(() {}); // Refresh the UI
+                      }
+                    },
+                  );
+                },
+              ),
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${'admin.failed_load_schools'.tr()}${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   void _checkScreenSize() {
@@ -144,7 +218,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 20,
             offset: const Offset(0, 0),
           ),
@@ -165,7 +239,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF1E3A8A).withOpacity(0.3),
+                        color: const Color(0xFF1E3A8A).withValues(alpha: 0.3),
                         blurRadius: 8,
                         offset: const Offset(0, 4),
                       ),
@@ -196,7 +270,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Manage your school',
+                        'admin.manage_your_school'.tr(),
                         style: TextStyle(
                           fontSize: 13,
                           color: Colors.grey[600],
@@ -213,7 +287,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     size: 22,
                   ),
                   onPressed: () => _showLogoutDialog(context),
-                  tooltip: 'Logout',
+                  tooltip: 'admin.logout'.tr(),
                 ),
               ],
             ),
@@ -233,7 +307,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
                   child: Material(
                     color: isSelected
-                        ? const Color(0xFF1E3A8A).withOpacity(0.1)
+                        ? const Color(0xFF1E3A8A).withValues(alpha: 0.1)
                         : Colors.transparent,
                     borderRadius: BorderRadius.circular(12),
                     child: InkWell(
@@ -367,7 +441,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF34C759).withOpacity(0.15),
+                      color: const Color(0xFF34C759).withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Text(
@@ -399,7 +473,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 8,
             offset: const Offset(0, -2),
           ),
@@ -428,7 +502,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     padding: const EdgeInsets.symmetric(vertical: 6),
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? const Color(0xFF1E3A8A).withOpacity(0.1)
+                          ? const Color(0xFF1E3A8A).withValues(alpha: 0.1)
                           : Colors.transparent,
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -560,7 +634,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                         Navigator.pop(context);
                       },
                       selected: isSelected,
-                      selectedTileColor: const Color(0xFF1E3A8A).withOpacity(0.1),
+                      selectedTileColor: const Color(0xFF1E3A8A).withValues(alpha: 0.1),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),

@@ -5,6 +5,7 @@ import '../../../services/message_service.dart';
 import '../../../services/api_service.dart';
 import '../../../services/auth_service.dart';
 import 'dart:ui' as ui;
+import 'package:edconamobile/models/message.dart';
 
 class MessagesSection extends StatefulWidget {
   final Map<String, dynamic> teacher;
@@ -198,7 +199,7 @@ class _MessagesSectionState extends State<MessagesSection> {
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
+                color: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: const Icon(
@@ -230,7 +231,7 @@ class _MessagesSectionState extends State<MessagesSection> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -296,7 +297,7 @@ class _MessagesSectionState extends State<MessagesSection> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF0D47A1).withOpacity(0.1),
+                    color: const Color(0xFF0D47A1).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(
@@ -356,7 +357,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
-  List<Map<String, dynamic>> _messages = [];
+  List<Message> _messages = [];
   bool _isLoading = true;
 
   @override
@@ -368,8 +369,8 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<void> _loadMessages() async {
     try {
       final messages = await _messageService.getMessages(
-        senderId: widget.currentUser['id'],
-        receiverId: widget.otherUser['id'],
+        userId: widget.currentUser['id'],
+        otherUserId: widget.otherUser['id'],
       );
 
       setState(() {
@@ -398,18 +399,25 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<void> _sendMessage() async {
-    final message = _messageController.text.trim();
-    if (message.isEmpty) return;
+    final messageContent = _messageController.text.trim();
+    if (messageContent.isEmpty) return;
 
     try {
-      final result = await _messageService.sendMessage(
-        senderId: widget.currentUser['id'],
-        receiverId: widget.otherUser['id'],
-        message: message,
-        childId: widget.otherUser['childId'],
-      );
+      final messageData = {
+        'senderId': widget.currentUser['id'],
+        'receiverId': widget.otherUser['id'],
+        'content': messageContent,
+        'type': 'TEXT',
+        'schoolId': widget.currentUser['schoolId'] ?? 'default_school', // Fallback or handle properly
+      };
+      
+      if (widget.otherUser['childId'] != null) {
+        messageData['childId'] = widget.otherUser['childId'];
+      }
 
-      if (result['success']) {
+      final result = await _messageService.sendMessage(messageData);
+
+      if (result != null) {
         _messageController.clear();
         if (mounted) {
           _loadMessages();
@@ -448,7 +456,7 @@ class _ChatScreenState extends State<ChatScreen> {
             children: [
               CircleAvatar(
                 radius: 20,
-                backgroundColor: Colors.white.withOpacity(0.2),
+                backgroundColor: Colors.white.withValues(alpha: 0.2),
                 backgroundImage: (widget.otherUser['avatar'] != null &&
                         widget.otherUser['avatar'].toString().isNotEmpty)
                     ? NetworkImage(widget.otherUser['avatar'])
@@ -483,7 +491,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           : 'Parent',
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.white.withOpacity(0.9),
+                        color: Colors.white.withValues(alpha: 0.9),
                       ),
                     ),
                   ],
@@ -544,23 +552,15 @@ class _ChatScreenState extends State<ChatScreen> {
       itemCount: _messages.length,
       itemBuilder: (context, index) {
         final message = _messages[index];
-        final isFromMe = message['senderId'] == widget.currentUser['id'];
+        final isFromMe = message.senderId == widget.currentUser['id'];
 
         return _buildMessageBubble(message, isFromMe);
       },
     );
   }
 
-  Widget _buildMessageBubble(Map<String, dynamic> message, bool isFromMe) {
-    final timestamp = message['timestamp'] as String?;
-    DateTime? messageTime;
-    if (timestamp != null) {
-      try {
-        messageTime = DateTime.parse(timestamp);
-      } catch (e) {
-        messageTime = null;
-      }
-    }
+  Widget _buildMessageBubble(Message message, bool isFromMe) {
+    final messageTime = message.timestamp;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
@@ -592,9 +592,9 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 5,
-                    offset: const Offset(0, 1),
+                    offset: const Offset(0, 2),
                   ),
                 ],
               ),
@@ -602,23 +602,34 @@ class _ChatScreenState extends State<ChatScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    message['message'] ?? '',
+                    message.content ?? '',
                     style: TextStyle(
                       color: isFromMe ? Colors.white : Colors.black87,
-                      fontSize: 16,
+                      fontSize: 15,
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    messageTime != null
-                        ? '${messageTime.hour.toString().padLeft(2, '0')}:${messageTime.minute.toString().padLeft(2, '0')}'
-                        : '',
-                    style: TextStyle(
-                      color: isFromMe
-                          ? Colors.white.withOpacity(0.7)
-                          : Colors.grey[500],
-                      fontSize: 11,
-                    ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        _formatTime(messageTime),
+                        style: TextStyle(
+                          color: isFromMe
+                              ? Colors.white.withValues(alpha: 0.7)
+                              : Colors.grey[600],
+                          fontSize: 11,
+                        ),
+                      ),
+                      if (isFromMe) ...[
+                        const SizedBox(width: 4),
+                        Icon(
+                          message.isRead ? Icons.done_all : Icons.done,
+                          size: 14,
+                          color: Colors.white.withValues(alpha: 0.7),
+                        ),
+                      ],
+                    ],
                   ),
                 ],
               ),
@@ -685,5 +696,10 @@ class _ChatScreenState extends State<ChatScreen> {
         ],
       ),
     );
+  }
+
+  String _formatTime(DateTime? time) {
+    if (time == null) return '';
+    return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
   }
 }
