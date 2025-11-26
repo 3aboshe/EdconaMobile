@@ -266,7 +266,8 @@
     "error_grade_dialog": "خطأ في فتح نافذة الدرجة",
     "create_announcement": "إنشاء إعلان",
     "failed_create_announcement": "فشل في إنشاء الإعلان",
-    "navigate_to": "الانتقال إلى"
+    "navigate_to": "الانتقال إلى",
+    "save_all": "حفظ الكل"
   },
   "common": {
     "ok": "موافق",
@@ -302,7 +303,8 @@
     "priority": "الأولوية",
     "normal": "عادي",
     "high": "عالي",
-    "urgent": "عاجل"
+    "urgent": "عاجل",
+    "view_all": "عرض الكل"
   },
   "admin": {
     "panel_title": "لوحة الإدارة",

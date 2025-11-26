@@ -166,7 +166,8 @@
     "create_announcement": "Create Announcement",
     "announcement_posted": "Announcement posted successfully",
     "failed_create_announcement": "Failed to create announcement",
-    "navigate_to": "Navigate to"
+    "navigate_to": "Navigate to",
+    "save_all": "Save All"
   },
   "common": {
     "ok": "OK",
@@ -202,7 +203,8 @@
     "priority": "Priority",
     "normal": "Normal",
     "high": "High",
-    "urgent": "Urgent"
+    "urgent": "Urgent",
+    "view_all": "View All"
   },
   "admin": {
     "panel_title": "Admin Panel",
@@ -348,7 +350,13 @@
     "total_issues": "Total Issues Found: ",
     "total_fixes": "Total Fixes Applied: ",
     "issues_found": "Issues Found:",
-    "fixes_applied": "Fixes Applied:"
+    "fixes_applied": "Fixes Applied:",
+    "export_data": "Export Data",
+    "create_backup": "Create Backup",
+    "export_success": "Data exported successfully! Check logs for data.",
+    "export_failed": "Failed to export data",
+    "backup_created": "Backup created",
+    "backup_failed": "Failed to create backup"
   },
   "super_admin": {
     "dashboard": "Super Admin Dashboard",

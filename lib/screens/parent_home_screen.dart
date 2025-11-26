@@ -193,7 +193,7 @@ class _ParentHomeScreenState extends State<ParentHomeScreen>
                               vertical: 12,
                             ),
                           ),
-                          child: const Text('Try Again'),
+                          child: Text('common.try_again'.tr()),
                         ),
                       ],
                     ),

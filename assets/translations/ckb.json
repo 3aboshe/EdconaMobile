@@ -187,7 +187,8 @@
     "warning": "ئاگاداری",
     "info": "زانیاری",
     "all": "هەموو",
-    "more": "زیاتر"
+    "more": "زیاتر",
+    "view_all": "بینینی هەموو"
   },
   "admin": {
     "panel_title": "پانێلی سەرۆکایەتی",
@@ -331,7 +332,13 @@
     "total_issues": "Total Issues Found: ",
     "total_fixes": "Total Fixes Applied: ",
     "issues_found": "Issues Found:",
-    "fixes_applied": "Fixes Applied:"
+    "fixes_applied": "Fixes Applied:",
+    "export_data": "هەناردەکردنی داتا",
+    "create_backup": "دروستکردنی پاشەکەوت",
+    "export_success": "داتا بە سەرکەوتوویی هەناردەکرا!",
+    "export_failed": "شکستی هێنا لە هەناردەکردنی داتا",
+    "backup_created": "پاشەکەوت دروستکرا",
+    "backup_failed": "شکستی هێنا لە دروستکردنی پاشەکەوت"
   },
   "super_admin": {
     "dashboard": "Super Admin Dashboard",

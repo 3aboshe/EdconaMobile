@@ -1036,7 +1036,7 @@ class _SubmissionsScreenState extends State<SubmissionsScreen> {
                 child: ElevatedButton.icon(
                   onPressed: _saveAllSubmissions,
                   icon: const Icon(Icons.save, size: 18),
-                  label: const Text('Save All'),
+                  label: Text('teacher.save_all'.tr()),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF34C759),
                     foregroundColor: Colors.white,

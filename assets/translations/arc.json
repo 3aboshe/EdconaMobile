@@ -164,7 +164,8 @@
     "error_grade_dialog": "ܚܛܐ ܒܦܬܚܬܐ ܕܬܪܥܐ ܕܢܩܘܕܐ",
     "create_announcement": "ܒܪܝ ܐܘܕܥܬܐ",
     "failed_create_announcement": "ܚܛܐ ܒܒܪܝܬܐ ܕܐܘܕܥܬܐ",
-    "navigate_to": "ܐܙܠ ܠܘܬ"
+    "navigate_to": "ܐܙܠ ܠܘܬ",
+    "save_all": "ܦܝܫ ܟܠ"
   },
   "common": {
     "ok": "ܛܒ",
@@ -200,7 +201,8 @@
     "priority": "ܩܕܡܝܘܬܐ",
     "normal": "ܥܕܝܐ",
     "high": "ܪܡܐ",
-    "urgent": "ܚܫܝܚܐ"
+    "urgent": "ܚܫܝܚܐ",
+    "view_all": "ܚܙܝ ܟܠ"
   },
   "admin": {
     "panel_title": "ܠܘܝܬܐ ܕܐܕܡܝܢ",
@@ -355,7 +357,13 @@
     "total_issues": "Total Issues Found: ",
     "total_fixes": "Total Fixes Applied: ",
     "issues_found": "Issues Found:",
-    "fixes_applied": "Fixes Applied:"
+    "fixes_applied": "Fixes Applied:",
+    "export_data": "ܤܛܐܒܕ ܝܕܥ̈ܬܐ",
+    "create_backup": "ܒܪܝ ܢܣخܬܐ ܐܚܬܝܐܛܝܬܐ",
+    "export_success": "ܝܕܥ̈ܬܐ ܐܬܤܛܐܒܠ ܒܫܘܬܦܝܘ!",
+    "export_failed": "ܚܛܐ ܒܤܛܐܒܬܐ ܕܝܕܥ̈ܬܐ",
+    "backup_created": "ܢܣخܬܐ ܐܬܒܪܝ",
+    "backup_failed": "ܚܛܐ ܒܒܪܝܬܐ ܕܢܣخܬܐ"
   },
   "super_admin": {
     "dashboard": "Super Admin Dashboard",

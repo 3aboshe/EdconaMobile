@@ -265,7 +265,8 @@
     "error_grade_dialog": "هەڵە لە کردنەوەی پەنجەرەی نمرە",
     "create_announcement": "دروستکردنی ڕاگەیاندن",
     "failed_create_announcement": "شکستی هێنا لە دروستکردنی ڕاگەیاندن",
-    "navigate_to": "چوونە"
+    "navigate_to": "چوونە",
+    "save_all": "پاشەکەوتکردنی هەموو"
   },
   "common": {
     "ok": "باشه‌",
@@ -450,7 +451,13 @@
     "total_issues": "Total Issues Found: ",
     "total_fixes": "Total Fixes Applied: ",
     "issues_found": "Issues Found:",
-    "fixes_applied": "Fixes Applied:"
+    "fixes_applied": "Fixes Applied:",
+    "export_data": "هەناردەکردنی داتا",
+    "create_backup": "دروستکردنی بەکئاپ",
+    "export_success": "داتا بە سەرکەوتوویی هەناردەکرا!",
+    "export_failed": "شکستی هێنا لە هەناردەکردنی داتا",
+    "backup_created": "بەکئاپ دروستکرا",
+    "backup_failed": "شکستی هێنا لە دروستکردنی بەکئاپ"
   },
   "super_admin": {
     "dashboard": "Super Admin Dashboard",

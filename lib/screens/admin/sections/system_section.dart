@@ -429,7 +429,7 @@ class _SystemSectionState extends State<SystemSection> {
                         child: ElevatedButton.icon(
                           onPressed: _exportData,
                           icon: const Icon(Icons.download, size: 20),
-                          label: const Text('Export Data'),
+                          label: Text('system.export_data'.tr()),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF1E3A8A),
                             padding: const EdgeInsets.symmetric(vertical: 16),
@@ -444,7 +444,7 @@ class _SystemSectionState extends State<SystemSection> {
                         child: ElevatedButton.icon(
                           onPressed: _createBackup,
                           icon: const Icon(Icons.save, size: 20),
-                          label: const Text('Create Backup'),
+                          label: Text('system.create_backup'.tr()),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF2563EB),
                             padding: const EdgeInsets.symmetric(vertical: 16),
@@ -554,7 +554,7 @@ class _SystemSectionState extends State<SystemSection> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: ${e.toString()}'),
+            content: Text('${'common.error'.tr()}: ${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );
@@ -592,8 +592,8 @@ class _SystemSectionState extends State<SystemSection> {
 }''';
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Data exported successfully! Check logs for data.'),
+        SnackBar(
+          content: Text('system.export_success'.tr()),
           backgroundColor: Colors.green,
         ),
       );
@@ -604,7 +604,7 @@ class _SystemSectionState extends State<SystemSection> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to export data: ${e.toString()}'),
+          content: Text('${'system.export_failed'.tr()}: ${e.toString()}'),
           backgroundColor: Colors.red,
         ),
       );
@@ -640,7 +640,7 @@ class _SystemSectionState extends State<SystemSection> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Backup created: $filename (Check logs for data)'),
+          content: Text('${'system.backup_created'.tr()}: $filename'),
           backgroundColor: Colors.green,
           duration: Duration(seconds: 5),
         ),
@@ -652,7 +652,7 @@ class _SystemSectionState extends State<SystemSection> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to create backup: ${e.toString()}'),
+          content: Text('${'system.backup_failed'.tr()}: ${e.toString()}'),
           backgroundColor: Colors.red,
         ),
       );

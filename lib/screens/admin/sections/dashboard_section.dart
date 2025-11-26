@@ -911,7 +911,7 @@ class _DashboardSectionState extends State<DashboardSection> {
                 onPressed: () {
                   // TODO: Navigate to all activities
                 },
-                child: const Text('View All'),
+                child: Text('common.view_all'.tr()),
               ),
             ],
           ),
