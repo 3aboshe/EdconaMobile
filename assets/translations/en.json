@@ -348,6 +348,7 @@
     "reset_password_button": "Reset Password",
     "password_reset_success": "Password reset successfully! New temporary password has been generated.",
     "password_reset_failed": "Failed to reset password",
+    "has_temporary_password_info": "This user has a temporary password. Click 'Reset Password' below to generate a new one.",
     "close": "Close"
   },
   "system": {

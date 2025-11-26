@@ -92,7 +92,7 @@ class AdminService {
       if (response.statusCode == 200) {
         return {
           'success': true,
-          'credentials': response.data,
+          'credentials': response.data['data'] ?? response.data,
         };
       }
       return {'success': false, 'message': 'Failed to get credentials'};
@@ -106,9 +106,10 @@ class AdminService {
     try {
       final response = await ApiService.dio.post('/api/users/$userId/reset-password');
       if (response.statusCode == 200) {
+        final data = response.data['data'] ?? response.data;
         return {
           'success': true,
-          'newPassword': response.data['temporaryPassword'],
+          'newPassword': data['temporaryPassword'],
           'message': response.data['message'] ?? 'Password reset successfully',
         };
       }

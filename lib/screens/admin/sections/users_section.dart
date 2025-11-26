@@ -632,6 +632,32 @@ class _UsersSectionState extends State<UsersSection>
                                       letterSpacing: 1.2,
                                     ),
                                   ),
+                                  if (credentials?['hasTemporaryPassword'] == true && credentials?['temporaryPassword'] == null) ...[
+                                    const Divider(height: 24),
+                                    Container(
+                                      padding: const EdgeInsets.all(12),
+                                      decoration: BoxDecoration(
+                                        color: Colors.orange.shade50,
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(color: Colors.orange.shade200),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Icon(Icons.info_outline, size: 20, color: Colors.orange.shade700),
+                                          const SizedBox(width: 8),
+                                          Expanded(
+                                            child: Text(
+                                              'admin.has_temporary_password_info'.tr(),
+                                              style: TextStyle(
+                                                fontSize: 13,
+                                                color: Colors.orange.shade900,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                   if (credentials?['temporaryPassword'] != null) ...[
                                     const Divider(height: 24),
                                     Row(

@@ -346,6 +346,7 @@
     "reset_password_button": "ܬܘܕܬܐ ܦܬܓܡܐ",
     "password_reset_success": "ܦܬܓܡܐ ܒܫܠܡܐ ܬܫܩܚ! ܦܬܓܡܐ ܚܕܬܐ ܙܒܢܝܐ ܐܬܒܪܝ.",
     "password_reset_failed": "ܚܛܐ ܒܬܘܕܬܐ ܕܦܬܓܡܐ",
+    "has_temporary_password_info": "ܐܚܢܐ ܚܕܬܘܫܢܐ ܐܝܬ ܦܬܓܡܐ ܙܒܢܝܐ. ܒܨܚ ܥܠ 'ܬܘܕܬܐ ܦܬܓܡܐ' ܠܬܒܪܝ ܚܕܬܐ.",
     "close": "ܣܚܝܪܐ"
   },
   "days": {
