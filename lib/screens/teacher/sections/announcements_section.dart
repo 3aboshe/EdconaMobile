@@ -58,9 +58,9 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
-              title: const Text(
-                'Create Announcement',
-                style: TextStyle(
+              title: Text(
+                'teacher.create_announcement'.tr(),
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF0D47A1),
@@ -72,17 +72,17 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
                   children: [
                     TextField(
                       controller: titleController,
-                      decoration: const InputDecoration(
-                        labelText: 'Title',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: 'common.title'.tr(),
+                        border: const OutlineInputBorder(),
                       ),
                     ),
                     const SizedBox(height: 16),
                     TextField(
                       controller: contentController,
-                      decoration: const InputDecoration(
-                        labelText: 'Content',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: 'common.content'.tr(),
+                        border: const OutlineInputBorder(),
                       ),
                       maxLines: 4,
                     ),
@@ -90,14 +90,14 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
                     Material(
                       child: DropdownButtonFormField<String>(
                         value: priority,
-                        decoration: const InputDecoration(
-                          labelText: 'Priority',
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          labelText: 'common.priority'.tr(),
+                          border: const OutlineInputBorder(),
                         ),
-                        items: const [
-                          DropdownMenuItem(value: 'normal', child: Text('Normal')),
-                          DropdownMenuItem(value: 'high', child: Text('High')),
-                          DropdownMenuItem(value: 'urgent', child: Text('Urgent')),
+                        items: [
+                          DropdownMenuItem(value: 'normal', child: Text('common.normal'.tr())),
+                          DropdownMenuItem(value: 'high', child: Text('common.high'.tr())),
+                          DropdownMenuItem(value: 'urgent', child: Text('common.urgent'.tr())),
                         ],
                         onChanged: (value) {
                           if (value != null) {
@@ -114,7 +114,7 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancel'),
+                  child: Text('common.cancel'.tr()),
                 ),
                 ElevatedButton(
                   onPressed: () async {
@@ -135,8 +135,8 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
                       if (result['success']) {
                         if (mounted) {
                           ScaffoldMessenger.of(currentContext).showSnackBar(
-                            const SnackBar(
-                              content: Text('Announcement posted successfully'),
+                            SnackBar(
+                              content: Text('teacher.announcement_posted'.tr()),
                               backgroundColor: Colors.green,
                             ),
                           );
@@ -146,15 +146,15 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
                     } catch (e) {
                       if (mounted) {
                         ScaffoldMessenger.of(currentContext).showSnackBar(
-                          const SnackBar(
-                            content: Text('Failed to create announcement'),
+                          SnackBar(
+                            content: Text('teacher.failed_create_announcement'.tr()),
                             backgroundColor: Colors.red,
                           ),
                         );
                       }
                     }
                   },
-                  child: const Text('Create'),
+                  child: Text('common.create'.tr()),
                 ),
               ],
             );

@@ -157,7 +157,14 @@
       "homework_created": "ܥܒܕܐ ܐܬܒܪܝ ܒܫܘܬܦܝܐ",
       "homework_title_hint": "ܐܬܒ ܫܡܐ ܕܥܒܕܐ",
       "description_hint": "ܐܬܒ ܦܘܫܩܐ ܕܥܒܕܐ"
-    }
+    },
+    "please_select_exam": "ܒܒܥܘ ܓܠܐ ܒܘܚܢܐ ܠܘܩܕܡ",
+    "please_enter_score": "ܒܒܥܘ ܐܬܒ ܢܩܘܕܐ",
+    "failed_save_grade": "ܚܛܐ ܒܦܝܫܬܐ ܕܢܩܘܕܐ",
+    "error_grade_dialog": "ܚܛܐ ܒܦܬܚܬܐ ܕܬܪܥܐ ܕܢܩܘܕܐ",
+    "create_announcement": "ܒܪܝ ܐܘܕܥܬܐ",
+    "failed_create_announcement": "ܚܛܐ ܒܒܪܝܬܐ ܕܐܘܕܥܬܐ",
+    "navigate_to": "ܐܙܠ ܠܘܬ"
   },
   "common": {
     "ok": "ܛܒ",
@@ -187,7 +194,13 @@
     "warning": "ܐܝܬܝܐ",
     "info": "ܝܕܥܬܐ",
     "all": "ܟܠ",
-    "more": "ܝܬܝܪ"
+    "more": "ܝܬܝܪ",
+    "title": "ܟܘܢܝܐ",
+    "content": "ܓܘܢܝܐ",
+    "priority": "ܩܕܡܝܘܬܐ",
+    "normal": "ܥܕܝܐ",
+    "high": "ܪܡܐ",
+    "urgent": "ܚܫܝܚܐ"
   },
   "admin": {
     "panel_title": "ܠܘܝܬܐ ܕܐܕܡܝܢ",
@@ -295,7 +308,18 @@
     "delete_class_confirm": "ܐܝܬܝܟ ܡܘܕܝܢ ܕܨܒܐ ܠܡܫܢܝ \"{}\"؟",
     "class_deleted_success": "ܦܠܨܐ ܐܫܬܢܝ",
     "delete_class_error": "ܚܛܐ ܒܫܢܝܬܐ ܕܦܠܨܐ: ",
-    "no_schools_found": "ܠܐ ܐܫܬܟܚ ܡܕܪ̈ܫܐ. ܩܪܝ ܠܡܕܒܪܢܐ ܕܣܝܣܬܐ.",
+    "analytics_title": "ܫܚܠܦܬ̈ܐ",
+    "analytics_subtitle": "ܚܙܝܬܐ ܕܝܕܥ̈ܬܐ ܘܫܘܘܕܥܐ",
+    "quick_stats": "ܡܚܫܚ̈ܬܐ ܚܫܝ̈ܬܐ",
+    "total_grades": "ܟܠ ܢܩܘܕ̈ܐ",
+    "all_assignments": "ܟܠ ܥܒܕ̈ܐ",
+    "average_score": "ܡܥܕܠܐ ܕܢܩܘܕ̈ܐ",
+    "across_all_subjects": "ܒܟܠ ܡܕܥ̈ܐ",
+    "most_active_teacher": "ܡܠܦܢܐ ܚܫܘܚܐ",
+    "classes_this_week": "ܦܠܨ̈ܐ ܗܢܐ ܫܒܬܐ",
+    "top_class": "ܦܠܨܐ ܪܫܝܐ",
+    "attendance_percent": "ܥܘܕܪܢܐ",
+    "no_schools_found": "ܠܐ ܐܫܬܟܚ ܡܕܪ̈ܫܐ. ܩܪܐ ܠܡܕܒܪܢܐ ܕܣܝܣܬܐ.",
     "select_school": "ܓܠܐ ܡܕܪܫܐ",
     "unknown_school": "ܡܕܪܫܐ ܠܐ ܝܕܝܥܐ",
     "school_code_prefix": "ܩܘܕܐ: ",

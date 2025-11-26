@@ -133,7 +133,7 @@ class _ChildSelectionScreenState extends State<ChildSelectionScreen> {
                 });
                 _loadData();
               },
-              child: const Text('Try Again'),
+              child: Text('common.try_again'.tr()),
             ),
           ],
         ),

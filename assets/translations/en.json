@@ -157,7 +157,16 @@
       "homework_created": "Homework created successfully",
       "homework_title_hint": "Enter homework title",
       "description_hint": "Enter homework description"
-    }
+    },
+    "please_select_exam": "Please select an exam first",
+    "edit_grade": "Edit Grade",
+    "please_enter_score": "Please enter a score",
+    "failed_save_grade": "Failed to save grade",
+    "error_grade_dialog": "Error opening grade dialog",
+    "create_announcement": "Create Announcement",
+    "announcement_posted": "Announcement posted successfully",
+    "failed_create_announcement": "Failed to create announcement",
+    "navigate_to": "Navigate to"
   },
   "common": {
     "ok": "OK",
@@ -187,7 +196,13 @@
     "warning": "Warning",
     "info": "Information",
     "all": "All",
-    "more": "More"
+    "more": "More",
+    "title": "Title",
+    "content": "Content",
+    "priority": "Priority",
+    "normal": "Normal",
+    "high": "High",
+    "urgent": "Urgent"
   },
   "admin": {
     "panel_title": "Admin Panel",
@@ -303,7 +318,18 @@
     "delete_class_title": "Delete Class",
     "delete_class_confirm": "Are you sure you want to delete \"{}\"?",
     "class_deleted_success": "Class deleted successfully",
-    "delete_class_error": "Failed to delete class: "
+    "delete_class_error": "Failed to delete class: ",
+    "analytics_title": "Analytics",
+    "analytics_subtitle": "Data visualization and performance insights",
+    "quick_stats": "Quick Stats",
+    "total_grades": "Total Grades",
+    "all_assignments": "All assignments",
+    "average_score": "Average Score",
+    "across_all_subjects": "Across all subjects",
+    "most_active_teacher": "Most Active Teacher",
+    "classes_this_week": "classes this week",
+    "top_class": "Top Class",
+    "attendance_percent": "attendance"
   },
   "system": {
     "title": "System Settings & Maintenance",

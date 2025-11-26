@@ -414,7 +414,7 @@ class _AnalyticsSectionState extends State<AnalyticsSection> {
         children: [
           // Header
           Text(
-            'Analytics',
+            'admin.analytics_title'.tr(),
             style: TextStyle(
               fontSize: isDesktop ? 40 : 32,
               fontWeight: FontWeight.w700,
@@ -423,9 +423,9 @@ class _AnalyticsSectionState extends State<AnalyticsSection> {
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Data visualization and performance insights',
-            style: TextStyle(
+          Text(
+            'admin.analytics_subtitle'.tr(),
+            style: const TextStyle(
               fontSize: 16,
               color: Color(0xFF86868B),
               fontWeight: FontWeight.w400,
@@ -440,9 +440,9 @@ class _AnalyticsSectionState extends State<AnalyticsSection> {
           const SizedBox(height: 32),
 
           // Quick Stats
-          const Text(
-            'Quick Stats',
-            style: TextStyle(
+          Text(
+            'admin.quick_stats'.tr(),
+            style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.w700,
               color: Color(0xFF1D1D1F),
@@ -466,30 +466,30 @@ class _AnalyticsSectionState extends State<AnalyticsSection> {
                 childAspectRatio: isDesktop ? 1.0 : (crossAxisCount == 1 ? 1.9 : 1.6),
                 children: [
                   _buildStatCard(
-                    title: 'Total Grades',
+                    title: 'admin.total_grades'.tr(),
                     value: '247',
-                    subtitle: 'All assignments',
+                    subtitle: 'admin.all_assignments'.tr(),
                     icon: Icons.grade,
                     color: const Color(0xFF1E3A8A),
                   ),
                   _buildStatCard(
-                    title: 'Average Score',
+                    title: 'admin.average_score'.tr(),
                     value: '87.5%',
-                    subtitle: 'Across all subjects',
+                    subtitle: 'admin.across_all_subjects'.tr(),
                     icon: Icons.trending_up,
                     color: const Color(0xFF2563EB),
                   ),
                   _buildStatCard(
-                    title: 'Most Active Teacher',
+                    title: 'admin.most_active_teacher'.tr(),
                     value: 'Mr. Smith',
-                    subtitle: '6 classes this week',
+                    subtitle: 'admin.classes_this_week'.tr(),
                     icon: Icons.person,
                     color: const Color(0xFF3B82F6),
                   ),
                   _buildStatCard(
-                    title: 'Top Class',
+                    title: 'admin.top_class'.tr(),
                     value: 'Class 5A',
-                    subtitle: '94.2% attendance',
+                    subtitle: 'admin.attendance_percent'.tr(),
                     icon: Icons.class_,
                     color: const Color(0xFF60A5FA),
                   ),

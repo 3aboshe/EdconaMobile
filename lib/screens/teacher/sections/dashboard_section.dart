@@ -453,7 +453,7 @@ class _DashboardSectionState extends State<DashboardSection> {
     // For now, just show a snackbar
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Navigate to: $section'),
+        content: Text('${'teacher.navigate_to'.tr()}: $section'),
         backgroundColor: const Color(0xFF007AFF),
       ),
     );

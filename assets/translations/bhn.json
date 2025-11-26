@@ -258,7 +258,14 @@
       "homework_created": "ئه‌رك به‌ سه‌ركه‌وتوویی دروستکرا",
       "homework_title_hint": "ناوی ئه‌رك بنووسه‌",
       "description_hint": "وه‌سفی ئه‌رك بنووسه‌"
-    }
+    },
+    "please_select_exam": "تکایە تاقیکردنەوەیەک هەڵبژێرە",
+    "please_enter_score": "تکایە خاڵەکان بنووسە",
+    "failed_save_grade": "شکستی هێنا لە پاشەکەوتکردنی نمرە",
+    "error_grade_dialog": "هەڵە لە کردنەوەی پەنجەرەی نمرە",
+    "create_announcement": "دروستکردنی ڕاگەیاندن",
+    "failed_create_announcement": "شکستی هێنا لە دروستکردنی ڕاگەیاندن",
+    "navigate_to": "چوونە"
   },
   "common": {
     "ok": "باشه‌",
@@ -396,6 +403,17 @@
     "delete_class_confirm": "دڵنیایت له‌ سڕینەوەی \"{}\"؟",
     "class_deleted_success": "پۆل به‌ سه‌رکه‌وتوویی سڕایەوه‌",
     "delete_class_error": "شکستی هێنا له‌ سڕینەوەی پۆل: ",
+    "analytics_title": "شیکردنەوە",
+    "analytics_subtitle": "دیمەنی داتاکان و تێبینییەکانی کارکرد",
+    "quick_stats": "ئاماری خێرا",
+    "total_grades": "كۆی نمره‌كان",
+    "all_assignments": "هەموو ئەرکەکان",
+    "average_score": "نمره‌ی ناوەند",
+    "across_all_subjects": "لە هەموو بابەتەکان",
+    "most_active_teacher": "مامۆستای چالاکترین",
+    "classes_this_week": "پۆلەکانی ئەم هەفتەیە",
+    "top_class": "باشترین پۆل",
+    "attendance_percent": "ئامادەبوون",
     "no_schools_found": "هیچ قوتابخانه‌یەک نه‌دۆزرایەوە. تکایه‌ په‌یوه‌ندی بکه‌ به‌ به‌ڕێوەبه‌ری سیسته‌م.",
     "select_school": "قوتابخانه‌یه‌ك هەڵبژێرە",
     "unknown_school": "قوتابخانه‌ی نەناسراو",

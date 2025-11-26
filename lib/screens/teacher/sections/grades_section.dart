@@ -529,8 +529,8 @@ class _GradesSectionState extends State<GradesSection> {
             onPressed: () {
               if (_selectedExam == null) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Please select an exam first'),
+                  SnackBar(
+                    content: Text('teacher.please_select_exam'.tr()),
                     backgroundColor: Colors.red,
                   ),
                 );
@@ -545,7 +545,7 @@ class _GradesSectionState extends State<GradesSection> {
               ),
             ),
             child: Text(
-              studentGrade != null ? 'Edit Grade' : 'teacher.grades_page.assign_grades'.tr(),
+              studentGrade != null ? 'teacher.edit_grade'.tr() : 'teacher.grades_page.assign_grades'.tr(),
               style: const TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
@@ -706,8 +706,8 @@ class _GradesSectionState extends State<GradesSection> {
   void _showGradeDialog(Map<String, dynamic> student, {Map<String, dynamic>? existingGrade}) {
     if (_selectedExam == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select an exam first'),
+        SnackBar(
+          content: Text('teacher.please_select_exam'.tr()),
           backgroundColor: Colors.red,
         ),
       );
@@ -842,8 +842,8 @@ class _GradesSectionState extends State<GradesSection> {
                 onPressed: () async {
                   if (gradeController.text.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Please enter a score'),
+                      SnackBar(
+                        content: Text('teacher.please_enter_score'.tr()),
                         backgroundColor: Colors.red,
                       ),
                     );
@@ -881,7 +881,7 @@ class _GradesSectionState extends State<GradesSection> {
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text(result['message'] ?? 'Failed to save grade'),
+                          content: Text(result['message'] ?? 'teacher.failed_save_grade'.tr()),
                           backgroundColor: Colors.red,
                         ),
                       );
@@ -889,7 +889,7 @@ class _GradesSectionState extends State<GradesSection> {
                   } catch (e) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('Error: ${e.toString()}'),
+                        content: Text('${'common.error'.tr()}: ${e.toString()}'),
                         backgroundColor: Colors.red,
                       ),
                     );
@@ -911,7 +911,7 @@ class _GradesSectionState extends State<GradesSection> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error opening grade dialog: ${e.toString()}'),
+          content: Text('${'teacher.error_grade_dialog'.tr()}: ${e.toString()}'),
           backgroundColor: Colors.red,
         ),
       );

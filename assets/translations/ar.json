@@ -259,7 +259,14 @@
       "homework_created": "تم إنشاء الواجب بنجاح",
       "homework_title_hint": "أدخل عنوان الواجب",
       "description_hint": "أدخل وصف الواجب"
-    }
+    },
+    "please_select_exam": "الرجاء اختيار اختبار أولاً",
+    "please_enter_score": "الرجاء إدخال النقاط",
+    "failed_save_grade": "فشل في حفظ الدرجة",
+    "error_grade_dialog": "خطأ في فتح نافذة الدرجة",
+    "create_announcement": "إنشاء إعلان",
+    "failed_create_announcement": "فشل في إنشاء الإعلان",
+    "navigate_to": "الانتقال إلى"
   },
   "common": {
     "ok": "موافق",
@@ -289,7 +296,13 @@
     "warning": "تحذير",
     "info": "معلومات",
     "all": "الكل",
-    "more": "المزيد"
+    "more": "المزيد",
+    "title": "العنوان",
+    "content": "المحتوى",
+    "priority": "الأولوية",
+    "normal": "عادي",
+    "high": "عالي",
+    "urgent": "عاجل"
   },
   "admin": {
     "panel_title": "لوحة الإدارة",
@@ -397,6 +410,17 @@
     "delete_class_confirm": "هل أنت متأكد من حذف \"{}\"؟",
     "class_deleted_success": "تم حذف الصف بنجاح",
     "delete_class_error": "فشل في حذف الصف: ",
+    "analytics_title": "التحليلات",
+    "analytics_subtitle": "تصور البيانات ورؤى الأداء",
+    "quick_stats": "إحصائيات سريعة",
+    "total_grades": "إجمالي الدرجات",
+    "all_assignments": "جميع الواجبات",
+    "average_score": "متوسط النقاط",
+    "across_all_subjects": "عبر جميع المواد",
+    "most_active_teacher": "المعلم الأكثر نشاطًا",
+    "classes_this_week": "صفوف هذا الأسبوع",
+    "top_class": "أفضل صف",
+    "attendance_percent": "الحضور",
     "no_schools_found": "لم يتم العثور على مدارس. يرجى الاتصال بمسؤول النظام.",
     "select_school": "اختر مدرسة",
     "unknown_school": "مدرسة غير معروفة",
