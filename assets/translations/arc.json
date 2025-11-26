@@ -365,6 +365,27 @@
     "school_created": "School Created Successfully",
     "save_credentials": "Please save these credentials. They will not be shown again.",
     "temp_password": "Temporary Password",
-    "done": "Done"
+    "done": "Done",
+    "notifications": "ܐܘܕܥ̈ܬܐ",
+    "create_notification": "ܒܪܝ ܐܘܕܥܬܐ",
+    "notification_title": "ܟܘܢܝܐ",
+    "notification_title_hint": "ܐܬܒ ܟܘܢܝܐ ܕܐܘܕܥܬܐ",
+    "notification_message": "ܐܓܪܬܐ",
+    "notification_message_hint": "ܐܬܒ ܐܓܪܬܐ ܕܐܘܕܥܬܐ",
+    "priority": "ܩܕܡܝܘܬܐ",
+    "urgent": "ܚܫܝܚܐ",
+    "important": "ܚܫܝܒܐ",
+    "normal": "ܥܕܝܐ",
+    "send_to_all_schools": "ܫܕܪ ܠܟܠ ܡܕܪ̈ܫܐ",
+    "send_to_all_schools_desc": "ܐܘܕܥܬܐ ܐܫܬܕܪ ܠܟܠ ܡܕܪ̈ܫܐ",
+    "select_schools": "ܓܠܐ ܡܕܪ̈ܫܐ",
+    "send_notification": "ܫܕܪ ܐܘܕܥܬܐ",
+    "notification_sent": "ܐܘܕܥܬܐ ܐܫܬܕܪ ܒܫܘܬܦܘܬܐ",
+    "no_notifications": "ܠܐ ܐܝܬ ܐܘܕܥ̈ܬܐ ܗܫܐ",
+    "all_schools": "ܟܠ ܡܕܪ̈ܫܐ",
+    "delete_notification": "ܫܢܝ ܐܘܕܥܬܐ",
+    "delete_notification_confirm": "ܐܝܬܝܟ ܡܘܕܝܢ ܕܨܒܐ ܠܡܫܢܝ ܗܕܐ ܐܘܕܥܬܐ؟",
+    "notification_deleted": "ܐܘܕܥܬܐ ܐܫܬܢܝ ܒܫܘܬܦܘܬܐ",
+    "failed_delete_notification": "ܚܛܐ ܒܫܢܝܬܐ ܕܐܘܕܥܬܐ"
   }
 }

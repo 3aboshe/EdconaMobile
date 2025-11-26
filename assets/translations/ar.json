@@ -467,6 +467,27 @@
     "school_created": "تم إنشاء المدرسة بنجاح",
     "save_credentials": "يرجى حفظ بيانات الاعتماد هذه. لن تظهر مرة أخرى.",
     "temp_password": "كلمة المرور المؤقتة",
-    "done": "تم"
+    "done": "تم",
+    "notifications": "الإشعارات",
+    "create_notification": "إنشاء إشعار",
+    "notification_title": "العنوان",
+    "notification_title_hint": "أدخل عنوان الإشعار",
+    "notification_message": "الرسالة",
+    "notification_message_hint": "أدخل رسالة الإشعار",
+    "priority": "الأولوية",
+    "urgent": "عاجل",
+    "important": "مهم",
+    "normal": "عادي",
+    "send_to_all_schools": "إرسال لجميع المدارس",
+    "send_to_all_schools_desc": "سيتم إرسال الإشعار لجميع المدارس",
+    "select_schools": "اختر المدارس",
+    "send_notification": "إرسال الإشعار",
+    "notification_sent": "تم إرسال الإشعار بنجاح",
+    "no_notifications": "لا توجد إشعارات حتى الآن",
+    "all_schools": "جميع المدارس",
+    "delete_notification": "حذف الإشعار",
+    "delete_notification_confirm": "هل أنت متأكد من حذف هذا الإشعار؟",
+    "notification_deleted": "تم حذف الإشعار بنجاح",
+    "failed_delete_notification": "فشل في حذف الإشعار"
   }
 }

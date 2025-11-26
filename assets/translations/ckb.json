@@ -365,6 +365,27 @@
     "school_created": "School Created Successfully",
     "save_credentials": "Please save these credentials. They will not be shown again.",
     "temp_password": "Temporary Password",
-    "done": "Done"
+    "done": "Done",
+    "notifications": "ئاگادارییەکان",
+    "create_notification": "دروستکردنی ئاگاداری",
+    "notification_title": "سەردێڕ",
+    "notification_title_hint": "سەردێڕی ئاگاداری بنووسە",
+    "notification_message": "پەیام",
+    "notification_message_hint": "پەیامی ئاگاداری بنووسە",
+    "priority": "پێشینە",
+    "urgent": "بەپەلە",
+    "important": "گرنگ",
+    "normal": "ئاسایی",
+    "send_to_all_schools": "بنێرە بۆ هەموو قوتابخانەکان",
+    "send_to_all_schools_desc": "ئاگاداری بۆ هەموو قوتابخانەکان دەنێردرێت",
+    "select_schools": "قوتابخانەکان هەڵبژێرە",
+    "send_notification": "ناردنی ئاگاداری",
+    "notification_sent": "ئاگاداری بە سەرکەوتوویی نێردرا",
+    "no_notifications": "هیچ ئاگادارییەک لە ئێستادا نییە",
+    "all_schools": "هەموو قوتابخانەکان",
+    "delete_notification": "سڕینەوەی ئاگاداری",
+    "delete_notification_confirm": "دڵنیایت لە سڕینەوەی ئەم ئاگادارییە؟",
+    "notification_deleted": "ئاگاداری بە سەرکەوتوویی سڕایەوە",
+    "failed_delete_notification": "شکستی هێنا لە سڕینەوەی ئاگاداری"
   }
 }
