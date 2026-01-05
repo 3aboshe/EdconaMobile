@@ -154,7 +154,7 @@ class _AttendanceSectionState extends State<AttendanceSection> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'teacher.attendance.select_date'.tr(),
+                  'teacher.attendance_page.select_date'.tr(),
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -187,7 +187,7 @@ class _AttendanceSectionState extends State<AttendanceSection> {
               }
             },
             icon: const Icon(Icons.calendar_today, size: 20),
-            label: Text('teacher.attendance.change_date'.tr()),
+            label: Text('teacher.attendance_page.change_date'.tr()),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF0D47A1),
             ),
@@ -215,7 +215,7 @@ class _AttendanceSectionState extends State<AttendanceSection> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'teacher.attendance.select_class'.tr(),
+            'teacher.attendance_page.select_class'.tr(),
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -234,7 +234,7 @@ class _AttendanceSectionState extends State<AttendanceSection> {
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        'teacher.attendance.no_classes_assigned'.tr(),
+                        'teacher.attendance_page.no_classes_assigned'.tr(),
                         style: TextStyle(
                           color: Colors.grey[600],
                           fontSize: 14,
@@ -248,7 +248,7 @@ class _AttendanceSectionState extends State<AttendanceSection> {
                   child: DropdownButtonFormField<String>(
                     value: _selectedClassId,
                     decoration: InputDecoration(
-                      labelText: 'teacher.attendance.class'.tr(),
+                      labelText: 'teacher.attendance_page.class'.tr(),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -294,7 +294,7 @@ class _AttendanceSectionState extends State<AttendanceSection> {
               ),
               const SizedBox(height: 16),
               Text(
-                'teacher.attendance.no_students_found'.tr(),
+                'teacher.attendance_page.no_students_found'.tr(),
                 style: const TextStyle(
                   fontSize: 16,
                   color: Colors.grey,
@@ -330,7 +330,7 @@ class _AttendanceSectionState extends State<AttendanceSection> {
               child: ElevatedButton.icon(
                 onPressed: () => _markAllAttendance('0'),
                 icon: const Icon(Icons.check_circle, size: 20),
-                label: Text('teacher.attendance.mark_all_present'.tr()),
+                label: Text('teacher.attendance_page.mark_all_present'.tr()),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF34C759),
                   foregroundColor: Colors.white,
@@ -346,7 +346,7 @@ class _AttendanceSectionState extends State<AttendanceSection> {
               child: ElevatedButton.icon(
                 onPressed: () => _markAllAttendance('1'),
                 icon: const Icon(Icons.cancel, size: 20),
-                label: Text('teacher.attendance.mark_all_absent'.tr()),
+                label: Text('teacher.attendance_page.mark_all_absent'.tr()),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFFF3B30),
                   foregroundColor: Colors.white,
@@ -527,7 +527,7 @@ class _AttendanceSectionState extends State<AttendanceSection> {
       if (mounted) {
         ScaffoldMessenger.of(currentContext).showSnackBar(
           SnackBar(
-            content: Text('teacher.attendance.save_success'.tr()),
+            content: Text('teacher.attendance_page.save_success'.tr()),
             backgroundColor: Colors.green,
           ),
         );
@@ -536,7 +536,7 @@ class _AttendanceSectionState extends State<AttendanceSection> {
       if (mounted) {
         ScaffoldMessenger.of(currentContext).showSnackBar(
           SnackBar(
-            content: Text('teacher.attendance.save_error'.tr()),
+            content: Text('teacher.attendance_page.save_error'.tr()),
             backgroundColor: Colors.red,
           ),
         );
