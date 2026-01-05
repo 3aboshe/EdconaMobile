@@ -40,7 +40,7 @@ class EdConaApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'EdCona',
+      title: 'common.app_name'.tr(),
       debugShowCheckedModeBanner: false,
       localizationsDelegates: [
         ...context.localizationDelegates,

@@ -73,7 +73,7 @@ class _SystemSectionState extends State<SystemSection> {
                         size: 32,
                       ),
                       const SizedBox(width: 16),
-                      const Expanded(
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [

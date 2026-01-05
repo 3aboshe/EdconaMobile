@@ -332,9 +332,9 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
                       backgroundColor: const Color(0xFF1E3A8A),
                       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                     ),
-                    child: const Text(
-                      'Create',
-                      style: TextStyle(color: Colors.white),
+                    child: Text(
+                      'admin.create'.tr(),
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                 ],
@@ -372,9 +372,9 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Academic Management',
-                      style: TextStyle(
+                    Text(
+                      'admin.academic_management_title'.tr(),
+                      style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF1D1D1F),
@@ -607,7 +607,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
             ),
             const SizedBox(height: 16),
             Text(
-              'No classes found',
+              'admin.no_classes_found'.tr(),
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.grey[600],

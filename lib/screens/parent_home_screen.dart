@@ -87,7 +87,11 @@ class _ParentHomeScreenState extends State<ParentHomeScreen>
       }
     } catch (e) {
       setState(() {
-        _errorMessage = 'Failed to load parent data: ${e.toString()}';
+        _errorMessage = 'parent.failed_load_parent_data'.tr(
+          namedArgs: {
+            'error': e.toString(),
+          },
+        );
         _isLoading = false;
       });
     }
@@ -136,7 +140,7 @@ class _ParentHomeScreenState extends State<ParentHomeScreen>
             ),
             const SizedBox(width: 16),
             Text(
-              _currentUser != null ? _currentUser!['name'] : 'Parent Portal',
+              _currentUser != null ? _currentUser!['name'] : 'parent.portal_title'.tr(),
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -151,7 +155,7 @@ class _ParentHomeScreenState extends State<ParentHomeScreen>
           IconButton(
             onPressed: _logout,
             icon: const Icon(Icons.logout),
-            tooltip: 'Logout',
+            tooltip: 'common.logout'.tr(),
           ),
         ],
       ),
@@ -229,7 +233,7 @@ class _ParentHomeScreenState extends State<ParentHomeScreen>
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text(
-                                isRTL ? 'أهلاً بك في بوابة ولي الأمر' : 'Welcome Parent',
+                                'parent.welcome_title'.tr(),
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 24,
@@ -239,9 +243,7 @@ class _ParentHomeScreenState extends State<ParentHomeScreen>
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                isRTL
-                                    ? 'مرحباً بك ${_currentUser!['name']}'
-                                    : 'Welcome, ${_currentUser!['name']}',
+                                'parent.welcome_user'.tr(args: [_currentUser!['name']]),
                                 style: TextStyle(
                                   color: Colors.white.withValues(alpha: 0.9),
                                   fontSize: 16,
@@ -249,10 +251,8 @@ class _ParentHomeScreenState extends State<ParentHomeScreen>
                                 textAlign: TextAlign.center,
                               ),
                               if (_children.isNotEmpty)
-                                Text(
-                                  isRTL
-                                      ? 'لديك ${_children.length} طالب'
-                                      : 'You have ${_children.length} students',
+                                  Text(
+                                  'parent.students_count'.tr(args: [_children.length.toString()]),
                                   style: TextStyle(
                                     color: Colors.white.withValues(alpha: 0.8),
                                     fontSize: 14,
@@ -363,16 +363,16 @@ class _ParentHomeScreenState extends State<ParentHomeScreen>
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Text(
-                      '${isRTL ? 'الصف:' : 'Grade:'} ${student['classId'] ?? 'N/A'}',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[600],
+                      Text(
+                      '${'parent.grade_colon'.tr()} ${student['classId']?.toString() ?? 'common.na'.tr()}',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey[600],
+                        ),
                       ),
-                    ),
                     if (student['role'] != null)
                       Text(
-                        '${isRTL ? 'الدور:' : 'Role:'} ${student['role']}',
+                        '${'parent.role_colon'.tr()} ${student['role']}',
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.grey[500],
@@ -561,7 +561,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      '${widget.isRTL ? 'الصف:' : 'Grade:'} ${widget.student['classId'] ?? 'N/A'}',
+                                      '${'parent.grade_colon'.tr()} ${widget.student['classId']?.toString() ?? 'common.na'.tr()}',
                                       style: TextStyle(
                                         fontSize: 14,
                                         color: Colors.grey[600],
@@ -577,7 +577,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
                             children: [
                               Expanded(
                                 child: _buildStatCard(
-                                  title: widget.isRTL ? 'الدرجات' : 'Grades',
+                                  title: 'parent.grades'.tr(),
                                   value: '${_grades.length}',
                                   icon: Icons.grade,
                                   color: Colors.blue,
@@ -586,7 +586,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
                               const SizedBox(width: 12),
                               Expanded(
                                 child: _buildStatCard(
-                                  title: widget.isRTL ? 'الحضور' : 'Attendance',
+                                  title: 'parent.attendance'.tr(),
                                   value: '${_attendance.length}',
                                   icon: Icons.calendar_today,
                                   color: Colors.green,
@@ -619,9 +619,9 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
                             padding: const EdgeInsets.symmetric(horizontal: 4),
                             child: Row(
                               children: [
-                                _buildTabButton(0, widget.isRTL ? 'الواجبات' : 'Homework', Icons.assignment),
-                                _buildTabButton(1, widget.isRTL ? 'الدرجات' : 'Grades', Icons.grade),
-                                _buildTabButton(2, widget.isRTL ? 'الحضور' : 'Attendance', Icons.calendar_today),
+                                _buildTabButton(0, 'parent.homework'.tr(), Icons.assignment),
+                                _buildTabButton(1, 'parent.grades'.tr(), Icons.grade),
+                                _buildTabButton(2, 'parent.attendance'.tr(), Icons.calendar_today),
                               ],
                             ),
                           ),
@@ -712,7 +712,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
             ),
             const SizedBox(height: 16),
             Text(
-              widget.isRTL ? 'لا توجد واجبات حالياً' : 'No homework available',
+              'parent.no_homework'.tr(),
               style: TextStyle(
                 color: Colors.grey[600],
                 fontSize: 16,
@@ -732,18 +732,18 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
           margin: const EdgeInsets.only(bottom: 12),
           child: ListTile(
             leading: const Icon(Icons.assignment, color: Colors.green),
-            title: Text(hw['title'] ?? 'Homework'),
+            title: Text(hw['title']?.toString() ?? 'parent.homework'.tr()),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (hw['dueDate'] != null)
                   Text(
-                    '${widget.isRTL ? 'تاريخ التسليم:' : 'Due:'} ${hw['dueDate']}',
+                    '${'parent.due_colon'.tr()} ${hw['dueDate']}',
                     style: TextStyle(color: Colors.grey[600]),
                   ),
                 if (hw['subject'] != null)
                   Text(
-                    '${widget.isRTL ? 'المادة:' : 'Subject:'} ${hw['subject']}',
+                    '${'parent.subject_colon'.tr()} ${hw['subject']}',
                     style: TextStyle(color: Colors.grey[600]),
                   ),
               ],
@@ -755,7 +755,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
-                hw['status'] ?? 'Pending',
+                hw['status']?.toString() ?? 'parent.pending'.tr(),
                 style: TextStyle(
                   color: Colors.green,
                   fontSize: 12,
@@ -782,7 +782,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
             ),
             const SizedBox(height: 16),
             Text(
-              widget.isRTL ? 'لا توجد درجات حالياً' : 'No grades available',
+              'parent.no_grades'.tr(),
               style: TextStyle(
                 color: Colors.grey[600],
                 fontSize: 16,
@@ -819,8 +819,10 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
                 ),
               ),
             ),
-            title: Text(grade['subject'] ?? 'Subject'),
-            subtitle: Text('${widget.isRTL ? 'التاريخ:' : 'Date:'} ${grade['date'] ?? 'N/A'}'),
+            title: Text(grade['subject']?.toString() ?? 'common.unknown'.tr()),
+            subtitle: Text(
+              '${'common.date_colon'.tr()} ${grade['date']?.toString() ?? 'common.na'.tr()}',
+            ),
             trailing: Text(
               '${grade['score'] ?? ''} / ${grade['totalScore'] ?? ''}',
               style: const TextStyle(
@@ -847,7 +849,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
             ),
             const SizedBox(height: 16),
             Text(
-              widget.isRTL ? 'لا توجد بيانات حضور حالياً' : 'No attendance data available',
+              'parent.no_attendance_data_available'.tr(),
               style: TextStyle(
                 color: Colors.grey[600],
                 fontSize: 16,
@@ -874,13 +876,15 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
                 color: isPresent ? Colors.green : Colors.red,
               ),
             ),
-            title: Text('${widget.isRTL ? 'التاريخ:' : 'Date:'} ${attendance['date'] ?? 'N/A'}'),
+            title: Text(
+              '${'common.date_colon'.tr()} ${attendance['date'] ?? 'common.na'.tr()}',
+            ),
             subtitle: Text(
-              attendance['subject'] ?? 'All Subjects',
+              attendance['subject'] ?? 'common.all_subjects'.tr(),
               style: TextStyle(color: Colors.grey[600]),
             ),
             trailing: Text(
-              isPresent ? (widget.isRTL ? 'حاضر' : 'Present') : (widget.isRTL ? 'غائب' : 'Absent'),
+              isPresent ? 'parent.present'.tr() : 'parent.absent'.tr(),
               style: TextStyle(
                 color: isPresent ? Colors.green : Colors.red,
                 fontWeight: FontWeight.w600,
@@ -907,7 +911,8 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
       case 'c-':
         return Colors.orange;
       case 'd':
-      case 'f':
+      case 'd+':
+      case 'd-':
         return Colors.red;
       default:
         return Colors.grey;

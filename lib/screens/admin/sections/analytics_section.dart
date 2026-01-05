@@ -124,7 +124,12 @@ class _AnalyticsSectionState extends State<AnalyticsSection> {
                       entry.value / gradeDistribution.values.reduce((a, b) => a + b) * 100;
                   return PieChartSectionData(
                     value: entry.value.toDouble(),
-                    title: '${entry.key}\n${percentage.toStringAsFixed(1)}%',
+                    title: 'admin.analytics_pie_section_title'.tr(
+                      namedArgs: {
+                        'grade': entry.key,
+                        'percentage': percentage.toStringAsFixed(1),
+                      },
+                    ),
                     color: colors[gradeDistribution.keys.toList().indexOf(entry.key)],
                     radius: 100,
                     titleStyle: const TextStyle(

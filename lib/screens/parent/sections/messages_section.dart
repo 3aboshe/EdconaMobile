@@ -204,7 +204,7 @@ class _MessagesSectionState extends State<MessagesSection> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        teacher['name'] ?? 'Teacher',
+                        teacher['name']?.toString() ?? 'common.unknown'.tr(),
                         style: const TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.w600,
@@ -213,7 +213,7 @@ class _MessagesSectionState extends State<MessagesSection> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        teacher['subject'] ?? 'Subject Teacher',
+                        teacher['subject']?.toString() ?? 'messages.subject_teacher'.tr(),
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey[600],
@@ -388,8 +388,8 @@ class _ChatScreenState extends State<ChatScreen> {
       } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Failed to send message'),
+            SnackBar(
+              content: Text('messages.send_error'.tr()),
               backgroundColor: Colors.red,
             ),
           );
@@ -398,8 +398,8 @@ class _ChatScreenState extends State<ChatScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to send message'),
+          SnackBar(
+            content: Text('messages.send_error'.tr()),
             backgroundColor: Colors.red,
           ),
         );
@@ -446,14 +446,14 @@ class _ChatScreenState extends State<ChatScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.otherUser['name'] ?? 'Unknown',
+                    widget.otherUser['name']?.toString() ?? 'common.unknown'.tr(),
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   Text(
-                    widget.otherUser['subject'] ?? 'Teacher',
+                    widget.otherUser['subject']?.toString() ?? 'messages.teacher_role_fallback'.tr(),
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.white.withValues(alpha: 0.9),
@@ -503,7 +503,7 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            widget.isRTL ? 'ابدأ المحادثة' : 'Start the conversation',
+            'messages.start_conversation_button'.tr(),
             style: TextStyle(
               fontSize: 16,
               color: Colors.grey[600],
@@ -627,7 +627,7 @@ class _ChatScreenState extends State<ChatScreen> {
               child: TextField(
                 controller: _messageController,
                 decoration: InputDecoration(
-                  hintText: widget.isRTL ? 'اكتب رسالتك...' : 'Type your message...',
+                  hintText: 'parent.type_message'.tr(),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,

@@ -91,12 +91,21 @@
     "no_homework_found": "ܠܐ ܐܫܬܟܚ ܥܒܕܐ",
     "urgent": "ܚܫܝܬܐ",
     "important": "ܡܗܝܡܐ",
-    "normal": "ܥܕܝܐ"
+    "normal": "ܥܕܝܐ",
+    "failed_load_parent_data": "ܠܐ ܫܟܚܢܐ ܐܬܟܫܦܐ ܠܓܙܪܐ ܐܒܐ ܘܐܡܐ: {error}",
+    "portal_title": "ܬܪܥܐ ܕܐܒܐ ܘܐܡܐ",
+    "welcome_title": "ܫܠܡܐ ܠܐܒܐ ܘܐܡܐ",
+    "welcome_user": "ܫܠܡܐ ܠܟ، {}",
+    "students_count": "ܐܝܬ ܠܟ {} ܐܣܟܪܝ̈ܐ",
+    "grade_colon": "ܕܪܓܐ:",
+    "role_colon": "ܬܦܩܝܕܐ:",
+    "due_colon": "ܙܒܢܐ ܕܓܡܘܪܐ:",
+    "subject_colon": "ܡܕܥܐ:"
   },
   "teacher": {
     "welcome": "ܫܠܡܐ ܠܟ ܒܬܪܥܐ ܕܡܠܦܢܐ",
     "welcome_back": "ܫܠܡܐ ܠܟ ܬܘܒ",
-    "home": "ܒܝܬ",
+    "home": "ܒܝܬܐ",
     "dashboard": "ܠܘܚܐ ܪܝܫܝܐ",
     "attendance": "ܥܘܕܪܢܐ",
     "homework": "ܥܒܕ̈ܐ ܕܒܝܬܐ",
@@ -127,7 +136,8 @@
       "mark_all_present": "ܣܝܡ ܟܠܗܘܢ ܐܝܬܝܗܘܢ",
       "mark_all_absent": "ܣܝܡ ܟܠܗܘܢ ܠܝܬܝܗܘܢ",
       "save_success": "ܥܘܕܪܢܐ ܐܬܦܝܫ ܒܫܘܬܦܝܐ",
-      "save_error": "ܚܛܐ ܒܦܘܫܝܐ ܕܥܘܕܪܢܐ"
+      "save_error": "ܚܛܐ ܒܦܘܫܝܐ ܕܥܘܕܪܢܐ",
+      "no_classes_assigned": "ܦܦܢܐ ܠܐ ܐܬܦܩܕܬ ܠܟܘܢ. ܐܬܟܦܠܘ ܥܡ ܡܕܒܪܢܐ ܡܢܝܢܐ."
     },
     "grades_page": {
       "create_exam": "ܒܪܝ ܒܘܚܢܐ",
@@ -143,7 +153,11 @@
       "no_students": "ܠܐ ܐܝܬ ܐܣܟܪܝ̈ܐ",
       "student_name": "ܫܡܐ ܕܐܣܟܪܝܐ",
       "score": "ܢܩܘܕܐ",
-      "select_exam": "ܓܠܐ ܒܘܚܢܐ"
+      "select_exam": "ܓܠܐ ܒܘܚܢܐ",
+      "select_class_first": "ܐܓܕܦܐ ܦܦܢܐ ܩܕܡܐ",
+      "select_class": "ܓܠܐ ܦܦܢܐ",
+      "class": "ܦܦܢܐ",
+      "no_classes_assigned": "ܦܦܢܐ ܠܐ ܐܬܦܩܕܬ ܠܟܘܢ. ܐܬܟܦܠܘ ܥܡ ܡܕܒܪܢܐ ܡܢܝܢܐ."
     },
     "homework_page": {
       "create_homework": "ܒܪܝ ܥܒܕܐ ܕܒܝܬܐ",
@@ -156,7 +170,12 @@
       "not_submitted": "ܠܐ ܐܫܬܕܪ",
       "homework_created": "ܥܒܕܐ ܐܬܒܪܝ ܒܫܘܬܦܝܐ",
       "homework_title_hint": "ܐܬܒ ܫܡܐ ܕܥܒܕܐ",
-      "description_hint": "ܐܬܒ ܦܘܫܩܐ ܕܥܒܕܐ"
+      "description_hint": "ܐܬܒ ܦܘܫܩܐ ܕܥܒܕܐ",
+      "unmark": "ܬܪܝܥ ܨܝܢܐ",
+      "marked_submitted_pending_save": "ܡܛܟܣܐ ܒܥܘܡܕܢܐ (ܚܟܡܐ ܕܫܪܪܐ)",
+      "marked_not_submitted_pending_save": "ܡܛܟܣܐ ܕܠܐ ܒܥܘܡܕܢܐ (ܚܟܡܐ ܕܫܪܪܐ)",
+      "all_submissions_saved_success": "ܟܠܗܝܢ ܥܠܘܬܐ ܦܬܚ ܡܬܩܦܘܪܘܬܐ",
+      "save_submissions_error": "ܚܦܪܐ ܡܛܟܣܘܬܐ ܡܫܪܪܐ: {error}"
     },
     "please_select_exam": "ܒܒܥܘ ܓܠܐ ܒܘܚܢܐ ܠܘܩܕܡ",
     "please_enter_score": "ܒܒܥܘ ܐܬܒ ܢܩܘܕܐ",
@@ -268,7 +287,38 @@
     "type_message": "ܟܬܘܒ ܐܓܪܬܟ...",
     "update": "ܚܕܬ",
     "view_details": "ܚܙܝ ܝܕܥ̈ܬܐ",
-    "yes": "ܐܝܢ"
+    "yes": "ܐܝܢ",
+    "overview": "ܚܙܘܐ ܓܘܢܝܐ",
+    "manage_grades": "ܛܒܬܐ ܕܢܩܘܕ̈ܐ",
+    "manage_homework": "ܛܒܬܐ ܕܥܒܕ̈ܐ ܕܒܝܬܐ",
+    "track_attendance": "ܓܙܘܪܐ ܕܥܘܕܪܢܐ",
+    "post_updates": "ܦܪܫܐ ܕܚܕܬ̈ܐ",
+    "communicate": "ܐܕܪܥܘܬܐ",
+    "student_rankings": "ܕܪ̈ܓܝܗܘܢ ܕܐܣܟܪܝ̈ܐ",
+    "dashboard_subtitle": "ܚܙܘܐ ܓܘܢܝܐ ܘܡܢܝܘܬܐ",
+    "grades_subtitle": "ܛܒܬܐ ܕܢܩܘܕ̈ܐ",
+    "homework_subtitle": "ܛܒܬܐ ܕܥܒܕ̈ܐ ܕܒܝܬܐ",
+    "attendance_subtitle": "ܓܙܘܪܐ ܕܥܘܕܪܢܐ",
+    "announcements_subtitle": "ܦܪܫܐ ܕܚܕܬ̈ܐ",
+    "messages_subtitle": "ܐܕܪܥܘܬܐ",
+    "leaderboard_subtitle": "ܕܪ̈ܓܝܗܘܢ ܕܐܣܟܪܝ̈ܐ",
+    "total_grades": "ܟܠܢܝܐ ܕܢܩܘܕ̈ܐ",
+    "no_parents": "ܠܐ ܐܘܗܝ ܐܒܐ ܕܐܡܐ",
+    "message": "ܐܓܪܬܐ",
+    "send": "ܫܕܪ",
+    "conversation": "ܡܡܠܠܐ",
+    "feedback": "ܦܘܪܥܢܐ",
+    "tap_create": "ܐܦܬܚ ܚܫܩܘܡܐ + ܕܒܪܘܡܐ ܕܥܒܕܐ ܕܒܝܬܐ",
+    "tap_create_announcement": "ܐܦܬܚ ܚܫܩܘܡܐ + ܕܒܪܘܡܐ ܕܐܘܕܥܬܐ",
+    "actions": "ܦܥܠܘܬ̈ܐ",
+    "mark_submitted": "ܗܘܕܥ ܥܘܡܕܢܐ",
+    "no_rankings": "ܠܐ ܕܪ̈ܓܝ ܥܕܡܐ ܠܐܠܝܢ",
+    "rankings_appear": "ܕܪ̈ܓܝ ܬܓܙܪܘܢ ܓܠܐ ܢܩܘܕ̈ܐ",
+    "all_students": "ܟܠܗܝܢ ܐܣܟܪܝ̈ܐ",
+    "first": "ܒܩܕܡܝܘܬܐ",
+    "second": "ܒܬܪܝܢܘܬܐ",
+    "third": "ܒܬܠܝܬܘܬܐ",
+    "edit_profile": "ܫܘܚܠܦܘܬܐ ܕܦܪܘܦܝܠ"
   },
   "common": {
     "ok": "ܛܒ",
@@ -305,7 +355,24 @@
     "normal": "ܥܕܝܐ",
     "high": "ܪܡܐ",
     "urgent": "ܚܫܝܚܐ",
-    "view_all": "ܚܙܝ ܟܠ"
+    "view_all": "ܚܙܝ ܟܠ",
+    "app_name": "ܐܕܟܘܢܐ",
+    "error_details": "ܚܦܪܐ: {error}",
+    "message": "ܐܓܪܬܐ",
+    "all_subjects": "ܟܠܗܝܢ ܡܕܥ̈ܐ",
+    "unknown": "ܠܐ ܡܬܝܕܥܐ",
+    "unknown_class": "ܦܦܢܐ ܠܐ ܡܬܝܕܥܐ",
+    "untitled": "ܕܠܐ ܠܫܪܫܝܬܐ",
+    "no_content": "ܠܐ ܓܘܒܐ",
+    "date": "ܝܘܡܐ",
+    "date_colon": "ܝܘܡܐ:",
+    "na": "ܠܐ ܐܝܬ",
+    "pending": "ܓܦܝܣܐ",
+    "selected": "ܓܠܝܐ",
+    "select": "ܓܠܝ",
+    "hours_ago": "{count} ܫܥ̈ܐ ܒܪܘܡܐ",
+    "days_ago": "{count} ܝܘܡܝܢ ܒܪܘܡܐ",
+    "day_ago": "{count} ܝܘܡܐ ܒܪܘܡܐ"
   },
   "admin": {
     "panel_title": "ܠܘܝܬܐ ܕܐܕܡܝܢ",
@@ -341,7 +408,7 @@
     "create_class_title": "ܒܪܝ ܦܠܨܐ",
     "class_name_label": "ܫܡܐ ܕܦܠܨܐ *",
     "class_name_hint": "ܡܬܠܐ: ܦܠܨܐ 5-ܐ، ܦܠܨܐ 1",
-    "class_name_hint_2": "ܡܬܠܐ: ܦܠܨܐ 5-ܐ، ܦܠܨܐ 1",
+    "class_name_hint_2": "ܡܬܠܐ: ܕܪܓܐ 5-ܐ، ܦܦܢܐ 1",
     "class_name_error": "ܐܬܒ ܫܡܐ ܕܦܠܨܐ",
     "select_subjects": "ܓܠܐ ܡܕ̈ܥܐ",
     "cancel": "ܣܟܘܬ",
@@ -451,7 +518,14 @@
     "password_reset_success": "ܦܬܓܡܐ ܒܫܠܡܐ ܬܫܩܚ! ܦܬܓܡܐ ܚܕܬܐ ܙܒܢܝܐ ܐܬܒܪܝ.",
     "password_reset_failed": "ܚܛܐ ܒܬܘܕܬܐ ܕܦܬܓܡܐ",
     "has_temporary_password_info": "ܐܚܢܐ ܚܕܬܘܫܢܐ ܐܝܬ ܦܬܓܡܐ ܙܒܢܝܐ. ܒܨܚ ܥܠ 'ܬܘܕܬܐ ܦܬܓܡܐ' ܠܬܒܪܝ ܚܕܬܐ.",
-    "close": "ܣܚܝܪܐ"
+    "close": "ܣܚܝܪܐ",
+    "average_grade": "ܡܥܕܠܐ ܕܢܩܘܕܐ",
+    "latest_activities": "ܦܥܠܘܬ̈ܐ ܚܕܬ̈ܐ",
+    "activity_new_homework_math": "ܥܒܕܐ ܕܒܝܬܐ ܚܕܬܐ ܒܡܢܝܢܘܬܐ",
+    "activity_school_meeting": "ܐܘܕܥܬܐ ܕܡܘܥܕܐ ܐܟܕܡܝܬܐ",
+    "activity_science_project_due": "ܙܒܢܐ ܕܓܡܘܪܐ ܕܦܪܘܛܝܩܛܘܣ ܣܓܕܘܬܐ",
+    "activity_holiday_notice": "ܐܘܕܥܬܐ ܕܦܛܪܐ ܡܦܪܫܬܐ",
+    "analytics_pie_section_title": "{grade}\n{percentage}٪"
   },
   "days": {
     "mon": "ܬܪܝܢ",
@@ -574,5 +648,40 @@
     "email_optional": "ܐܝܡܝܠ (ܐܝܬ ܚܠܦܝܢܐ)",
     "school_code": "ܩܘܕܐ ܕܡܕܪܫܐ",
     "admin_management_info": "ܒܪܝ ܐܕܡܝܢ̈ܐ ܥܡ ܫܡ̈ܐ ܦܪ̈ܝܫܐ ܠܡܕܒܪܢܘܬܐ ܕܗܕܐ ܡܕܪܫܐ. ܟܠ ܐܕܡܝܢ ܡܩܒܠ ܝܕܥ̈ܬܐ ܕܥܐܠܬܐ."
+  },
+  "home": {
+    "user_information": "ܝܕܥܬܐ ܕܡܦܠܚܢܐ",
+    "user_id": "ܓܡܪܘܬܐ ܕܡܦܠܚܢܐ",
+    "quick_actions": "ܦܥܠܝ̈ܐ ܚܫܝܬ̈ܐ",
+    "classes_coming_soon": "ܦܦܢܡܬܐ ܓܡܪܝܗܘܢ ܫܪܝܪܐ!",
+    "homework_coming_soon": "ܥܒܕ̈ܐ ܕܒܝܬܐ ܓܡܪܝܗܘܢ ܫܪܝܪܐ!",
+    "grades_coming_soon": "ܢܩܘܕ̈ܐ ܓܡܪܝܗܘܢ ܫܪܝܪܐ!",
+    "messages_coming_soon": "ܐܓܪ̈ܬܐ ܓܡܪܝܗܘܢ ܫܪܝܪܐ!"
+  },
+  "password_reset": {
+    "title": "ܒܪܘܡܐ ܕܡܠܬܐ ܚܕܬܐ ܕܥܒܪܐ",
+    "subtitle": "ܡܠܬܐ ܕܥܒܪܐ ܕܚܢܦܬܐ ܡܬܠܚܪܐ. ܡܐܠ ܡܠܬܐ ܚܕܬܐ ܘܚܙܩܬܐ ܕܥܒܪܐ.",
+    "current_password": "ܡܠܬܐ ܕܥܒܪܐ ܚܢܦܝܬܐ",
+    "new_password": "ܡܠܬܐ ܚܕܬܐ ܕܥܒܪܐ",
+    "confirm_password": "ܡܠܬܪܐ ܚܕܬܐ ܕܥܒܪܐ",
+    "current_required": "ܐܦܣܘܦ ܡܠܬܐ ܕܥܒܪܐ ܚܢܦܝܬܐ",
+    "new_required": "ܐܦܣܘܦ ܡܠܬܐ ܚܕܬܐ ܕܥܒܪܐ",
+    "confirm_required": "ܐܦܣܘܦ ܡܠܬܐ ܚܕܬܐ ܕܥܒܪܐ",
+    "min_length": "ܡܠܬܐ ܕܥܒܪܐ ܓܒܐ ܗܘܐ ܠܡܢ 8 ܐܬ̈ܘܬܐ",
+    "passwords_mismatch": "ܡܠܘܬ̈ܐ ܕܥܒܪܐ ܠܐ ܡܬܠܒܒ̈ܐ",
+    "submit": "ܦܣܘܬܐ ܕܡܠܬܐ ܚܕܬܐ ܕܥܒܪܐ",
+    "success": "ܡܠܬܐ ܕܥܒܪܐ ܫܘܚܠܦܬ ܒܥܒܘܪܬܐ!",
+    "failed": "ܚܦܪܐ ܫܘܚܠܦܘܬܐ ܕܡܠܬܐ ܕܥܒܪܐ"
+  },
+  "messages": {
+    "start_conversation_button": "ܫܪܐ ܡܡܠܠܐ",
+    "teacher_role_fallback": "ܡܠܦܢܐ",
+    "send_error": "ܚܦܪܐ ܒܫܕܪܘܬܐ ܕܐܓܪܬܐ",
+    "failed_load_user_data": "ܚܦܪܐ ܒܓܙܘܪܐ ܕܝܕܥܬܐ ܕܡܦܠܚܢܐ",
+    "failed_load_conversations": "ܚܦܪܐ ܒܓܙܘܪܐ ܕܡܡܠܠܬ̈ܐ",
+    "message_sent": "ܐܓܪܬܐ ܐܫܬܕܪܬ",
+    "choose_teacher": "ܓܠܐ ܡܠܦܢܐ",
+    "type_message_here": "ܐܦܣܓܕ ܐܓܪܬܟ ܠܘܬ...",
+    "subject_teacher": "ܡܠܦܢܐ ܕܡܕܥܐ"
   }
 }

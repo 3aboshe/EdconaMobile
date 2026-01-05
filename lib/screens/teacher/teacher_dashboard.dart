@@ -47,131 +47,6 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
     return ['ar', 'ckb', 'ku', 'bhn', 'arc', 'bad', 'bdi', 'sdh', 'kmr'].contains(locale.languageCode);
   }
 
-  String _getLocalizedText(String key) {
-    final locale = context.locale.languageCode;
-    final Map<String, Map<String, String>> translations = {
-      'ar': {
-        'quick_access': 'الوصول السريع',
-        'total_students': 'إجمالي الطلاب',
-        'pending_homework': 'الواجبات المعلقة',
-        'unread_messages': 'الرسائل غير المقروءة',
-        'welcome_message': 'مرحباً بك',
-        'dashboard': 'لوحة التحكم',
-        'grades': 'الدرجات',
-        'homework': 'الواجبات',
-        'attendance': 'الحضور',
-        'announcements': 'الإعلانات',
-        'messages': 'الرسائل',
-        'leaderboard': 'لوحة المتصدرين',
-        'overview': 'نظرة عامة',
-        'manage_grades': 'إدارة الدرجات',
-        'manage_homework': 'إدارة الواجبات',
-        'track_attendance': 'تتبع الحضور',
-        'post_updates': 'نشر التحديثات',
-        'communicate': 'تواصل',
-        'student_rankings': 'ترتيب الطلاب',
-        'dashboard_subtitle': 'نظرة عامة وإحصائيات',
-        'grades_subtitle': 'إدارة الدرجات',
-        'homework_subtitle': 'إدارة الواجبات',
-        'attendance_subtitle': 'تتبع الحضور',
-        'announcements_subtitle': 'نشر التحديثات',
-        'messages_subtitle': 'تواصل',
-        'leaderboard_subtitle': 'ترتيب الطلاب',
-      },
-      'ku': {
-        'quick_access': 'دەستڕەگەشتنی خێرا',
-        'total_students': 'کۆی قاریان',
-        'pending_homework': 'خەتباری مەودا',
-        'unread_messages': 'پەیامەخوێنراوەکان',
-        'welcome_message': 'بەخێربێی',
-        'dashboard': 'Dashboard',
-        'grades': 'نمەرەکان',
-        'homework': 'خەتبار',
-        'attendance': 'هەبوون',
-        'announcements': 'ڕاگەیان',
-        'messages': 'پەیام',
-        'leaderboard': 'لیستی پێشکەوتوو',
-        'overview': 'بەردەست',
-        'manage_grades': 'بەڕێوەبردنی نمرە',
-        'manage_homework': 'بەڕێوەبردنی خەتبار',
-        'track_attendance': 'بینینی دێرین',
-        'post_updates': 'بڵاکردنەوە',
-        'communicate': 'پەیوەندی',
-        'student_rankings': 'پۆلی قاریان',
-        'dashboard_subtitle': 'بەردەست و ئامار',
-        'grades_subtitle': 'بەڕێوەبردنی نمرە',
-        'homework_subtitle': 'بەڕێوەبردنی خەتبار',
-        'attendance_subtitle': 'بینینی دێرین',
-        'announcements_subtitle': 'بڵاکردنەوە',
-        'messages_subtitle': 'پەیوەندی',
-        'leaderboard_subtitle': 'پۆلی قاریان',
-      },
-      'bhn': {
-        'quick_access': 'چورھکتی نیزیک',
-        'total_students': 'جمیعتی خوێندکاران',
-        'pending_homework': 'کاری ناتەواو',
-        'unread_messages': 'پیامانی نەخوێنراو',
-        'welcome_message': 'چکاوەت',
-        'dashboard': 'Dashboard',
-        'grades': 'نمرە',
-        'homework': 'کار',
-        'attendance': 'حضور',
-        'announcements': 'چاخچەکان',
-        'messages': 'پیامەکان',
-        'leaderboard': 'لیستی یەکەمەکان',
-        'overview': 'نەظر',
-        'manage_grades': 'بەڕێوەبردنی نمرە',
-        'manage_homework': 'بەڕێوەبردنی کار',
-        'track_attendance': 'بینینی حضور',
-        'post_updates': 'بڵاکردنەوە',
-        'communicate': 'پەیوەندی',
-        'student_rankings': 'پۆلی خوێندکاران',
-        'dashboard_subtitle': 'نەظر و ئامار',
-        'grades_subtitle': 'بەڕێوەبردنی نمرە',
-        'homework_subtitle': 'بەڕێوەبردنی کار',
-        'attendance_subtitle': 'بینینی حضور',
-        'announcements_subtitle': 'بڵاکردنەوە',
-        'messages_subtitle': 'پەیوەندی',
-        'leaderboard_subtitle': 'پۆلی خوێندکاران',
-      },
-    };
-
-    if (translations[locale]?[key] != null) {
-      return translations[locale]![key]!;
-    }
-
-    // Fallback to English
-    final Map<String, String> english = {
-      'quick_access': 'Quick Access',
-      'total_students': 'Total Students',
-      'pending_homework': 'Pending Homework',
-      'unread_messages': 'Unread Messages',
-      'welcome_message': 'Welcome back',
-      'dashboard': 'Dashboard',
-      'grades': 'Grades',
-      'homework': 'Homework',
-      'attendance': 'Attendance',
-      'announcements': 'Announcements',
-      'messages': 'Messages',
-      'leaderboard': 'Leaderboard',
-      'overview': 'Overview',
-      'manage_grades': 'Manage Grades',
-      'manage_homework': 'Manage Homework',
-      'track_attendance': 'Track Attendance',
-      'post_updates': 'Post Updates',
-      'communicate': 'Communicate',
-      'student_rankings': 'Student Rankings',
-      'dashboard_subtitle': 'Overview & Stats',
-      'grades_subtitle': 'Manage Grades',
-      'homework_subtitle': 'Manage Homework',
-      'attendance_subtitle': 'Track Attendance',
-      'announcements_subtitle': 'Post Updates',
-      'messages_subtitle': 'Communicate',
-      'leaderboard_subtitle': 'Student Rankings',
-    };
-    return english[key] ?? key;
-  }
-
   @override
   Widget build(BuildContext context) {
     final isRTL = _isRTL();
@@ -208,7 +83,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                         textAlign: TextAlign.right,
                       ),
                       Text(
-                        _getLocalizedText('dashboard'),
+                        'teacher.dashboard'.tr(),
                         style: const TextStyle(
                           color: Colors.white70,
                           fontSize: 12,
@@ -238,7 +113,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                         ),
                       ),
                       Text(
-                        _getLocalizedText('dashboard'),
+                        'teacher.dashboard'.tr(),
                         style: const TextStyle(
                           color: Colors.white70,
                           fontSize: 12,
@@ -382,7 +257,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      _getLocalizedText('welcome_message'),
+                      'teacher.welcome_message'.tr(),
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
@@ -402,56 +277,56 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
   Widget _buildMainSections() {
     final sections = [
       {
-        'title': 'Dashboard',
-        'subtitle': 'Overview & Stats',
+        'title': 'teacher.dashboard'.tr(),
+        'subtitle': 'teacher.dashboard_subtitle'.tr(),
         'icon': CupertinoIcons.home,
         'color': const Color(0xFF007AFF),
         'gradient': [const Color(0xFF007AFF), const Color(0xFF0051D5)],
         'key': 'dashboard',
       },
       {
-        'title': 'Grades',
-        'subtitle': 'Manage Grades',
+        'title': 'teacher.grades'.tr(),
+        'subtitle': 'teacher.grades_subtitle'.tr(),
         'icon': CupertinoIcons.chart_bar,
         'color': const Color(0xFF34C759),
         'gradient': [const Color(0xFF34C759), const Color(0xFF30B0C7)],
         'key': 'grades',
       },
       {
-        'title': 'Homework',
-        'subtitle': 'Manage Homework',
+        'title': 'teacher.homework'.tr(),
+        'subtitle': 'teacher.homework_subtitle'.tr(),
         'icon': CupertinoIcons.doc_text,
         'color': const Color(0xFFFF9500),
         'gradient': [const Color(0xFFFF9500), const Color(0xFFFF6B00)],
         'key': 'homework',
       },
       {
-        'title': 'Attendance',
-        'subtitle': 'Track Attendance',
+        'title': 'teacher.attendance'.tr(),
+        'subtitle': 'teacher.attendance_subtitle'.tr(),
         'icon': CupertinoIcons.calendar,
         'color': const Color(0xFFAF52DE),
         'gradient': [const Color(0xFFAF52DE), const Color(0xFF5E5CE6)],
         'key': 'attendance',
       },
       {
-        'title': 'Announcements',
-        'subtitle': 'Post Updates',
+        'title': 'teacher.announcements'.tr(),
+        'subtitle': 'teacher.announcements_subtitle'.tr(),
         'icon': CupertinoIcons.bell,
         'color': const Color(0xFFFF2D55),
         'gradient': [const Color(0xFFFF2D55), const Color(0xFFFF6B6B)],
         'key': 'announcements',
       },
       {
-        'title': 'Messages',
-        'subtitle': 'Communicate',
+        'title': 'teacher.messages'.tr(),
+        'subtitle': 'teacher.messages_subtitle'.tr(),
         'icon': CupertinoIcons.chat_bubble_2,
         'color': const Color(0xFF007AFF),
         'gradient': [const Color(0xFF007AFF), const Color(0xFF00C7BE)],
         'key': 'messages',
       },
       {
-        'title': 'Leaderboard',
-        'subtitle': 'Student Rankings',
+        'title': 'teacher.leaderboard'.tr(),
+        'subtitle': 'teacher.leaderboard_subtitle'.tr(),
         'icon': CupertinoIcons.star_fill,
         'color': const Color(0xFFFFD60A),
         'gradient': [const Color(0xFFFFD60A), const Color(0xFFFF9500)],
@@ -465,7 +340,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            _getLocalizedText('quick_access'),
+            'teacher.quick_access'.tr(),
             style: const TextStyle(
               color: Colors.white,
               fontSize: 20,
@@ -522,7 +397,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    _getLocalizedText(section['key'] as String),
+                    section['title'] as String,
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 18,
@@ -531,7 +406,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    _getLocalizedText('${section['key']}_subtitle'),
+                    section['subtitle'] as String,
                     style: TextStyle(
                       color: Colors.white.withValues(alpha: 0.9),
                       fontSize: 13,

@@ -1,0 +1,167 @@
+Scanning /Users/abdalrahmanmajed/Desktop/edconamobile/lib...
+
+Found 129 potential hardcoded strings:
+
+=== lib/main.dart ===
+  Line 43 [Parameter (title)]: "EdCona"
+
+=== lib/screens/parent_home_screen.dart ===
+  Line 154 [Parameter (tooltip)]: "Logout"
+  Line 823 [Text Widget]: "${widget.isRTL ? "
+  Line 877 [Text Widget]: "${widget.isRTL ? "
+
+=== lib/screens/messages_screen.dart ===
+  Line 532 [Text Widget]: "Failed to send message"
+  Line 542 [Text Widget]: "Failed to send message"
+  Line 884 [Text Widget]: "Failed to send message"
+  Line 894 [Text Widget]: "Failed to send message"
+
+=== lib/screens/login_screen.dart ===
+  Line 151 [Text Widget]: "Welcome, ${result["
+
+=== lib/screens/home_screen.dart ===
+  Line 133 [Parameter (tooltip)]: "Logout"
+  Line 318 [Parameter (label)]: "Classes"
+  Line 322 [Text Widget]: "Classes coming soon!"
+  Line 328 [Parameter (label)]: "Homework"
+  Line 332 [Text Widget]: "Homework coming soon!"
+  Line 338 [Parameter (label)]: "Grades"
+  Line 342 [Text Widget]: "Grades coming soon!"
+  Line 348 [Parameter (label)]: "Messages"
+  Line 352 [Text Widget]: "Messages coming soon!"
+
+=== lib/screens/admin/sections/analytics_section.dart ===
+  Line 127 [Parameter (title)]: "${entry.key}\n${percentage.toStringAsFixed(1)}%"
+
+=== lib/screens/admin/sections/users_section.dart ===
+  Line 847 [Text Widget]: "admin.delete_user_confirm"
+
+=== lib/screens/admin/sections/academic_section.dart ===
+  Line 473 [Text Widget]: "admin.tab_subjects"
+  Line 483 [Text Widget]: "admin.tab_classes"
+  Line 720 [Text Widget]: "admin.delete_subject_confirm"
+  Line 761 [Text Widget]: "admin.delete_class_confirm"
+
+=== lib/screens/admin/sections/dashboard_section.dart ===
+  Line 614 [Parameter (title)]: "Total Students"
+  Line 618 [Parameter (subtitle)]: "Enrolled students"
+  Line 621 [Parameter (title)]: "Total Teachers"
+  Line 625 [Parameter (subtitle)]: "Active teachers"
+  Line 628 [Parameter (title)]: "Total Parents"
+  Line 632 [Parameter (subtitle)]: "Registered parents"
+  Line 635 [Parameter (title)]: "Active Homework"
+  Line 639 [Parameter (subtitle)]: "Assignments this week"
+  Line 704 [Parameter (title)]: "Average Grade"
+  Line 720 [Parameter (title)]: "Active Homework"
+  Line 732 [Parameter (title)]: "Average Grade"
+  Line 744 [Parameter (title)]: "Active Homework"
+
+=== lib/screens/parent/sections/messages_section.dart ===
+  Line 392 [Text Widget]: "Failed to send message"
+  Line 402 [Text Widget]: "Failed to send message"
+
+=== lib/screens/teacher/teacher_dashboard.dart ===
+  Line 211 [Text Widget]: "dashboard"
+  Line 241 [Text Widget]: "dashboard"
+  Line 385 [Text Widget]: "welcome_message"
+  Line 468 [Text Widget]: "quick_access"
+
+=== lib/screens/teacher/sections/messages_section.dart ===
+  Line 166 [Text Widget]: "messages"
+  Line 213 [Text Widget]: "no_parents"
+  Line 287 [Text Widget]: "student"
+  Line 288 [Text Widget]: "conversation"
+  Line 490 [Text Widget]: "student"
+  Line 669 [Text Widget]: "type_message"
+
+=== lib/screens/teacher/sections/homework_section.dart ===
+  Line 203 [Text Widget]: "homework"
+  Line 256 [Text Widget]: "no_homework"
+  Line 265 [Text Widget]: "tap_create"
+  Line 320 [Text Widget]: "subject"
+  Line 338 [Text Widget]: "pending"
+  Line 338 [Text Widget]: "submitted"
+  Line 356 [Text Widget]: "due_date"
+  Line 364 [Text Widget]: "assigned_date"
+  Line 375 [Text Widget]: "view_submissions"
+  Line 384 [Text Widget]: "edit"
+  Line 484 [Text Widget]: "create_homework"
+  Line 498 [Text Widget]: "title"
+  Line 508 [Text Widget]: "subject"
+  Line 518 [Text Widget]: "description"
+  Line 531 [Text Widget]: "class"
+  Line 574 [Text Widget]: "due_date"
+  Line 588 [Text Widget]: "cancel"
+  Line 595 [Text Widget]: "title"
+  Line 604 [Text Widget]: "select_class"
+  Line 627 [Text Widget]: "Homework created successfully"
+  Line 636 [Text Widget]: "Error: ${e.toString()}"
+  Line 649 [Text Widget]: "create"
+  Line 700 [Text Widget]: "edit"
+  Line 714 [Text Widget]: "title"
+  Line 724 [Text Widget]: "subject"
+  Line 734 [Text Widget]: "description"
+  Line 747 [Text Widget]: "class"
+  Line 790 [Text Widget]: "due_date"
+  Line 804 [Text Widget]: "cancel"
+  Line 812 [Text Widget]: "select_class"
+  Line 836 [Text Widget]: "Homework updated successfully"
+  Line 845 [Text Widget]: "Error: ${e.toString()}"
+  Line 858 [Text Widget]: "save"
+  Line 948 [Text Widget]: "grade_homework"
+  Line 955 [Text Widget]: "grade"
+  Line 966 [Text Widget]: "feedback"
+  Line 978 [Text Widget]: "cancel"
+  Line 994 [Text Widget]: "save"
+  Line 1011 [Text Widget]: "save"
+  Line 1197 [Text Widget]: "grade"
+  Line 1281 [Text Widget]: "All submissions saved successfully"
+  Line 1289 [Text Widget]: "Error saving submissions: ${e.toString()}"
+
+=== lib/screens/teacher/sections/leaderboard_section.dart ===
+  Line 187 [Text Widget]: "leaderboard"
+  Line 196 [Text Widget]: "select_class"
+  Line 241 [Text Widget]: "select_class"
+  Line 273 [Text Widget]: "select_class"
+  Line 324 [Text Widget]: "no_rankings"
+  Line 333 [Text Widget]: "rankings_appear"
+  Line 434 [Text Widget]: "first"
+  Line 436 [Text Widget]: "second"
+  Line 437 [Text Widget]: "third"
+  Line 476 [Text Widget]: "all_students"
+  Line 563 [Text Widget]: "score"
+  Line 579 [Text Widget]: "rank"
+
+=== lib/screens/teacher/sections/profile_section.dart ===
+  Line 144 [Text Widget]: "set_availability"
+  Line 164 [Text Widget]: "availability_updated"
+  Line 254 [Text Widget]: "profile"
+  Line 363 [Text Widget]: "available_now"
+  Line 365 [Text Widget]: "available_at"
+  Line 366 [Text Widget]: "not_available"
+  Line 400 [Text Widget]: "teacher_info"
+  Line 410 [Text Widget]: "teacher_id"
+  Line 416 [Text Widget]: "my_subject"
+  Line 422 [Text Widget]: "total_classes"
+  Line 503 [Text Widget]: "messaging_hours"
+  Line 515 [Text Widget]: "set_availability"
+  Line 526 [Text Widget]: "available_from"
+  Line 534 [Text Widget]: "available_to"
+  Line 556 [Text Widget]: "save"
+  Line 620 [Text Widget]: "logout"
+
+=== lib/screens/teacher/sections/dashboard_section.dart ===
+  Line 159 [Text Widget]: "overview"
+  Line 215 [Text Widget]: "quick_actions"
+  Line 227 [Text Widget]: "take_attendance"
+  Line 236 [Text Widget]: "create_homework"
+  Line 249 [Text Widget]: "post_announcement"
+  Line 258 [Text Widget]: "add_grade"
+  Line 322 [Text Widget]: "my_classes"
+  Line 347 [Text Widget]: "no_classes"
+  Line 420 [Text Widget]: "students"
+  Line 438 [Text Widget]: "view_details"
+
+=== lib/screens/teacher/sections/grades_section.dart ===
+  Line 717 [Text Widget]: "Error: ${e.toString()}"
+

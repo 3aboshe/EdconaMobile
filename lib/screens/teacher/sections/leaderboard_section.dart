@@ -31,69 +31,7 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
     return ['ar', 'ckb', 'ku', 'bhn', 'arc', 'bad', 'bdi', 'sdh', 'kmr'].contains(locale.languageCode);
   }
 
-  String _getLocalizedText(String key) {
-    final locale = context.locale.languageCode;
-    final Map<String, Map<String, String>> translations = {
-      'ar': {
-        'leaderboard': 'لوحة الصدارة',
-        'select_class': 'اختر الصف',
-        'no_rankings': 'لا توجد ترتيبات',
-        'rankings_appear': 'ستظهر الترتيبات عند إضافة الدرجات',
-        'all_students': 'جميع الطلاب',
-        'rank': 'الترتيب',
-        'student_name': 'اسم الطالب',
-        'score': 'النتيجة',
-        'first': 'الأول',
-        'second': 'الثاني',
-        'third': 'الثالث',
-      },
-      'ku': {
-        'leaderboard': 'لیستی پێشکەوتوو',
-        'select_class': 'هەڵبژاردنی پۆل',
-        'no_rankings': 'پۆل نییە',
-        'rankings_appear': 'پۆل دەردەکەوە کاتێک نمرە زیاددەکرێت',
-        'all_students': 'هەموو قاریانەکان',
-        'rank': 'پۆل',
-        'student_name': 'ناوی قاری',
-        'score': 'ڕێژە',
-        'first': 'یەکەم',
-        'second': 'دووەم',
-        'third': 'سێیەم',
-      },
-      'bhn': {
-        'leaderboard': 'لیستی یەکەمەکان',
-        'select_class': 'هەڵبژاردنی کلاس',
-        'no_rankings': 'لیست نییە',
-        'rankings_appear': 'لیست دەردەکەوە کاتێک نمرە زیاددەکرێت',
-        'all_students': 'هەموو خوێندکارەکان',
-        'rank': 'پۆل',
-        'student_name': 'ناوی خوێندکار',
-        'score': 'ڕێژە',
-        'first': 'یەکەم',
-        'second': 'دووەم',
-        'third': 'سێیەم',
-      },
-    };
 
-    if (translations[locale]?[key] != null) {
-      return translations[locale]![key]!;
-    }
-
-    final Map<String, String> english = {
-      'leaderboard': 'Leaderboard',
-      'select_class': 'Select Class',
-      'no_rankings': 'No Rankings Yet',
-      'rankings_appear': 'Rankings will appear once grades are added',
-      'all_students': 'All Students',
-      'rank': 'Rank',
-      'student_name': 'Student Name',
-      'score': 'Score',
-      'first': '1st',
-      'second': '2nd',
-      'third': '3rd',
-    };
-    return english[key] ?? key;
-  }
 
   Future<void> _loadClasses() async {
     setState(() => _isLoading = true);
@@ -184,7 +122,7 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  _getLocalizedText('leaderboard'),
+                  'teacher.leaderboard'.tr(),
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 28,
@@ -193,7 +131,7 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  _getLocalizedText('select_class'),
+                  'teacher.select_class'.tr(),
                   style: TextStyle(
                     color: Colors.white.withValues(alpha: 0.8),
                     fontSize: 14,
@@ -238,7 +176,7 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            _getLocalizedText('select_class'),
+            'teacher.select_class'.tr(),
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -257,7 +195,7 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        'No classes assigned to you yet. Please contact your administrator.',
+                        'teacher.grades_page.no_classes_assigned'.tr(),
                         style: TextStyle(
                           color: Colors.grey[600],
                           fontSize: 14,
@@ -270,7 +208,7 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
               : DropdownButtonFormField<String>(
                   value: _selectedClassId,
                   decoration: InputDecoration(
-                    labelText: _getLocalizedText('select_class'),
+                    labelText: 'teacher.select_class'.tr(),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -278,7 +216,7 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
                   items: _classes.map((classData) {
                     return DropdownMenuItem<String>(
                       value: classData['id'],
-                      child: Text(classData['name'] ?? 'Unknown Class'),
+                      child: Text(classData['name'] ?? 'common.unknown_class'.tr()),
                     );
                   }).toList(),
                   onChanged: (value) {
@@ -321,7 +259,7 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
               ),
               const SizedBox(height: 24),
               Text(
-                _getLocalizedText('no_rankings'),
+                'teacher.no_rankings'.tr(),
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -330,7 +268,7 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
               ),
               const SizedBox(height: 8),
               Text(
-                _getLocalizedText('rankings_appear'),
+                'teacher.rankings_appear'.tr(),
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.grey[600],
@@ -431,10 +369,10 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
           ),
           child: Text(
             position == 0
-                ? _getLocalizedText('first')
+                ? 'teacher.first'.tr()
                 : position == 1
-                    ? _getLocalizedText('second')
-                    : _getLocalizedText('third'),
+                    ? 'teacher.second'.tr()
+                    : 'teacher.third'.tr(),
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.bold,
@@ -444,7 +382,7 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
         ),
         const SizedBox(height: 4),
         Text(
-          student['name'] ?? 'Unknown',
+          student['name'] ?? 'common.unknown'.tr(),
           style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
@@ -473,7 +411,7 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            _getLocalizedText('all_students'),
+            'teacher.all_students'.tr(),
             style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -551,7 +489,7 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  student['name'] ?? 'Unknown',
+                  student['name'] ?? 'common.unknown'.tr(),
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -560,7 +498,7 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '${_getLocalizedText('score')}: ${score.toStringAsFixed(1)}',
+                  '${'teacher.score'.tr()}: ${score.toStringAsFixed(1)}',
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.grey[600],
@@ -576,7 +514,7 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
-              _getLocalizedText('rank'),
+              'teacher.rank'.tr(),
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,

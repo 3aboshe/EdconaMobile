@@ -148,7 +148,14 @@ class _LoginScreenState extends State<LoginScreen>
         
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Welcome, ${result['user']['name']}! (Role: $userRole)'),
+            content: Text(
+              'login.welcome_user_role'.tr(
+                namedArgs: {
+                  'name': (result['user']['name'] ?? '').toString(),
+                  'role': userRole.toString(),
+                },
+              ),
+            ),
             backgroundColor: (userRole == 'ADMIN' || userRole == 'SUPER_ADMIN' || userRole == 'SCHOOL_ADMIN') ? Colors.blue : Colors.green,
             duration: Duration(seconds: 3),
           ),

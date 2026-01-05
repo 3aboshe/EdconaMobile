@@ -174,9 +174,9 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
         backgroundColor: const Color(0xFF0D47A1),
         foregroundColor: Colors.white,
         elevation: 0,
-        title: const Text(
-          'Announcements',
-          style: TextStyle(
+        title: Text(
+          'teacher.announcements'.tr(),
+          style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
           ),
@@ -235,17 +235,17 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
             color: Colors.grey[400],
           ),
           const SizedBox(height: 16),
-          const Text(
-            'No Announcements',
-            style: TextStyle(
+          Text(
+            'teacher.no_announcements'.tr(),
+            style: const TextStyle(
               fontSize: 18,
               color: Colors.grey,
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Tap the + button to create an announcement',
-            style: TextStyle(
+          Text(
+            'teacher.tap_create_announcement'.tr(),
+            style: const TextStyle(
               fontSize: 14,
               color: Colors.grey,
             ),
@@ -287,9 +287,9 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
         children: [
           Row(
             children: [
-              Expanded(
+                Expanded(
                 child: Text(
-                  announcement['title'] ?? 'Untitled',
+                  announcement['title'] ?? 'common.untitled'.tr(),
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -304,7 +304,7 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  (announcement['priority'] ?? 'normal').toString().toUpperCase(),
+                  'common.${announcement['priority'] ?? 'normal'}'.tr().toUpperCase(),
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w600,
@@ -316,7 +316,7 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
           ),
           const SizedBox(height: 12),
           Text(
-            announcement['content'] ?? 'No content',
+            announcement['content'] ?? 'common.no_content'.tr(),
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey[700],
@@ -324,7 +324,7 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
           ),
           const SizedBox(height: 12),
           Text(
-            'Date: ${announcement['date'] ?? 'N/A'}',
+            '${'common.date'.tr()}: ${announcement['date'] ?? 'N/A'}',
             style: TextStyle(
               fontSize: 12,
               color: Colors.grey[600],

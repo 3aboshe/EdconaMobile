@@ -257,7 +257,7 @@ class _AttendanceSectionState extends State<AttendanceSection> {
                     items: _classes.map((classData) {
                       return DropdownMenuItem<String>(
                         value: classData['id'],
-                        child: Text(classData['name'] ?? 'Unknown Class'),
+                        child: Text(classData['name'] ?? 'common.unknown_class'.tr()),
                       );
                     }).toList(),
                     onChanged: (value) {
@@ -317,9 +317,9 @@ class _AttendanceSectionState extends State<AttendanceSection> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildAttendanceButton('parent.present'.tr(), const Color(0xFF34C759), 0),
-              _buildAttendanceButton('parent.absent'.tr(), const Color(0xFFFF3B30), 1),
-              _buildAttendanceButton('parent.late'.tr(), const Color(0xFFFF9500), 2),
+              _buildAttendanceButton('teacher.present'.tr(), const Color(0xFF34C759), 0),
+              _buildAttendanceButton('teacher.absent'.tr(), const Color(0xFFFF3B30), 1),
+              _buildAttendanceButton('teacher.late'.tr(), const Color(0xFFFF9500), 2),
             ],
           ),
         ),
@@ -390,7 +390,7 @@ class _AttendanceSectionState extends State<AttendanceSection> {
 
   Widget _buildAttendanceCard(Map<String, dynamic> student) {
     final studentId = student['id']?.toString() ?? '';
-    final studentName = student['name']?.toString() ?? 'Unknown';
+    final studentName = student['name']?.toString() ?? 'common.unknown'.tr();
     final status = _attendanceStatus[studentId] ?? '1';
     Color statusColor;
     String statusText;
@@ -398,15 +398,15 @@ class _AttendanceSectionState extends State<AttendanceSection> {
     switch (status) {
       case '0':
         statusColor = const Color(0xFF34C759);
-        statusText = 'parent.present'.tr();
+        statusText = 'teacher.present'.tr();
         break;
       case '2':
         statusColor = const Color(0xFFFF9500);
-        statusText = 'parent.late'.tr();
+        statusText = 'teacher.late'.tr();
         break;
       default:
         statusColor = const Color(0xFFFF3B30);
-        statusText = 'parent.absent'.tr();
+        statusText = 'teacher.absent'.tr();
     }
 
     return Container(
@@ -482,15 +482,15 @@ class _AttendanceSectionState extends State<AttendanceSection> {
             itemBuilder: (context) => [
               PopupMenuItem(
                 value: 0,
-                child: Text('parent.present'.tr()),
+                child: Text('teacher.present'.tr()),
               ),
               PopupMenuItem(
                 value: 1,
-                child: Text('parent.absent'.tr()),
+                child: Text('teacher.absent'.tr()),
               ),
               PopupMenuItem(
                 value: 2,
-                child: Text('parent.late'.tr()),
+                child: Text('teacher.late'.tr()),
               ),
             ],
           ),

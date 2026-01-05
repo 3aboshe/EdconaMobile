@@ -30,142 +30,6 @@ class _HomeworkSectionState extends State<HomeworkSection> {
     return ['ar', 'ckb', 'ku', 'bhn', 'arc', 'bad', 'bdi', 'sdh', 'kmr'].contains(locale.languageCode);
   }
 
-  String _getLocalizedText(String key) {
-    final locale = context.locale.languageCode;
-    final Map<String, Map<String, String>> translations = {
-      'ar': {
-        'homework': 'الواجبات',
-        'create_homework': 'إنشاء واجب',
-        'title': 'العنوان',
-        'subject': 'المادة',
-        'description': 'الوصف',
-        'due_date': 'تاريخ التسليم',
-        'class': 'الصف',
-        'create': 'إنشاء',
-        'cancel': 'إلغاء',
-        'edit': 'تعديل',
-        'delete': 'حذف',
-        'submitted': 'تم التسليم',
-        'pending': 'معلق',
-        'graded': 'تم التقدير',
-        'view_submissions': 'عرض الطلاب',
-        'grade_homework': 'تقدير الواجب',
-        'student_name': 'اسم الطالب',
-        'submission_date': 'تاريخ التسليم',
-        'grade': 'الدرجة',
-        'feedback': 'التعليق',
-        'save': 'حفظ',
-        'no_homework': 'لا توجد واجبات',
-        'tap_create': 'اضغط على + لإنشاء واجب',
-        'status': 'الحالة',
-        'actions': 'الإجراءات',
-        'select_class': 'اختر الصف',
-        'assigned_date': 'تاريخ التكليف',
-        'mark_submitted': 'تعيين كمُسلم',
-        'view_details': 'عرض التفاصيل',
-      },
-      'ku': {
-        'homework': 'خەتبار',
-        'create_homework': 'دروستکردنی خەتبار',
-        'title': 'ناونیشان',
-        'subject': 'بابەت',
-        'description': 'وەسف',
-        'due_date': 'بەرواری ئاگادارکردنەوە',
-        'class': 'پۆل',
-        'create': 'دروستکردن',
-        'cancel': 'هەڵوەشاندنەوە',
-        'edit': 'دەستکاریکردن',
-        'delete': 'سڕینەوە',
-        'submitted': 'ئاگادارکراوەتەوە',
-        'pending': 'چاوەڕێکەر',
-        'graded': 'نمرە دراوە',
-        'view_submissions': 'بینینی قاریان',
-        'grade_homework': 'نمرەدانی خەتبار',
-        'student_name': 'ناوی قاری',
-        'submission_date': 'بەرواری ئاگادارکردنەوە',
-        'grade': 'نمرە',
-        'feedback': 'ڕەخنە',
-        'save': 'هەڵگرتن',
-        'no_homework': 'خەتبار نییە',
-        'tap_create': 'بۆ دروستکردنی خەتبار + بزنە',
-        'status': 'دۆخ',
-        'actions': 'کردەوەکان',
-        'select_class': 'هەڵبژاردنی پۆل',
-        'assigned_date': 'بەرواری ئاگادارکردنەوە',
-        'mark_submitted': 'بە ئاگادارکراوە دیاریکردن',
-        'view_details': 'بینینی وردەکاری',
-      },
-      'bhn': {
-        'homework': 'کار',
-        'create_homework': 'دروستکردنی کار',
-        'title': 'ناونیشان',
-        'subject': 'ماددە',
-        'description': 'وەسف',
-        'due_date': 'بەرواری تەواوکردن',
-        'class': 'کلاس',
-        'create': 'دروستکردن',
-        'cancel': 'کنسلکردن',
-        'edit': 'دەستکاریکردن',
-        'delete': 'سڕینەوە',
-        'submitted': 'تەواوکراوە',
-        'pending': 'چاوەڕێکەر',
-        'graded': 'نمرە دراوە',
-        'view_submissions': 'بینینی خوێندکاران',
-        'grade_homework': 'نمرەدانی کار',
-        'student_name': 'ناوی خوێندکار',
-        'submission_date': 'بەرواری تەواوکردن',
-        'grade': 'نمرە',
-        'feedback': 'ڕەخنە',
-        'save': 'هەڵگرتن',
-        'no_homework': 'کار نییە',
-        'tap_create': 'بۆ دروستکردنی کار + بزنە',
-        'status': 'دۆخ',
-        'actions': 'کردەوەکان',
-        'select_class': 'هەڵبژاردنی کلاس',
-        'assigned_date': 'بەرواری دیاریکردن',
-        'mark_submitted': 'بە تەواوکراو دیاریکردن',
-        'view_details': 'بینینی وردەکاری',
-      },
-    };
-
-    if (translations[locale]?[key] != null) {
-      return translations[locale]![key]!;
-    }
-
-    final Map<String, String> english = {
-      'homework': 'Homework',
-      'create_homework': 'Create Homework',
-      'title': 'Title',
-      'subject': 'Subject',
-      'description': 'Description',
-      'due_date': 'Due Date',
-      'class': 'Class',
-      'create': 'Create',
-      'cancel': 'Cancel',
-      'edit': 'Edit',
-      'delete': 'Delete',
-      'submitted': 'Submitted',
-      'pending': 'Pending',
-      'graded': 'Graded',
-      'view_submissions': 'View Students',
-      'grade_homework': 'Grade Homework',
-      'student_name': 'Student Name',
-      'submission_date': 'Submission Date',
-      'grade': 'Grade',
-      'feedback': 'Feedback',
-      'save': 'Save',
-      'no_homework': 'No Homework',
-      'tap_create': 'Tap the + button to create homework',
-      'status': 'Status',
-      'actions': 'Actions',
-      'select_class': 'Select Class',
-      'assigned_date': 'Assigned Date',
-      'mark_submitted': 'Mark as Submitted',
-      'view_details': 'View Details',
-    };
-    return english[key] ?? key;
-  }
-
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
 
@@ -200,7 +64,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
           elevation: 0,
           automaticallyImplyLeading: false,
           title: Text(
-            _getLocalizedText('homework'),
+            'teacher.homework'.tr(),
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w700,
@@ -253,7 +117,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
             ),
             const SizedBox(height: 24),
             Text(
-              _getLocalizedText('no_homework'),
+              'teacher.no_homework'.tr(),
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -262,7 +126,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
             ),
             const SizedBox(height: 8),
             Text(
-              _getLocalizedText('tap_create'),
+              'teacher.tap_create'.tr(),
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.white.withValues(alpha: 0.8),
@@ -308,7 +172,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            homework['title'] ?? 'Untitled',
+                            homework['title']?.toString() ?? 'common.untitled'.tr(),
                             style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -317,7 +181,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            '${_getLocalizedText('subject')}: ${homework['subject'] ?? 'N/A'}',
+                            '${'teacher.subject'.tr()}: ${homework['subject']?.toString() ?? 'common.na'.tr()}',
                             style: TextStyle(
                               fontSize: 13,
                               color: Colors.grey[600],
@@ -335,7 +199,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        isOverdue ? _getLocalizedText('pending') : _getLocalizedText('submitted'),
+                        isOverdue ? 'parent.pending'.tr() : 'teacher.homework_page.submitted'.tr(),
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
@@ -353,16 +217,16 @@ class _HomeworkSectionState extends State<HomeworkSection> {
                     Expanded(
                       child: _buildInfoItem(
                         CupertinoIcons.calendar,
-                        _getLocalizedText('due_date'),
-                        homework['dueDate'] ?? 'N/A',
+                        'teacher.due_date'.tr(),
+                        homework['dueDate']?.toString() ?? 'common.na'.tr(),
                       ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
                       child: _buildInfoItem(
                         CupertinoIcons.clock,
-                        _getLocalizedText('assigned_date'),
-                        homework['assignedDate'] ?? 'N/A',
+                        'teacher.assigned_date'.tr(),
+                        homework['assignedDate']?.toString() ?? 'common.na'.tr(),
                       ),
                     ),
                   ],
@@ -372,7 +236,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
                   children: [
                     Expanded(
                       child: _buildActionButton(
-                        _getLocalizedText('view_submissions'),
+                        'teacher.homework_page.mark_submissions'.tr(),
                         CupertinoIcons.checkmark_circle,
                         const Color(0xFF34C759),
                         () => _viewSubmissions(homework),
@@ -381,7 +245,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: _buildActionButton(
-                        _getLocalizedText('edit'),
+                        'common.edit'.tr(),
                         CupertinoIcons.pencil,
                         const Color(0xFF007AFF),
                         () => _editHomework(homework),
@@ -481,7 +345,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
               ),
               backgroundColor: Colors.white,
               title: Text(
-                _getLocalizedText('create_homework'),
+                'teacher.homework_page.create_homework'.tr(),
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -495,7 +359,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
                     TextField(
                       controller: titleController,
                       decoration: InputDecoration(
-                        labelText: _getLocalizedText('title'),
+                        labelText: 'teacher.title'.tr(),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -505,7 +369,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
                     TextField(
                       controller: subjectController,
                       decoration: InputDecoration(
-                        labelText: _getLocalizedText('subject'),
+                        labelText: 'teacher.subject'.tr(),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -515,7 +379,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
                     TextField(
                       controller: descriptionController,
                       decoration: InputDecoration(
-                        labelText: _getLocalizedText('description'),
+                        labelText: 'teacher.description'.tr(),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -528,7 +392,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
                       child: DropdownButtonFormField<String>(
                         value: selectedClassId,
                         decoration: InputDecoration(
-                          labelText: _getLocalizedText('class'),
+                          labelText: 'teacher.class'.tr(),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -536,7 +400,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
                         items: _classes.map((classData) {
                           return DropdownMenuItem<String>(
                             value: classData['id'],
-                            child: Text(classData['name'] ?? 'Unknown'),
+                            child: Text(classData['name']?.toString() ?? 'common.unknown'.tr()),
                           );
                         }).toList(),
                         onChanged: (value) {
@@ -571,7 +435,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              '${_getLocalizedText('due_date')}: ${DateFormat('yyyy-MM-dd').format(dueDate)}',
+                              '${'teacher.due_date'.tr()}: ${DateFormat('yyyy-MM-dd').format(dueDate)}',
                               style: const TextStyle(fontSize: 14),
                             ),
                             const Icon(Icons.calendar_today),
@@ -585,68 +449,68 @@ class _HomeworkSectionState extends State<HomeworkSection> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: Text(_getLocalizedText('cancel')),
+                  child: Text('common.cancel'.tr()),
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    if (titleController.text.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(_getLocalizedText('title')),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                      return;
-                    }
-                    if (selectedClassId == null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(_getLocalizedText('select_class')),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                      return;
-                    }
-
-                    try {
-                      final result = await _teacherService.createHomework({
-                        'title': titleController.text.trim(),
-                        'subject': subjectController.text.trim(),
-                        'description': descriptionController.text.trim(),
-                        'dueDate': DateFormat('yyyy-MM-dd').format(dueDate),
-                        'assignedDate': DateFormat('yyyy-MM-dd').format(DateTime.now()),
-                        'teacherId': widget.teacher['id']?.toString() ?? '',
-                        'classIds': [selectedClassId!],
-                      });
-
-                      if (!mounted) return;
-                      Navigator.pop(context);
-                      if (result['success']) {
+                      if (titleController.text.isEmpty) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('Homework created successfully'),
-                            backgroundColor: Colors.green,
+                            content: Text('teacher.title'.tr()),
+                            backgroundColor: Colors.red,
                           ),
                         );
-                        _loadData();
+                        return;
                       }
-                    } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Error: ${e.toString()}'),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF0D47A1),
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      if (selectedClassId == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('teacher.select_class'.tr()),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                        return;
+                      }
+
+                      try {
+                        final result = await _teacherService.createHomework({
+                          'title': titleController.text.trim(),
+                          'subject': subjectController.text.trim(),
+                          'description': descriptionController.text.trim(),
+                          'dueDate': DateFormat('yyyy-MM-dd').format(dueDate),
+                          'assignedDate': DateFormat('yyyy-MM-dd').format(DateTime.now()),
+                          'teacherId': widget.teacher['id']?.toString() ?? '',
+                          'classIds': [selectedClassId!],
+                        });
+
+                        if (!mounted) return;
+                        Navigator.pop(context);
+                        if (result['success']) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('teacher.homework_created'.tr()),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                          _loadData();
+                        }
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('common.error_details'.tr(namedArgs: {'error': e.toString()})),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF0D47A1),
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
-                  ),
-                  child: Text(_getLocalizedText('create')),
+                    child: Text('teacher.homework_page.create'.tr()),
                 ),
               ],
             );
@@ -664,7 +528,6 @@ class _HomeworkSectionState extends State<HomeworkSection> {
           homework: homework,
           teacher: widget.teacher,
           isRTL: _isRTL(),
-          getLocalizedText: _getLocalizedText,
         ),
       ),
     );
@@ -697,7 +560,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
               ),
               backgroundColor: Colors.white,
               title: Text(
-                _getLocalizedText('edit'),
+                'common.edit'.tr(),
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -711,7 +574,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
                     TextField(
                       controller: titleController,
                       decoration: InputDecoration(
-                        labelText: _getLocalizedText('title'),
+                        labelText: 'teacher.title'.tr(),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -721,7 +584,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
                     TextField(
                       controller: subjectController,
                       decoration: InputDecoration(
-                        labelText: _getLocalizedText('subject'),
+                        labelText: 'teacher.subject'.tr(),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -731,7 +594,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
                     TextField(
                       controller: descriptionController,
                       decoration: InputDecoration(
-                        labelText: _getLocalizedText('description'),
+                        labelText: 'teacher.description'.tr(),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -744,7 +607,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
                       child: DropdownButtonFormField<String>(
                         value: selectedClassId,
                         decoration: InputDecoration(
-                          labelText: _getLocalizedText('class'),
+                          labelText: 'teacher.class'.tr(),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -752,7 +615,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
                         items: _classes.map((classData) {
                           return DropdownMenuItem<String>(
                             value: classData['id'],
-                            child: Text(classData['name'] ?? 'Unknown'),
+                            child: Text(classData['name']?.toString() ?? 'common.unknown'.tr()),
                           );
                         }).toList(),
                         onChanged: (value) {
@@ -787,7 +650,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              '${_getLocalizedText('due_date')}: ${DateFormat('yyyy-MM-dd').format(dueDate)}',
+                              '${'teacher.due_date'.tr()}: ${DateFormat('yyyy-MM-dd').format(dueDate)}',
                               style: const TextStyle(fontSize: 14),
                             ),
                             const Icon(Icons.calendar_today),
@@ -801,7 +664,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: Text(_getLocalizedText('cancel')),
+                  child: Text('common.cancel'.tr()),
                 ),
                 ElevatedButton(
                   onPressed: () async {
@@ -809,7 +672,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
                     if (selectedClassId == null) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text(_getLocalizedText('select_class')),
+                          content: Text('teacher.select_class'.tr()),
                           backgroundColor: Colors.red,
                         ),
                       );
@@ -833,7 +696,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
                       if (result['success']) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('Homework updated successfully'),
+                            content: Text('teacher.homework_updated'.tr()),
                             backgroundColor: Colors.green,
                           ),
                         );
@@ -842,7 +705,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
                     } catch (e) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('Error: ${e.toString()}'),
+                          content: Text('common.error_details'.tr(namedArgs: {'error': e.toString()})),
                           backgroundColor: Colors.red,
                         ),
                       );
@@ -855,7 +718,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: Text(_getLocalizedText('save')),
+                  child: Text('common.save'.tr()),
                 ),
               ],
             );
@@ -870,14 +733,12 @@ class SubmissionsScreen extends StatefulWidget {
   final Map<String, dynamic> homework;
   final Map<String, dynamic> teacher;
   final bool isRTL;
-  final String Function(String) getLocalizedText;
 
   const SubmissionsScreen({
     super.key,
     required this.homework,
     required this.teacher,
     required this.isRTL,
-    required this.getLocalizedText,
   });
 
   @override
@@ -945,14 +806,14 @@ class _SubmissionsScreenState extends State<SubmissionsScreen> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
-          title: Text(widget.getLocalizedText('grade_homework')),
+          title: Text('teacher.homework_page.mark_submissions'.tr()),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: gradeController,
                 decoration: InputDecoration(
-                  labelText: widget.getLocalizedText('grade'),
+                  labelText: 'parent.grade'.tr(),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -963,7 +824,7 @@ class _SubmissionsScreenState extends State<SubmissionsScreen> {
               TextField(
                 controller: feedbackController,
                 decoration: InputDecoration(
-                  labelText: widget.getLocalizedText('feedback'),
+                  labelText: 'teacher.feedback'.tr(),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -975,7 +836,7 @@ class _SubmissionsScreenState extends State<SubmissionsScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text(widget.getLocalizedText('cancel')),
+              child: Text('common.cancel'.tr()),
             ),
             ElevatedButton(
               onPressed: () async {
@@ -991,7 +852,7 @@ class _SubmissionsScreenState extends State<SubmissionsScreen> {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(widget.getLocalizedText('save')),
+                      content: Text('common.save'.tr()),
                       backgroundColor: Colors.green,
                     ),
                   );
@@ -1008,7 +869,7 @@ class _SubmissionsScreenState extends State<SubmissionsScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF0D47A1),
               ),
-              child: Text(widget.getLocalizedText('save')),
+              child: Text('common.save'.tr()),
             ),
           ],
         );
@@ -1026,7 +887,7 @@ class _SubmissionsScreenState extends State<SubmissionsScreen> {
           backgroundColor: const Color(0xFF0D47A1),
           foregroundColor: Colors.white,
           title: Text(
-            widget.homework['title'] ?? 'Homework',
+            widget.homework['title']?.toString() ?? 'teacher.homework'.tr(),
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
           ),
           actions: [
@@ -1116,7 +977,7 @@ class _SubmissionsScreenState extends State<SubmissionsScreen> {
                 Row(
                   children: [
                     Text(
-                      student['name'] ?? 'Unknown',
+                      student['name']?.toString() ?? 'common.unknown'.tr(),
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -1131,9 +992,9 @@ class _SubmissionsScreenState extends State<SubmissionsScreen> {
                           color: const Color(0xFFFF9500).withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(4),
                         ),
-                        child: const Text(
-                          'Pending',
-                          style: TextStyle(
+                        child: Text(
+                          'common.pending'.tr(),
+                          style: const TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.w600,
                             color: Color(0xFFFF9500),
@@ -1153,7 +1014,9 @@ class _SubmissionsScreenState extends State<SubmissionsScreen> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    effectiveSubmitted ? 'Submitted' : 'Not Submitted',
+                    effectiveSubmitted
+                        ? 'teacher.homework_page.submitted'.tr()
+                        : 'teacher.homework_page.not_submitted'.tr(),
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
@@ -1176,7 +1039,9 @@ class _SubmissionsScreenState extends State<SubmissionsScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                 ),
                 child: Text(
-                  effectiveSubmitted ? 'Unmark' : 'Mark Submitted',
+                  effectiveSubmitted
+                      ? 'teacher.homework_page.unmark'.tr()
+                      : 'teacher.mark_submitted'.tr(),
                   style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
@@ -1194,7 +1059,7 @@ class _SubmissionsScreenState extends State<SubmissionsScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                 ),
                 child: Text(
-                  widget.getLocalizedText('grade'),
+                  'parent.grade'.tr(),
                   style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
@@ -1233,7 +1098,9 @@ class _SubmissionsScreenState extends State<SubmissionsScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          backendSubmitted ? 'Marked as not submitted (pending save)' : 'Marked as submitted (pending save)',
+          backendSubmitted
+              ? 'teacher.homework_page.marked_not_submitted_pending_save'.tr()
+              : 'teacher.homework_page.marked_submitted_pending_save'.tr(),
         ),
         backgroundColor: const Color(0xFFFF9500),
       ),
@@ -1277,8 +1144,8 @@ class _SubmissionsScreenState extends State<SubmissionsScreen> {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('All submissions saved successfully'),
+        SnackBar(
+          content: Text('teacher.homework_page.all_submissions_saved_success'.tr()),
           backgroundColor: Colors.green,
         ),
       );
@@ -1286,7 +1153,11 @@ class _SubmissionsScreenState extends State<SubmissionsScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error saving submissions: ${e.toString()}'),
+          content: Text(
+            'teacher.homework_page.save_submissions_error'.tr(
+              namedArgs: {'error': e.toString()},
+            ),
+          ),
           backgroundColor: Colors.red,
         ),
       );

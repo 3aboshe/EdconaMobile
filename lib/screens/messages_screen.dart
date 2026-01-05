@@ -79,7 +79,7 @@ class _MessagesScreenState extends State<MessagesScreen>
       }
     } catch (e) {
       setState(() {
-        _errorMessage = 'Failed to load user data';
+        _errorMessage = 'messages.failed_load_user_data'.tr();
         _isLoading = false;
       });
     }
@@ -96,7 +96,7 @@ class _MessagesScreenState extends State<MessagesScreen>
       });
     } catch (e) {
       setState(() {
-        _errorMessage = 'Failed to load conversations';
+        _errorMessage = 'messages.failed_load_conversations'.tr();
         _isLoading = false;
       });
     }
@@ -228,7 +228,7 @@ class _MessagesScreenState extends State<MessagesScreen>
             ),
             const SizedBox(height: 24),
             Text(
-              isRTL ? 'لا توجد رسائل حالياً' : 'No messages yet',
+              'parent.no_messages'.tr(),
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontSize: 20,
@@ -238,7 +238,7 @@ class _MessagesScreenState extends State<MessagesScreen>
             ),
             const SizedBox(height: 8),
             Text(
-              isRTL ? 'ابدأ المحادثة مع معلمي أطفالك' : 'Start a conversation with your children\'s teachers',
+              'parent.start_conversation'.tr(),
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
@@ -249,7 +249,7 @@ class _MessagesScreenState extends State<MessagesScreen>
             ElevatedButton.icon(
               onPressed: _showNewMessageDialog,
               icon: const Icon(Icons.add),
-              label: Text(isRTL ? 'رسالة جديدة' : 'New Message'),
+              label: Text('parent.new_message'.tr()),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF0D47A1),
                 foregroundColor: Colors.white,
@@ -361,7 +361,7 @@ class _MessagesScreenState extends State<MessagesScreen>
                         children: [
                           Expanded(
                             child: Text(
-                              otherUser?['name'] ?? 'Unknown',
+                              otherUser?['name']?.toString() ?? 'common.unknown'.tr(),
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
@@ -393,7 +393,7 @@ class _MessagesScreenState extends State<MessagesScreen>
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        otherUser?['subject'] ?? isRTL ? 'معلم' : 'Teacher',
+                        otherUser?['subject'] ?? 'messages.teacher_role_fallback'.tr(),
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.grey[600],
@@ -527,19 +527,19 @@ class _ChatScreenState extends State<ChatScreen> {
         }
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Failed to send message'),
-              backgroundColor: Colors.red,
-            ),
-          );
+        ScaffoldMessenger.of(context).showSnackBar(
+           SnackBar(
+            content: Text('messages.send_error'.tr()),
+            backgroundColor: Colors.red,
+          ),
+        );
         }
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to send message'),
+          SnackBar(
+            content: Text('messages.send_error'.tr()),
             backgroundColor: Colors.red,
           ),
         );
@@ -584,14 +584,14 @@ class _ChatScreenState extends State<ChatScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.otherUser['name'] ?? 'Unknown',
+                    widget.otherUser['name']?.toString() ?? 'common.unknown'.tr(),
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   Text(
-                    widget.otherUser['subject'] ?? widget.isRTL ? 'معلم' : 'Teacher',
+                    widget.otherUser['subject'] ?? 'messages.teacher_role_fallback'.tr(),
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.white.withValues(alpha: 0.9),
@@ -641,7 +641,7 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            widget.isRTL ? 'ابدأ المحادثة' : 'Start the conversation',
+            'messages.start_conversation_button'.tr(),
             style: TextStyle(
               fontSize: 16,
               color: Colors.grey[600],
@@ -765,7 +765,7 @@ class _ChatScreenState extends State<ChatScreen> {
               child: TextField(
                 controller: _messageController,
                 decoration: InputDecoration(
-                  hintText: widget.isRTL ? 'اكتب رسالتك...' : 'Type your message...',
+                  hintText: 'parent.type_message'.tr(),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,
@@ -872,7 +872,7 @@ class _NewMessageDialogState extends State<NewMessageDialog> {
 
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(widget.isRTL ? 'تم إرسال الرسالة' : 'Message sent'),
+              content: Text('messages.message_sent'.tr()),
               backgroundColor: Colors.green,
             ),
           );
@@ -880,8 +880,8 @@ class _NewMessageDialogState extends State<NewMessageDialog> {
       } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Failed to send message'),
+            SnackBar(
+              content: Text('messages.send_error'.tr()),
               backgroundColor: Colors.red,
             ),
           );
@@ -890,8 +890,8 @@ class _NewMessageDialogState extends State<NewMessageDialog> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to send message'),
+          SnackBar(
+            content: Text('messages.send_error'.tr()),
             backgroundColor: Colors.red,
           ),
         );
@@ -925,7 +925,7 @@ class _NewMessageDialogState extends State<NewMessageDialog> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              widget.isRTL ? 'رسالة جديدة' : 'New Message',
+              'parent.new_message'.tr(),
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -936,7 +936,7 @@ class _NewMessageDialogState extends State<NewMessageDialog> {
 
             // Teacher Selection
             Text(
-              widget.isRTL ? 'اختر المعلم' : 'Select Teacher',
+              'parent.select_teacher'.tr(),
               style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
@@ -964,7 +964,7 @@ class _NewMessageDialogState extends State<NewMessageDialog> {
                         value: _selectedTeacher,
                         isExpanded: true,
                         hint: Text(
-                          widget.isRTL ? 'اختر معلماً' : 'Choose a teacher',
+                          'messages.choose_teacher'.tr(),
                           style: TextStyle(color: Colors.grey[600]),
                         ),
                         items: _teachers.map((teacher) {
@@ -975,7 +975,7 @@ class _NewMessageDialogState extends State<NewMessageDialog> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  teacher['name'] ?? 'Unknown',
+                                  teacher['name']?.toString() ?? 'common.unknown'.tr(),
                                   style: const TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
@@ -1006,7 +1006,7 @@ class _NewMessageDialogState extends State<NewMessageDialog> {
 
             // Message Input
             Text(
-              widget.isRTL ? 'الرسالة' : 'Message',
+              'common.message'.tr(),
               style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
@@ -1019,7 +1019,7 @@ class _NewMessageDialogState extends State<NewMessageDialog> {
               controller: _messageController,
               maxLines: 4,
               decoration: InputDecoration(
-                hintText: widget.isRTL ? 'اكتب رسالتك هنا...' : 'Type your message here...',
+                hintText: 'messages.type_message_here'.tr(),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(color: Colors.grey[300]!),
@@ -1041,7 +1041,7 @@ class _NewMessageDialogState extends State<NewMessageDialog> {
                 TextButton(
                   onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
                   child: Text(
-                    widget.isRTL ? 'إلغاء' : 'Cancel',
+                    'common.cancel'.tr(),
                     style: const TextStyle(color: Colors.grey),
                   ),
                 ),
@@ -1065,7 +1065,7 @@ class _NewMessageDialogState extends State<NewMessageDialog> {
                             valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                           ),
                         )
-                      : Text(widget.isRTL ? 'إرسال' : 'Send'),
+                      : Text('parent.send'.tr()),
                 ),
               ],
             ),

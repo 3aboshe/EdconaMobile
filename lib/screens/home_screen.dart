@@ -130,7 +130,7 @@ class _HomeScreenState extends State<HomeScreen>
           IconButton(
             onPressed: _logout,
             icon: const Icon(Icons.logout),
-            tooltip: 'Logout',
+            tooltip: 'common.logout'.tr(),
           ),
         ],
       ),
@@ -254,8 +254,8 @@ class _HomeScreenState extends State<HomeScreen>
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'User Information',
+                          Text(
+                            'home.user_information'.tr(),
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -263,13 +263,13 @@ class _HomeScreenState extends State<HomeScreen>
                             ),
                           ),
                           const SizedBox(height: 16),
-                          _buildInfoRow('User ID', _currentUser!['id']),
-                          _buildInfoRow('Name', _currentUser!['name']),
-                          _buildInfoRow('Role', _currentUser!['role']),
+                          _buildInfoRow('home.user_id'.tr(), _currentUser!['id']),
+                          _buildInfoRow('common.name'.tr(), _currentUser!['name']),
+                          _buildInfoRow('parent.role'.tr(), _currentUser!['role']),
                           if (_currentUser!['subject'] != null)
-                            _buildInfoRow('Subject', _currentUser!['subject']),
+                            _buildInfoRow('common.subject'.tr(), _currentUser!['subject']),
                           if (_currentUser!['classId'] != null)
-                            _buildInfoRow('Class', _currentUser!['classId']),
+                            _buildInfoRow('common.class'.tr(), _currentUser!['classId']),
                         ],
                       ),
                     ),
@@ -294,8 +294,8 @@ class _HomeScreenState extends State<HomeScreen>
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Quick Actions',
+                          Text(
+                            'home.quick_actions'.tr(),
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -315,41 +315,41 @@ class _HomeScreenState extends State<HomeScreen>
                               children: [
                               _buildActionCard(
                                 icon: Icons.class_,
-                                label: 'Classes',
+                                label: 'teacher.classes'.tr(),
                                 color: Colors.blue,
                                 onTap: () {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Classes coming soon!')),
+                                    SnackBar(content: Text('home.classes_coming_soon'.tr())),
                                   );
                                 },
                               ),
                               _buildActionCard(
                                 icon: Icons.assignment,
-                                label: 'Homework',
+                                label: 'parent.homework'.tr(),
                                 color: Colors.green,
                                 onTap: () {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Homework coming soon!')),
+                                    SnackBar(content: Text('home.homework_coming_soon'.tr())),
                                   );
                                 },
                               ),
                               _buildActionCard(
                                 icon: Icons.grade,
-                                label: 'Grades',
+                                label: 'parent.grades'.tr(),
                                 color: Colors.orange,
                                 onTap: () {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Grades coming soon!')),
+                                    SnackBar(content: Text('home.grades_coming_soon'.tr())),
                                   );
                                 },
                               ),
                               _buildActionCard(
                                 icon: Icons.message,
-                                label: 'Messages',
+                                label: 'parent.messages'.tr(),
                                 color: Colors.purple,
                                 onTap: () {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Messages coming soon!')),
+                                    SnackBar(content: Text('home.messages_coming_soon'.tr())),
                                   );
                                 },
                               ),

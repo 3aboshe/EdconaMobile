@@ -91,7 +91,16 @@
     "no_homework_found": "هیچ ئه‌ركێك نه‌دۆزرایه‌وه‌",
     "urgent": "پەلە",
     "important": "گرنگ",
-    "normal": "ئاسایی"
+    "normal": "ئاسایی",
+    "failed_load_parent_data": "شکستی لە بارکردنی داتای دایک و باوک: {error}",
+    "portal_title": "دەروازەی دایک و باوک",
+    "welcome_title": "بەخێربێیت دایک و باوک",
+    "welcome_user": "بەخێربێیت، {}",
+    "students_count": "{} خوێندکارت هەیە",
+    "grade_colon": "پۆل:",
+    "role_colon": "ڕۆڵ:",
+    "due_colon": "کاتی تەسلیم:",
+    "subject_colon": "بابەت:"
   },
   "teacher": {
     "welcome": "به‌خێربێیت بۆ په‌نجه‌ره‌ی مامۆستا",
@@ -229,7 +238,8 @@
       "mark_all_present": "هه‌موو وه‌ك ئامادە نیشانبکه‌",
       "mark_all_absent": "هه‌موو وه‌ك غیاب نیشانبکه‌",
       "save_success": "ئامادەبوون به‌ سه‌ركه‌وتوویی پاشه‌كه‌وتكرا",
-      "save_error": "شکستی هێنا له‌ پاشه‌كه‌وتكردنی ئامادەبوون"
+      "save_error": "شکستی هێنا له‌ پاشه‌كه‌وتكردنی ئامادەبوون",
+      "no_classes_assigned": "پۆلێک بۆ ئێوە دیاری نەکرایە. تکایە پەیوەندی بە بەڕێوەبەری سیستەم بکەن."
     },
     "grades_page": {
       "create_exam": "دروستکردنی تاقیکردنه‌وه‌",
@@ -245,7 +255,11 @@
       "no_students": "هیچ خوێندکارێك نییه‌",
       "student_name": "ناوی خوێندکار",
       "score": "خاڵ",
-      "select_exam": "تاقیکردنه‌وه‌یه‌ك هه‌ڵبژێره‌"
+      "select_exam": "تاقیکردنه‌وه‌یه‌ك هه‌ڵبژێره‌",
+      "select_class_first": "تکایە یەکێم جار پۆلێک هەڵبژێرە",
+      "select_class": "پۆل هەڵبژێرە",
+      "class": "پۆل",
+      "no_classes_assigned": "پۆلێک بۆ ئێوە دیاری نەکرایە. تکایە پەیوەندی بە بەڕێوەبەری سیستەم بکەن."
     },
     "homework_page": {
       "create_homework": "دروستکردنی ئه‌رك",
@@ -258,7 +272,12 @@
       "not_submitted": "ڕاگه‌یێنراوە",
       "homework_created": "ئه‌رك به‌ سه‌ركه‌وتوویی دروستکرا",
       "homework_title_hint": "ناوی ئه‌رك بنووسه‌",
-      "description_hint": "وه‌سفی ئه‌رك بنووسه‌"
+      "description_hint": "وه‌سفی ئه‌رك بنووسه‌",
+      "unmark": "هەڵوەشاندنەوە",
+      "marked_submitted_pending_save": "وەک تەسلیمکراو دیاری کرا (چاوەڕوانی پاشەکەوتکردن)",
+      "marked_not_submitted_pending_save": "وەک نەتەسلیمکراو دیاری کرا (چاوەڕوانی پاشەکەوتکردن)",
+      "all_submissions_saved_success": "هەموو تەسلیمەکان بە سەرکەوتوویی پاشەکەوت کران",
+      "save_submissions_error": "هەڵە لە پاشەکەوتکردنی تەسلیمەکان: {error}"
     },
     "please_select_exam": "تکایە تاقیکردنەوەیەک هەڵبژێرە",
     "please_enter_score": "تکایە خاڵەکان بنووسە",
@@ -267,7 +286,39 @@
     "create_announcement": "دروستکردنی ڕاگەیاندن",
     "failed_create_announcement": "شکستی هێنا لە دروستکردنی ڕاگەیاندن",
     "navigate_to": "چوونە",
-    "save_all": "پاشەکەوتکردنی هەموو"
+    "save_all": "پاشەکەوتکردنی هەموو",
+    "overview": "نیشاندانی گشتی",
+    "manage_grades": "بەڕێوەبردنی نمرەکان",
+    "manage_homework": "بەڕێوەبردنی ئەرکەکان",
+    "track_attendance": "چاودێریکردنی ئامادەبوون",
+    "post_updates": "بڵاوکردنەوەی نوێکاری",
+    "communicate": "پەیوەندی",
+    "student_rankings": "ڕیزبەندی خوێندکاران",
+    "dashboard_subtitle": "نیشاندانی گشتی و ئامار",
+    "grades_subtitle": "بەڕێوەبردنی نمرەکان",
+    "homework_subtitle": "بەڕێوەبردنی ئەرکەکان",
+    "attendance_subtitle": "چاودێریکردنی ئامادەبوون",
+    "announcements_subtitle": "بڵاوکردنەوەی نوێکاری",
+    "messages_subtitle": "پەیوەندی",
+    "leaderboard_subtitle": "ڕیزبەندی خوێندکاران",
+    "total_grades": "کۆی نمرەکان",
+    "no_parents": "هیچ دایک و باوکێک نییە",
+    "message": "پەیام",
+    "send": "ناردن",
+    "conversation": "گفتوگۆ",
+    "feedback": "ڕاوێژ",
+    "tap_create": "دوگمەی + دابگرە بۆ دروستکردنی ئەرک",
+    "tap_create_announcement": "دوگمەی + دابگرە بۆ دروستکردنی ڕاگەیاندن",
+    "actions": "کردارەکان",
+    "mark_submitted": "وەک تەسلیمکراو دیاری بکە",
+    "home": "سەرەکی",
+    "no_rankings": "هێشتا ڕیزبەندی نییە",
+    "rankings_appear": "کاتێک نمرەکان زیاد بکرێن ڕیزبەندی دەردەکەوێت",
+    "all_students": "هەموو خوێندکاران",
+    "first": "یەکەم",
+    "second": "دووەم",
+    "third": "سێیەم",
+    "edit_profile": "دەستکاریکردنی پرۆفایل"
   },
   "common": {
     "ok": "باشه‌",
@@ -304,7 +355,24 @@
     "warning": "ئاگاداری",
     "info": "زانیاری",
     "all": "هه‌موو",
-    "more": "زیاتر"
+    "more": "زیاتر",
+    "app_name": "ئێدکۆنا",
+    "error_details": "هەڵە: {error}",
+    "message": "پەیام",
+    "all_subjects": "هەموو بابەتەکان",
+    "unknown": "نەناسراو",
+    "unknown_class": "پۆلی نەناسراو",
+    "untitled": "بێ سەردێڕ",
+    "no_content": "هیچ ناوەڕۆکێک نییە",
+    "date": "ڕێکەوت",
+    "date_colon": "ڕێکەوت:",
+    "na": "نەزانراو",
+    "pending": "چاوەڕوانکراو",
+    "selected": "هەڵبژێردراو",
+    "select": "هەڵبژێرە",
+    "hours_ago": "{count} کاتژمێر پێش",
+    "days_ago": "{count} ڕۆژ پێش",
+    "day_ago": "{count} ڕۆژ پێش"
   },
   "admin": {
     "panel_title": "پانێلی سه‌رۆكایه‌تی",
@@ -449,7 +517,15 @@
     "password_reset_success": "وشەی نهێنی بە سەرکەوتوویی رێسێت کرا! وشەی نهێنیی نوێی کاتی دروست کرا.",
     "password_reset_failed": "شکستی لە رێسێتکردنی وشەی نهێنی",
     "has_temporary_password_info": "ئەم بەکارهێنەرە وشەی نهێنییەکی کاتی هەيە. لەسەر 'رێسێتکردنی وشەی نهێنی' کلیک بکە بۆ دروستکردنی یەکێکی نوێ.",
-    "close": "داخستن"
+    "close": "داخستن",
+    "average_grade": "ناوەندی نمرە",
+    "latest_activities": "چالاکییە دواییەکان",
+    "activity_new_homework_math": "ئەرکی نوێ دیاریکرا لە بیرکاری",
+    "activity_school_meeting": "ڕاگەیاندنی کۆبوونەوەی قوتابخانە",
+    "activity_science_project_due": "کاتی تەسلیمی پڕۆژەی زانست",
+    "activity_holiday_notice": "ئاگاداری پشوو بڵاوکرایەوە",
+    "class_name_hint_2": "نمونە: پۆلی 5-أ، پۆل 1",
+    "analytics_pie_section_title": "{grade}\n{percentage}٪"
   },
   "days": {
     "mon": "دووشه‌ممه‌",
@@ -573,5 +649,40 @@
     "school_code": "کۆدی قوتابخانە",
     "admin_management_info": "بەڕێوەبەران دروست بکە بە ناوی بەکارهێنەری تایبەت بۆ بەڕێوەبردنی ئەم قوتابخانەیە. هەر بەڕێوەبەرێک زانیاری چوونەژوورەوە وەردەگرێت.",
     "class_name_hint_2": "نمونە: پۆلی 5-أ، پۆل 1"
+  },
+  "home": {
+    "user_information": "زانیاری بەکارهێنەر",
+    "user_id": "ناسنامەی بەکارهێنەر",
+    "quick_actions": "کارکردنی خێرا",
+    "classes_coming_soon": "پۆلەکان بە زودی!",
+    "homework_coming_soon": "ئەرکەکان بە زودی!",
+    "grades_coming_soon": "نمرەکان بە زودی!",
+    "messages_coming_soon": "پەیامەکان بە زودی!"
+  },
+  "password_reset": {
+    "title": "وشەی نهێنیی نوێ دروست بکە",
+    "subtitle": "وشەی نهێنیی کاتیت پێویستە بگۆڕدرێت. تکایە وشەی نهێنییەکی نوێ و پارێزراو دروست بکە.",
+    "current_password": "وشەی نهێنیی کاتی",
+    "new_password": "وشەی نهێنیی نوێ",
+    "confirm_password": "دووپاتکردنەوەی وشەی نهێنیی نوێ",
+    "current_required": "تکایە وشەی نهێنیی کاتیت بنووسە",
+    "new_required": "تکایە وشەی نهێنییەکی نوێ بنووسە",
+    "confirm_required": "تکایە وشەی نهێنیی نوێ دووپات بکە",
+    "min_length": "وشەی نهێنی دەبێت لانیکەم 8 پیت بێت",
+    "passwords_mismatch": "وشە نهێنییەکان یەکسان نین",
+    "submit": "دانانی وشەی نهێنیی نوێ",
+    "success": "وشەی نهێنی بە سەرکەوتوویی گۆڕدرا!",
+    "failed": "شکستی لە گۆڕینی وشەی نهێنی"
+  },
+  "messages": {
+    "start_conversation_button": "دەست بکە بە گفتوگۆ",
+    "teacher_role_fallback": "مامۆستا",
+    "send_error": "شکستی لە ناردنی پەیام",
+    "failed_load_user_data": "شکستی لە بارکردنی داتای بەکارهێنەر",
+    "failed_load_conversations": "شکستی لە بارکردنی گفتوگۆکان",
+    "message_sent": "پەیام نێردرا",
+    "choose_teacher": "مامۆستایه‌ك هەڵبژێرە",
+    "type_message_here": "پەیامەکەت لێرە بنووسە...",
+    "subject_teacher": "مامۆستای بابەت"
   }
 }

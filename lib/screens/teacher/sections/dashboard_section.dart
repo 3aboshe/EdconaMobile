@@ -29,69 +29,6 @@ class _DashboardSectionState extends State<DashboardSection> {
     return ['ar', 'ckb', 'ku', 'bhn', 'arc', 'bad', 'bdi', 'sdh', 'kmr'].contains(locale.languageCode);
   }
 
-  String _getLocalizedText(String key) {
-    final locale = context.locale.languageCode;
-    final Map<String, Map<String, String>> translations = {
-      'ar': {
-        'overview': 'نظرة عامة',
-        'total_students': 'إجمالي الطلاب',
-        'present_today': 'الحضور اليوم',
-        'pending_homework': 'الواجبات المعلقة',
-        'unread_messages': 'الرسائل غير المقروءة',
-        'total_grades': 'إجمالي الدرجات',
-        'quick_actions': 'إجراءات سريعة',
-        'take_attendance': 'تسجيل الحضور',
-        'create_homework': 'إنشاء واجب',
-        'post_announcement': 'نشر إعلان',
-        'add_grade': 'إضافة درجة',
-        'my_classes': 'فصولي',
-        'no_classes': 'لا توجد فصول',
-        'students': 'طلاب',
-        'view_details': 'عرض التفاصيل',
-      },
-      'ku': {
-        'overview': 'پێداچوونەوە',
-        'total_students': 'کۆی قاریان',
-        'present_today': 'ئامادەی ئەمڕۆ',
-        'pending_homework': 'خەتباری مەودا',
-        'unread_messages': 'پەیامەخوێنراوەکان',
-        'total_grades': 'کۆی نمرە',
-        'quick_actions': 'کردەوەی خێرا',
-        'take_attendance': 'بینینی دێرین',
-        'create_homework': 'دروستکردنی خەتبار',
-        'post_announcement': 'بڵاکردنەوە',
-        'add_grade': 'زیادکردنی نمرە',
-        'my_classes': 'پۆلەکانم',
-        'no_classes': 'پۆل نییە',
-        'students': 'قاریان',
-        'view_details': 'بینینی وردەکاری',
-      },
-    };
-
-    if (translations[locale]?[key] != null) {
-      return translations[locale]![key]!;
-    }
-
-    final Map<String, String> english = {
-      'overview': 'Overview',
-      'total_students': 'Total Students',
-      'present_today': 'Present Today',
-      'pending_homework': 'Pending Homework',
-      'unread_messages': 'Unread Messages',
-      'total_grades': 'Total Grades',
-      'quick_actions': 'Quick Actions',
-      'take_attendance': 'Take Attendance',
-      'create_homework': 'Create Homework',
-      'post_announcement': 'Post Announcement',
-      'add_grade': 'Add Grade',
-      'my_classes': 'My Classes',
-      'no_classes': 'No Classes',
-      'students': 'Students',
-      'view_details': 'View Details',
-    };
-    return english[key] ?? key;
-  }
-
   Future<void> _loadDashboardData() async {
     if (!mounted) return;
     setState(() => _isLoading = true);
@@ -156,7 +93,7 @@ class _DashboardSectionState extends State<DashboardSection> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      _getLocalizedText('overview'),
+                      'teacher.overview'.tr(),
                       style: TextStyle(
                         color: Colors.white.withValues(alpha: 0.8),
                         fontSize: 14,
@@ -212,7 +149,7 @@ class _DashboardSectionState extends State<DashboardSection> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            _getLocalizedText('quick_actions'),
+            'teacher.quick_actions'.tr(),
             style: const TextStyle(
               color: Colors.white,
               fontSize: 20,
@@ -224,7 +161,7 @@ class _DashboardSectionState extends State<DashboardSection> {
             children: [
               Expanded(
                 child: _buildActionButton(
-                  _getLocalizedText('take_attendance'),
+                  'teacher.take_attendance'.tr(),
                   CupertinoIcons.checkmark_square,
                   const Color(0xFF007AFF),
                   () => _navigateTo('attendance'),
@@ -233,7 +170,7 @@ class _DashboardSectionState extends State<DashboardSection> {
               const SizedBox(width: 12),
               Expanded(
                 child: _buildActionButton(
-                  _getLocalizedText('create_homework'),
+                  'teacher.create_homework'.tr(),
                   CupertinoIcons.doc_text,
                   const Color(0xFF34C759),
                   () => _navigateTo('homework'),
@@ -246,7 +183,7 @@ class _DashboardSectionState extends State<DashboardSection> {
             children: [
               Expanded(
                 child: _buildActionButton(
-                  _getLocalizedText('post_announcement'),
+                  'teacher.post_announcement'.tr(),
                   CupertinoIcons.bell,
                   const Color(0xFFFF9500),
                   () => _navigateTo('announcements'),
@@ -255,7 +192,7 @@ class _DashboardSectionState extends State<DashboardSection> {
               const SizedBox(width: 12),
               Expanded(
                 child: _buildActionButton(
-                  _getLocalizedText('add_grade'),
+                  'teacher.add_grade'.tr(),
                   CupertinoIcons.chart_bar_square,
                   const Color(0xFFFF3B30),
                   () => _navigateTo('grades'),
@@ -319,7 +256,7 @@ class _DashboardSectionState extends State<DashboardSection> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            _getLocalizedText('my_classes'),
+            'teacher.my_classes'.tr(),
             style: const TextStyle(
               color: Colors.white,
               fontSize: 20,
@@ -344,7 +281,7 @@ class _DashboardSectionState extends State<DashboardSection> {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      _getLocalizedText('no_classes'),
+                      'teacher.no_classes'.tr(),
                       style: TextStyle(
                         color: Colors.grey[600],
                         fontSize: 14,
@@ -417,7 +354,7 @@ class _DashboardSectionState extends State<DashboardSection> {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      '${classData['studentCount'] ?? 0} ${_getLocalizedText('students')}',
+                      '${classData['studentCount'] ?? 0} ${'teacher.students'.tr()}',
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey[600],
@@ -435,7 +372,7 @@ class _DashboardSectionState extends State<DashboardSection> {
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
-              _getLocalizedText('view_details'),
+              'teacher.view_details'.tr(),
               style: const TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,

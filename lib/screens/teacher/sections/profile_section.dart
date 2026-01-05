@@ -32,89 +32,7 @@ class _ProfileSectionState extends State<ProfileSection> {
     return ['ar', 'ckb', 'ku', 'bhn', 'arc', 'bad', 'bdi', 'sdh', 'kmr'].contains(locale.languageCode);
   }
 
-  String _getLocalizedText(String key) {
-    final locale = context.locale.languageCode;
-    final Map<String, Map<String, String>> translations = {
-      'ar': {
-        'profile': 'الملف الشخصي',
-        'teacher_info': 'معلومات المعلم',
-        'teacher_id': 'المعرف',
-        'my_subject': 'مادتي',
-        'total_classes': 'إجمالي الصفوف',
-        'messaging_hours': 'ساعات المراسلة',
-        'set_availability': 'حدد توافرك للرد على الرسائل',
-        'available_from': 'متاح من',
-        'available_to': 'متاح حتى',
-        'logout': 'تسجيل الخروج',
-        'edit_profile': 'تعديل الملف الشخصي',
-        'save': 'حفظ',
-        'availability_updated': 'تم تحديث التوفر',
-        'not_available': 'غير متاح',
-        'available_now': 'متاح الآن',
-        'available_at': 'متاح في',
-      },
-      'ku': {
-        'profile': 'پڕۆفایل',
-        'teacher_info': 'زانیاری مامۆستا',
-        'teacher_id': 'ناسنامە',
-        'my_subject': 'بابەتەکەم',
-        'total_classes': 'کۆی پۆلەکان',
-        'messaging_hours': 'کاتژمێری پەیام',
-        'set_availability': 'بەردەستی دیاری بکە',
-        'available_from': 'بەردەست لە',
-        'available_to': 'بەردەست تا',
-        'logout': 'چوونەدەرەوە',
-        'edit_profile': 'دەستکاریکردنی پڕۆفایل',
-        'save': 'هەڵگرتن',
-        'availability_updated': 'بەردەستی نوێکرایەوە',
-        'not_available': 'بەردەست نییە',
-        'available_now': 'ئێستا بەردەستە',
-        'available_at': 'بەردەست لە',
-      },
-      'bhn': {
-        'profile': 'پڕۆفایل',
-        'teacher_info': 'زانیاری مامۆستا',
-        'teacher_id': 'ناسنامە',
-        'my_subject': 'بابەتەکەم',
-        'total_classes': 'کۆی کلاسەکان',
-        'messaging_hours': 'کاتژمێری پەیام',
-        'set_availability': 'بەردەستی دیاری بکە',
-        'available_from': 'بەردەست لە',
-        'available_to': 'بەردەست تا',
-        'logout': 'چوونەدەرەوە',
-        'edit_profile': 'دەستکاریکردنی پڕۆفایل',
-        'save': 'هەڵگرتن',
-        'availability_updated': 'بەردەستی نوێکرایەوە',
-        'not_available': 'بەردەست نییە',
-        'available_now': 'ئێستا بەردەستە',
-        'available_at': 'بەردەست لە',
-      },
-    };
 
-    if (translations[locale]?[key] != null) {
-      return translations[locale]![key]!;
-    }
-
-    final Map<String, String> english = {
-      'profile': 'Profile',
-      'teacher_info': 'Teacher Info',
-      'teacher_id': 'Teacher ID',
-      'my_subject': 'My Subject',
-      'total_classes': 'Total Classes',
-      'messaging_hours': 'Messaging Hours',
-      'set_availability': 'Set your availability to respond to messages',
-      'available_from': 'Available From',
-      'available_to': 'Available To',
-      'logout': 'Logout',
-      'edit_profile': 'Edit Profile',
-      'save': 'Save',
-      'availability_updated': 'Availability Updated',
-      'not_available': 'Not Available',
-      'available_now': 'Available Now',
-      'available_at': 'Available at',
-    };
-    return english[key] ?? key;
-  }
 
   void _loadAvailability() {
     final availability = widget.teacher['messagingAvailability'];
@@ -141,7 +59,7 @@ class _ProfileSectionState extends State<ProfileSection> {
     if (_availableFrom == null || _availableTo == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(_getLocalizedText('set_availability')),
+          content: Text('teacher.set_availability'.tr()),
           backgroundColor: Colors.red,
         ),
       );
@@ -161,7 +79,7 @@ class _ProfileSectionState extends State<ProfileSection> {
         SnackBar(
           content: Text(
             result['success']
-                ? _getLocalizedText('availability_updated')
+                ? 'teacher.availability_updated'.tr()
                 : result['message'],
           ),
           backgroundColor: result['success'] ? Colors.green : Colors.red,
@@ -251,7 +169,7 @@ class _ProfileSectionState extends State<ProfileSection> {
           children: [
             Expanded(
               child: Text(
-                _getLocalizedText('profile'),
+                'teacher.profile'.tr(),
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 32,
@@ -358,18 +276,18 @@ class _ProfileSectionState extends State<ProfileSection> {
                   color: isAvailable ? const Color(0xFF34C759) : const Color(0xFFFF9500),
                 ),
                 const SizedBox(width: 6),
-                Text(
-                  isAvailable
-                      ? _getLocalizedText('available_now')
-                      : availability != null
-                          ? '${_getLocalizedText('available_at')} ${availability['from']} - ${availability['to']}'
-                          : _getLocalizedText('not_available'),
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: isAvailable ? const Color(0xFF34C759) : const Color(0xFFFF9500),
+                  Text(
+                    isAvailable
+                        ? 'teacher.available_now'.tr()
+                        : availability != null
+                            ? '${'teacher.available_at'.tr()} ${availability['from']} - ${availability['to']}'
+                            : 'teacher.not_available'.tr(),
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: isAvailable ? const Color(0xFF34C759) : const Color(0xFFFF9500),
+                    ),
                   ),
-                ),
               ],
             ),
           ),
@@ -397,7 +315,7 @@ class _ProfileSectionState extends State<ProfileSection> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            _getLocalizedText('teacher_info'),
+            'teacher.teacher_info'.tr(),
             style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -407,19 +325,19 @@ class _ProfileSectionState extends State<ProfileSection> {
           const SizedBox(height: 20),
           _buildInfoItem(
             CupertinoIcons.person_fill,
-            _getLocalizedText('teacher_id'),
+            'teacher.teacher_id'.tr(),
             widget.teacher['id']?.toString() ?? 'N/A',
           ),
           const SizedBox(height: 20),
           _buildInfoItem(
             CupertinoIcons.book_fill,
-            _getLocalizedText('my_subject'),
+            'teacher.my_subject'.tr(),
             widget.teacher['subject'] ?? 'N/A',
           ),
           const SizedBox(height: 20),
           _buildInfoItem(
             CupertinoIcons.building_2_fill,
-            _getLocalizedText('total_classes'),
+            'teacher.total_classes'.tr(),
             (widget.teacher['classIds'] as List?)?.length.toString() ?? '0',
           ),
         ],
@@ -500,7 +418,7 @@ class _ProfileSectionState extends State<ProfileSection> {
               const SizedBox(width: 16),
               Expanded(
                 child: Text(
-                  _getLocalizedText('messaging_hours'),
+                  'teacher.messaging_hours'.tr(),
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -512,7 +430,7 @@ class _ProfileSectionState extends State<ProfileSection> {
           ),
           const SizedBox(height: 16),
           Text(
-            _getLocalizedText('set_availability'),
+            'teacher.set_availability'.tr(),
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey[600],
@@ -523,7 +441,7 @@ class _ProfileSectionState extends State<ProfileSection> {
             children: [
               Expanded(
                 child: _buildTimeSelector(
-                  _getLocalizedText('available_from'),
+                  'teacher.available_from'.tr(),
                   _availableFrom,
                   (time) => setState(() => _availableFrom = time),
                 ),
@@ -531,7 +449,7 @@ class _ProfileSectionState extends State<ProfileSection> {
               const SizedBox(width: 12),
               Expanded(
                 child: _buildTimeSelector(
-                  _getLocalizedText('available_to'),
+                  'teacher.available_to'.tr(),
                   _availableTo,
                   (time) => setState(() => _availableTo = time),
                 ),
@@ -553,7 +471,7 @@ class _ProfileSectionState extends State<ProfileSection> {
                 elevation: 0,
               ),
               child: Text(
-                _getLocalizedText('save'),
+                'common.save'.tr(),
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -617,7 +535,7 @@ class _ProfileSectionState extends State<ProfileSection> {
         onPressed: _logout,
         icon: const Icon(CupertinoIcons.square_arrow_right, size: 22),
         label: Text(
-          _getLocalizedText('logout'),
+          'common.logout'.tr(),
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,

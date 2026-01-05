@@ -235,7 +235,7 @@ class _GradesSectionState extends State<GradesSection> {
                   items: _classes.map((classData) {
                     return DropdownMenuItem<String>(
                       value: classData['id'],
-                      child: Text(classData['name'] ?? 'Unknown Class'),
+                        child: Text(classData['name']?.toString() ?? 'common.unknown_class'.tr()),
                     );
                   }).toList(),
                   onChanged: (value) {
@@ -365,7 +365,7 @@ class _GradesSectionState extends State<GradesSection> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    exam['title'] ?? 'Unknown',
+                    exam['title'] ?? 'common.unknown'.tr(),
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -392,7 +392,7 @@ class _GradesSectionState extends State<GradesSection> {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
-                isSelected ? 'Selected' : 'Select',
+                isSelected ? 'common.selected'.tr() : 'common.select'.tr(),
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
@@ -440,7 +440,7 @@ class _GradesSectionState extends State<GradesSection> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '${'teacher.students'.tr()} - ${_selectedExam?['title'] ?? 'Exam'}',
+          '${'teacher.students'.tr()} - ${_selectedExam?['title'] ?? 'teacher.grades_page.exam'.tr()}',
           style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -510,7 +510,7 @@ class _GradesSectionState extends State<GradesSection> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  student['name'] ?? 'Unknown',
+                  student['name']?.toString() ?? 'common.unknown'.tr(),
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -526,7 +526,7 @@ class _GradesSectionState extends State<GradesSection> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      'Grade: ${studentGrade['marksObtained']}/${studentGrade['maxMarks']}',
+                      '${'teacher.grades_page.grade'.tr()}: ${studentGrade['marksObtained']}/${studentGrade['maxMarks']}',
                       style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
@@ -714,7 +714,7 @@ class _GradesSectionState extends State<GradesSection> {
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Error: ${e.toString()}'),
+                      content: Text('common.error_details'.tr(namedArgs: {'error': e.toString()})),
                       backgroundColor: Colors.red,
                     ),
                   );
@@ -772,7 +772,7 @@ class _GradesSectionState extends State<GradesSection> {
             ),
             backgroundColor: Colors.white,
             title: Text(
-              '${existingGrade != null ? 'Edit Grade' : 'teacher.grades_page.assign_grades'.tr()} - ${student['name'] ?? 'Student'}',
+              '${existingGrade != null ? 'teacher.edit_grade'.tr() : 'teacher.grades_page.assign_grades'.tr()} - ${student['name'] ?? 'teacher.student_name'.tr()}',
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,

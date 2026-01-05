@@ -33,58 +33,6 @@ class _MessagesSectionState extends State<MessagesSection> {
     return ['ar', 'ckb', 'ku', 'bhn', 'arc', 'bad', 'bdi', 'sdh', 'kmr'].contains(locale.languageCode);
   }
 
-  String _getLocalizedText(String key) {
-    final locale = context.locale.languageCode;
-    final Map<String, Map<String, String>> translations = {
-      'ar': {
-        'messages': 'الرسائل',
-        'parents': 'أولياء الأمور',
-        'no_parents': 'لا يوجد أولياء أمور',
-        'message': 'رسالة',
-        'type_message': 'اكتب رسالتك...',
-        'send': 'إرسال',
-        'student': 'الطالب',
-        'conversation': 'المحادثة',
-      },
-      'ku': {
-        'messages': 'پەیام',
-        'parents': 'باوان',
-        'no_parents': 'با نییە',
-        'message': 'پەیام',
-        'type_message': 'پەیامەکەت بنووسە...',
-        'send': 'ناردن',
-        'student': 'قاری',
-        'conversation': 'گفتوگۆ',
-      },
-      'bhn': {
-        'messages': 'پیامەکان',
-        'parents': 'والدین',
-        'no_parents': 'والدین نییە',
-        'message': 'پیام',
-        'type_message': 'پیامەکەت بنووسە...',
-        'send': 'ناردن',
-        'student': 'خوێندکار',
-        'conversation': 'گفتوگۆ',
-      },
-    };
-
-    if (translations[locale]?[key] != null) {
-      return translations[locale]![key]!;
-    }
-
-    final Map<String, String> english = {
-      'messages': 'Messages',
-      'parents': 'Parents',
-      'no_parents': 'No Parents',
-      'message': 'Message',
-      'type_message': 'Type your message...',
-      'send': 'Send',
-      'student': 'Student',
-      'conversation': 'Conversation',
-    };
-    return english[key] ?? key;
-  }
-
   Future<void> _loadData() async {
     try {
       final user = await _authService.getCurrentUser();
@@ -163,7 +111,7 @@ class _MessagesSectionState extends State<MessagesSection> {
           elevation: 0,
           automaticallyImplyLeading: false,
           title: Text(
-            _getLocalizedText('messages'),
+            'teacher.messages'.tr(),
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w700,
@@ -210,7 +158,7 @@ class _MessagesSectionState extends State<MessagesSection> {
             ),
             const SizedBox(height: 24),
             Text(
-              _getLocalizedText('no_parents'),
+              'teacher.no_parents'.tr(),
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -284,8 +232,8 @@ class _MessagesSectionState extends State<MessagesSection> {
                       const SizedBox(height: 4),
                       Text(
                         parent['childName'] != null
-                            ? '${_getLocalizedText('student')}: ${parent['childName']}'
-                            : _getLocalizedText('conversation'),
+                            ? '${'teacher.student_name'.tr()}: ${parent['childName']}'
+                            : 'teacher.conversation'.tr(),
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey[600],
@@ -325,7 +273,6 @@ class _MessagesSectionState extends State<MessagesSection> {
           otherUser: parent,
           teacher: widget.teacher,
           isRTL: _isRTL(),
-          getLocalizedText: _getLocalizedText,
         ),
       ),
     );
@@ -337,7 +284,6 @@ class ChatScreen extends StatefulWidget {
   final Map<String, dynamic> otherUser;
   final Map<String, dynamic> teacher;
   final bool isRTL;
-  final String Function(String) getLocalizedText;
 
   const ChatScreen({
     super.key,
@@ -345,7 +291,6 @@ class ChatScreen extends StatefulWidget {
     required this.otherUser,
     required this.teacher,
     required this.isRTL,
-    required this.getLocalizedText,
   });
 
   @override
@@ -487,8 +432,8 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                     Text(
                       widget.otherUser['childName'] != null
-                          ? '${widget.getLocalizedText('student')}: ${widget.otherUser['childName']}'
-                          : 'Parent',
+                          ? '${'teacher.student_name'.tr()}: ${widget.otherUser['childName']}'
+                          : 'teacher.parents'.tr(),
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.white.withValues(alpha: 0.9),
@@ -534,7 +479,7 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            widget.isRTL ? 'ابدأ المحادثة' : 'Start the conversation',
+            widget.isRTL ? 'teacher.messages.start_conversation_button'.tr() : 'teacher.messages.start_conversation_button'.tr(),
             style: TextStyle(
               fontSize: 16,
               color: Colors.grey[600],
@@ -666,7 +611,7 @@ class _ChatScreenState extends State<ChatScreen> {
               child: TextField(
                 controller: _messageController,
                 decoration: InputDecoration(
-                  hintText: widget.getLocalizedText('type_message'),
+                  hintText: 'teacher.type_message'.tr(),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,

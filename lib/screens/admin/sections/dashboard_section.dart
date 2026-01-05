@@ -490,7 +490,7 @@ class _DashboardSectionState extends State<DashboardSection> {
         children: [
           // Header
           Text(
-            'Dashboard',
+            'admin.dashboard'.tr(),
             style: TextStyle(
               fontSize: isDesktop ? 40 : 32,
               fontWeight: FontWeight.w700,
@@ -500,7 +500,7 @@ class _DashboardSectionState extends State<DashboardSection> {
           ),
           const SizedBox(height: 8),
           Text(
-            'welcome_admin'.tr(),
+            'admin.welcome_admin'.tr(),
             style: TextStyle(
               fontSize: isDesktop ? 18 : 16,
               color: const Color(0xFF86868B),
@@ -611,32 +611,32 @@ class _DashboardSectionState extends State<DashboardSection> {
                   childAspectRatio: isDesktop ? 0.95 : (crossAxisCount == 1 ? 1.5 : 1.8),
                   children: [
                     _buildStatCard(
-                      title: 'Total Students',
+                      title: 'admin.total_students'.tr(),
                       value: _analytics!['totalStudents'].toString(),
                       icon: Icons.school,
                       color: const Color(0xFF1E3A8A),
-                      subtitle: 'Enrolled students',
+                      subtitle: 'admin.enrolled_students'.tr(),
                     ),
                     _buildStatCard(
-                      title: 'Total Teachers',
+                      title: 'admin.total_teachers'.tr(),
                       value: _analytics!['totalTeachers'].toString(),
                       icon: Icons.person,
                       color: const Color(0xFF2563EB),
-                      subtitle: 'Active teachers',
+                      subtitle: 'admin.active_teachers'.tr(),
                     ),
                     _buildStatCard(
-                      title: 'Total Parents',
+                      title: 'admin.total_parents'.tr(),
                       value: _analytics!['totalParents'].toString(),
                       icon: Icons.family_restroom,
                       color: const Color(0xFF3B82F6),
-                      subtitle: 'Registered parents',
+                      subtitle: 'admin.registered_parents'.tr(),
                     ),
                     _buildStatCard(
-                      title: 'Active Homework',
+                      title: 'admin.active_homework'.tr(),
                       value: '24',
                       icon: Icons.assignment,
                       color: const Color(0xFF60A5FA),
-                      subtitle: 'Assignments this week',
+                      subtitle: 'admin.assignments_this_week'.tr(),
                     ),
                   ],
                 );
@@ -647,7 +647,7 @@ class _DashboardSectionState extends State<DashboardSection> {
 
           // Performance Metrics
           Text(
-            'Performance Overview',
+            'admin.performance_overview'.tr(),
             style: TextStyle(
               fontSize: isDesktop ? 28 : 24,
               fontWeight: FontWeight.w700,
@@ -661,7 +661,7 @@ class _DashboardSectionState extends State<DashboardSection> {
 
           // Recent Activity
           Text(
-            'Recent Activity',
+            'admin.recent_activity'.tr(),
             style: TextStyle(
               fontSize: isDesktop ? 28 : 24,
               fontWeight: FontWeight.w700,
@@ -701,7 +701,7 @@ class _DashboardSectionState extends State<DashboardSection> {
                   children: [
                     Expanded(
                       child: _buildProgressMetric(
-                        title: 'Average Grade',
+                        title: 'admin.average_grade'.tr(),
                         value: 87.5,
                         color: const Color(0xFF1E3A8A),
                       ),
@@ -717,7 +717,7 @@ class _DashboardSectionState extends State<DashboardSection> {
                     const SizedBox(width: 24),
                     Expanded(
                       child: _buildCountMetric(
-                        title: 'Active Homework',
+                        title: 'admin.active_homework'.tr(),
                         value: '24',
                         icon: Icons.assignment,
                         color: const Color(0xFF3B82F6),
@@ -729,7 +729,7 @@ class _DashboardSectionState extends State<DashboardSection> {
                 return Column(
                   children: [
                     _buildProgressMetric(
-                      title: 'Average Grade',
+                      title: 'admin.average_grade'.tr(),
                       value: 87.5,
                       color: const Color(0xFF1E3A8A),
                     ),
@@ -741,7 +741,7 @@ class _DashboardSectionState extends State<DashboardSection> {
                     ),
                     const SizedBox(height: 24),
                     _buildCountMetric(
-                      title: 'Active Homework',
+                      title: 'admin.active_homework'.tr(),
                       value: '24',
                       icon: Icons.assignment,
                       color: const Color(0xFF3B82F6),
@@ -861,26 +861,26 @@ class _DashboardSectionState extends State<DashboardSection> {
     final activities = [
       {
         'type': 'homework',
-        'title': 'New homework assigned in Math',
-        'time': '2 hours ago',
+        'title': 'admin.activity_new_homework_math'.tr(),
+        'time': 'common.hours_ago'.tr(namedArgs: {'count': '2'}),
         'icon': Icons.assignment,
       },
       {
         'type': 'announcement',
-        'title': 'School meeting announcement',
-        'time': '5 hours ago',
+        'title': 'admin.activity_school_meeting'.tr(),
+        'time': 'common.hours_ago'.tr(namedArgs: {'count': '5'}),
         'icon': Icons.campaign,
       },
       {
         'type': 'homework',
-        'title': 'Science project due date',
-        'time': '1 day ago',
+        'title': 'admin.activity_science_project_due'.tr(),
+        'time': 'common.day_ago'.tr(namedArgs: {'count': '1'}),
         'icon': Icons.assignment,
       },
       {
         'type': 'announcement',
-        'title': 'Holiday notice published',
-        'time': '2 days ago',
+        'title': 'admin.activity_holiday_notice'.tr(),
+        'time': 'common.days_ago'.tr(namedArgs: {'count': '2'}),
         'icon': Icons.campaign,
       },
     ];
@@ -904,9 +904,9 @@ class _DashboardSectionState extends State<DashboardSection> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Latest Activities',
-                style: TextStyle(
+              Text(
+                'admin.latest_activities'.tr(),
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
                   color: Color(0xFF1D1D1F),
