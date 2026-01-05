@@ -2,38 +2,39 @@ import 'package:dio/dio.dart';
 import 'api_service.dart';
 
 class ParentService {
-  // Get parent's children information
+  // Get parent's children information - uses dedicated endpoint
   Future<List<Map<String, dynamic>>> getChildren(String parentId) async {
     try {
-      // First get the parent data to get childrenIds
-      final parentResponse = await ApiService.dio.get('/api/auth/user/$parentId');
+      // Use the dedicated parent children endpoint
+      final response = await ApiService.dio.get('/api/auth/parent/$parentId/children');
 
-      if (parentResponse.statusCode == 200) {
-        final parentData = parentResponse.data;
-        final childrenIds = List<String>.from(parentData['childrenIds'] ?? []);
-
-        // Get each child's data
-        final children = <Map<String, dynamic>>[];
-        for (String childId in childrenIds) {
-          try {
-            final childResponse = await ApiService.dio.get('/api/auth/user/$childId');
-            if (childResponse.statusCode == 200) {
-              children.add(childResponse.data);
-            }
-          } on DioException catch (e) {
-             // If child not found (404), just skip them.
-             if (e.response?.statusCode == 404) {
-                 continue;
-             }
-            continue;
-          } catch (e) {
-            continue;
-          }
-        }
-        return children;
+      if (response.statusCode == 200) {
+        return List<Map<String, dynamic>>.from(response.data);
       }
       return [];
     } catch (e) {
+      // Fallback to old method if new endpoint fails
+      try {
+        final parentResponse = await ApiService.dio.get('/api/auth/user/$parentId');
+
+        if (parentResponse.statusCode == 200) {
+          final parentData = parentResponse.data;
+          final childrenIds = List<String>.from(parentData['childrenIds'] ?? []);
+
+          final children = <Map<String, dynamic>>[];
+          for (String childId in childrenIds) {
+            try {
+              final childResponse = await ApiService.dio.get('/api/auth/user/$childId');
+              if (childResponse.statusCode == 200) {
+                children.add(childResponse.data);
+              }
+            } catch (_) {
+              continue;
+            }
+          }
+          return children;
+        }
+      } catch (_) {}
       throw Exception('Failed to load children: ${e.toString()}');
     }
   }

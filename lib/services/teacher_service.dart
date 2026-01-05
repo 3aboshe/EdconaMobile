@@ -19,17 +19,34 @@ class TeacherService {
   // Get students in a class
   Future<List<Map<String, dynamic>>> getStudentsByClass(String classId) async {
     try {
-      final response = await ApiService.dio.get('/api/auth/users');
+      // First try the dedicated endpoint
+      final response = await ApiService.dio.get('/api/classes/$classId/students');
       if (response.statusCode == 200) {
-        final users = response.data as List<dynamic>;
-        return users
-            .where((u) => u['role'] == 'STUDENT' && u['classId'] == classId)
+        return (response.data as List<dynamic>)
             .map((u) => u as Map<String, dynamic>)
             .toList();
       }
       return [];
     } catch (e) {
-
+      // Fallback to fetching all users and filtering
+      try {
+        final response = await ApiService.dio.get('/api/auth/users');
+        if (response.statusCode == 200) {
+          List<dynamic> users;
+          if (response.data is List) {
+            users = response.data as List<dynamic>;
+          } else if (response.data is Map && response.data['data'] != null) {
+            users = response.data['data'] as List<dynamic>;
+          } else {
+            return [];
+          }
+          
+          return users
+              .where((u) => u['role'] == 'STUDENT' && u['classId'] == classId)
+              .map((u) => u as Map<String, dynamic>)
+              .toList();
+        }
+      } catch (_) {}
       return [];
     }
   }
