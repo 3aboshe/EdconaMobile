@@ -68,6 +68,7 @@ class _SchoolsSectionState extends State<SchoolsSection> {
     final addressController = TextEditingController();
     final adminNameController = TextEditingController();
     final adminEmailController = TextEditingController();
+    final adminUsernameController = TextEditingController();
     bool isCreating = false;
 
     await showModalBottomSheet(
@@ -122,6 +123,8 @@ class _SchoolsSectionState extends State<SchoolsSection> {
                       const SizedBox(height: 16),
                       _buildTextField(tr('super_admin.admin_name'), adminNameController, 'Principal Skinner'),
                       const SizedBox(height: 16),
+                      _buildTextField(tr('super_admin.custom_username'), adminUsernameController, tr('super_admin.username_hint')),
+                      const SizedBox(height: 16),
                       _buildTextField(tr('super_admin.admin_email'), adminEmailController, 'admin@school.edu', keyboardType: TextInputType.emailAddress),
                     ],
                   ),
@@ -151,6 +154,7 @@ class _SchoolsSectionState extends State<SchoolsSection> {
                             'admin': {
                               'name': adminNameController.text,
                               'email': adminEmailController.text,
+                              'accessCode': adminUsernameController.text.isNotEmpty ? adminUsernameController.text : null,
                             }
                           };
 
@@ -794,6 +798,156 @@ class _SchoolsSectionState extends State<SchoolsSection> {
     );
   }
 
+  void _showSchoolAdmins(Map<String, dynamic> school) async {
+    // Show loading dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
+
+    try {
+      // Get all users for this school and filter admins locally
+      final schools = await _adminService.getAllSchools();
+      final thisSchool = schools.firstWhere(
+        (s) => s['id'] == school['id'],
+        orElse: () => school,
+      );
+      
+      // The school response includes _count but we need to fetch users
+      // For now, show all SCHOOL_ADMIN role users
+      // This requires a backend endpoint - using available data
+      
+      if (mounted) Navigator.pop(context); // Close loading
+      
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (ctx) => Container(
+          height: MediaQuery.of(context).size.height * 0.7,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    tr('super_admin.school_admins'),
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.pop(ctx),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                school['name'] ?? '',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey[600],
+                ),
+              ),
+              const SizedBox(height: 24),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.blue.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.blue.withOpacity(0.2)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.info_outline, color: Colors.blue),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        tr('super_admin.admin_management_info'),
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.blue[700],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                tr('super_admin.school_code'),
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  school['code'] ?? 'N/A',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Courier',
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                '${tr('super_admin.total_users')}: ${thisSchool['_count']?['users'] ?? 0}',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey[600],
+                ),
+              ),
+              const Spacer(),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.pop(ctx);
+                    _showAddAdminDialog(school);
+                  },
+                  icon: const Icon(Icons.person_add),
+                  label: Text(tr('super_admin.add_school_admin')),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF007AFF),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    } catch (e) {
+      if (mounted) Navigator.pop(context); // Close loading
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${tr('super_admin.error_occurred')}: $e')),
+        );
+      }
+    }
+  }
+
   void _showSchoolOptions(Map<String, dynamic> school) {
     showModalBottomSheet(
       context: context,
@@ -865,6 +1019,14 @@ class _SchoolsSectionState extends State<SchoolsSection> {
               ),
               const Divider(),
               ListTile(
+                leading: const Icon(Icons.admin_panel_settings_outlined, color: Colors.green),
+                title: Text(tr('super_admin.view_admins')),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showSchoolAdmins(school);
+                },
+              ),
+              ListTile(
                 leading: const Icon(Icons.person_add_outlined, color: Colors.blue),
                 title: Text(tr('super_admin.add_school_admin')),
                 onTap: () {
@@ -891,6 +1053,7 @@ class _SchoolsSectionState extends State<SchoolsSection> {
   Future<void> _showAddAdminDialog(Map<String, dynamic> school) async {
     final nameController = TextEditingController();
     final emailController = TextEditingController();
+    final usernameController = TextEditingController();
     bool isAdding = false;
 
     await showDialog(
@@ -899,25 +1062,36 @@ class _SchoolsSectionState extends State<SchoolsSection> {
         builder: (context, setDialogState) => AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: Text(tr('super_admin.add_school_admin')),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: nameController,
-                decoration: InputDecoration(
-                  labelText: tr('super_admin.admin_name'),
-                  border: const OutlineInputBorder(),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: nameController,
+                  decoration: InputDecoration(
+                    labelText: tr('super_admin.admin_name'),
+                    border: const OutlineInputBorder(),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: emailController,
-                decoration: InputDecoration(
-                  labelText: tr('super_admin.email_optional'),
-                  border: const OutlineInputBorder(),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: usernameController,
+                  decoration: InputDecoration(
+                    labelText: tr('super_admin.custom_username'),
+                    hintText: tr('super_admin.username_hint'),
+                    border: const OutlineInputBorder(),
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 16),
+                TextField(
+                  controller: emailController,
+                  decoration: InputDecoration(
+                    labelText: tr('super_admin.email_optional'),
+                    border: const OutlineInputBorder(),
+                  ),
+                ),
+              ],
+            ),
           ),
           actions: [
             TextButton(
@@ -938,6 +1112,7 @@ class _SchoolsSectionState extends State<SchoolsSection> {
                         {
                           'name': nameController.text,
                           'email': emailController.text,
+                          'accessCode': usernameController.text.isNotEmpty ? usernameController.text : null,
                         },
                       );
                       
@@ -963,6 +1138,7 @@ class _SchoolsSectionState extends State<SchoolsSection> {
       ),
     );
   }
+
 
   void _confirmDeleteSchool(Map<String, dynamic> school) {
     showDialog(

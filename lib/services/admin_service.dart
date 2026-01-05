@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'api_service.dart';
 
@@ -407,6 +408,46 @@ class AdminService {
       return {'success': false, 'message': 'Failed to add admin'};
     } catch (e) {
       return {'success': false, 'message': e.toString()};
+    }
+  }
+
+  // Get school admins (for SUPER_ADMIN viewing school admin details)
+  Future<List<Map<String, dynamic>>> getSchoolAdmins(String schoolId) async {
+    try {
+      // Set school context temporarily and fetch admins
+      final response = await ApiService.dio.get('/api/auth/users', 
+        queryParameters: {'role': 'SCHOOL_ADMIN'},
+        options: Options(headers: {'x-edcon-school-id': schoolId}),
+      );
+      if (response.statusCode == 200) {
+        if (response.data is Map && response.data['data'] != null) {
+          return List<Map<String, dynamic>>.from(response.data['data']);
+        } else if (response.data is List) {
+          return List<Map<String, dynamic>>.from(response.data);
+        }
+      }
+      return [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  // Get all users for a school (for SUPER_ADMIN)
+  Future<List<Map<String, dynamic>>> getSchoolUsers(String schoolId) async {
+    try {
+      final response = await ApiService.dio.get('/api/auth/users',
+        options: Options(headers: {'x-edcon-school-id': schoolId}),
+      );
+      if (response.statusCode == 200) {
+        if (response.data is Map && response.data['data'] != null) {
+          return List<Map<String, dynamic>>.from(response.data['data']);
+        } else if (response.data is List) {
+          return List<Map<String, dynamic>>.from(response.data);
+        }
+      }
+      return [];
+    } catch (e) {
+      return [];
     }
   }
 
