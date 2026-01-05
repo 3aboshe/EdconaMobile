@@ -535,6 +535,9 @@ class _UsersSectionState extends State<UsersSection>
 
           return AlertDialog(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            contentPadding: const EdgeInsets.all(24),
+            insetPadding: const EdgeInsets.symmetric(horizontal: 40),
+            constraints: const BoxConstraints(maxWidth: 600),
             title: Row(
               children: [
                 CircleAvatar(
@@ -637,20 +640,20 @@ class _UsersSectionState extends State<UsersSection>
                                     Container(
                                       padding: const EdgeInsets.all(12),
                                       decoration: BoxDecoration(
-                                        color: Colors.orange.shade50,
+                                        color: const Color(0xFF1E3A8A).withValues(alpha: 0.1),
                                         borderRadius: BorderRadius.circular(8),
-                                        border: Border.all(color: Colors.orange.shade200),
+                                        border: Border.all(color: const Color(0xFF1E3A8A).withValues(alpha: 0.3)),
                                       ),
                                       child: Row(
                                         children: [
-                                          Icon(Icons.info_outline, size: 20, color: Colors.orange.shade700),
+                                          const Icon(Icons.info_outline, size: 20, color: Color(0xFF1E3A8A)),
                                           const SizedBox(width: 8),
                                           Expanded(
                                             child: Text(
                                               'admin.has_temporary_password_info'.tr(),
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                 fontSize: 13,
-                                                color: Colors.orange.shade900,
+                                                color: Color(0xFF1E3A8A),
                                               ),
                                             ),
                                           ),
@@ -704,6 +707,9 @@ class _UsersSectionState extends State<UsersSection>
                             if (user['role'] == 'TEACHER' || user['role'] == 'PARENT')
                               ElevatedButton.icon(
                                 onPressed: () async {
+                                  // Capture the scaffold messenger before showing dialog
+                                  final scaffoldMessenger = ScaffoldMessenger.of(context);
+                                  
                                   final confirm = await showDialog<bool>(
                                     context: context,
                                     builder: (context) => AlertDialog(
@@ -717,7 +723,7 @@ class _UsersSectionState extends State<UsersSection>
                                         ElevatedButton(
                                           onPressed: () => Navigator.pop(context, true),
                                           style: ElevatedButton.styleFrom(
-                                            backgroundColor: Colors.orange,
+                                            backgroundColor: const Color(0xFF1E3A8A),
                                           ),
                                           child: Text('admin.reset_password_button'.tr()),
                                         ),
@@ -732,29 +738,39 @@ class _UsersSectionState extends State<UsersSection>
                                       setState(() {
                                         isLoading = false;
                                         if (result['success']) {
-                                          credentials?['temporaryPassword'] = result['newPassword'];
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(
-                                              content: Text('admin.password_reset_success'.tr()),
-                                              backgroundColor: Colors.green,
-                                            ),
-                                          );
-                                        } else {
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(
-                                              content: Text(result['message'] ?? 'admin.password_reset_failed'.tr()),
-                                              backgroundColor: Colors.red,
-                                            ),
-                                          );
+                                          // Update credentials to show the new temporary password
+                                          credentials = {
+                                            ...?credentials,
+                                            'temporaryPassword': result['newPassword'],
+                                            'hasTemporaryPassword': true,
+                                          };
                                         }
                                       });
+                                      
+                                      // Show snackbar after setState completes
+                                      if (result['success']) {
+                                        scaffoldMessenger.showSnackBar(
+                                          SnackBar(
+                                            content: Text('admin.password_reset_success'.tr()),
+                                            backgroundColor: Colors.green,
+                                            duration: const Duration(seconds: 2),
+                                          ),
+                                        );
+                                      } else {
+                                        scaffoldMessenger.showSnackBar(
+                                          SnackBar(
+                                            content: Text(result['message'] ?? 'admin.password_reset_failed'.tr()),
+                                            backgroundColor: Colors.red,
+                                          ),
+                                        );
+                                      }
                                     }
                                   }
                                 },
                                 icon: const Icon(Icons.lock_reset, size: 18),
                                 label: Text('admin.reset_password_button'.tr()),
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.orange,
+                                  backgroundColor: const Color(0xFF1E3A8A),
                                   foregroundColor: Colors.white,
                                   minimumSize: const Size(double.infinity, 44),
                                   shape: RoundedRectangleBorder(

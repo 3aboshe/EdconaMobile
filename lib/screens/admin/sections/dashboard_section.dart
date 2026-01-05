@@ -26,17 +26,23 @@ class _DashboardSectionState extends State<DashboardSection> {
   }
 
   Future<void> _loadAnalytics() async {
+    if (!mounted) return;
+    
     setState(() {
       _isLoading = true;
     });
 
     try {
       final data = await _adminService.getAnalytics();
+      if (!mounted) return;
+      
       setState(() {
         _analytics = data;
         _isLoading = false;
       });
     } catch (e) {
+      if (!mounted) return;
+      
       setState(() {
         _isLoading = false;
       });

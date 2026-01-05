@@ -31,6 +31,8 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
   }
 
   Future<void> _loadData() async {
+    if (!mounted) return;
+    
     setState(() {
       _isLoading = true;
     });
@@ -39,12 +41,16 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
       final subjects = await _adminService.getAllSubjects();
       final classes = await _adminService.getAllClasses();
 
+      if (!mounted) return;
+      
       setState(() {
         _subjects = subjects;
         _classes = classes;
         _isLoading = false;
       });
     } catch (e) {
+      if (!mounted) return;
+      
       setState(() {
         _isLoading = false;
       });

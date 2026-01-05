@@ -23,17 +23,23 @@ class _AnalyticsSectionState extends State<AnalyticsSection> {
   }
 
   Future<void> _loadAnalytics() async {
+    if (!mounted) return;
+    
     setState(() {
       _isLoading = true;
     });
 
     try {
       final analytics = await _adminService.getAnalytics();
+      if (!mounted) return;
+      
       setState(() {
         _analytics = analytics;
         _isLoading = false;
       });
     } catch (e) {
+      if (!mounted) return;
+      
       setState(() {
         _isLoading = false;
       });

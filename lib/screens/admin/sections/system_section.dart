@@ -514,6 +514,8 @@ class _SystemSectionState extends State<SystemSection> {
   }
 
   Future<void> _checkRelations() async {
+    if (!mounted) return;
+    
     setState(() {
       _isChecking = true;
       _checkResult = null;
@@ -521,6 +523,8 @@ class _SystemSectionState extends State<SystemSection> {
 
     try {
       final result = await _adminService.checkAndFixRelations();
+      if (!mounted) return;
+      
       setState(() {
         _checkResult = result;
         _isChecking = false;
@@ -539,6 +543,8 @@ class _SystemSectionState extends State<SystemSection> {
         );
       }
     } catch (e) {
+      if (!mounted) return;
+      
       setState(() {
         _isChecking = false;
         _checkResult = {
