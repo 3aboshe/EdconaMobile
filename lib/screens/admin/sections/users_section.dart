@@ -962,6 +962,10 @@ class _UsersSectionState extends State<UsersSection>
   }
 
   Widget _buildStudentList() {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    
     final filteredStudents = _students.where((student) {
       final name = student['name'].toString().toLowerCase();
       return name.contains(_searchQuery.toLowerCase());
@@ -986,6 +990,10 @@ class _UsersSectionState extends State<UsersSection>
   }
 
   Widget _buildTeacherList() {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    
     final filteredTeachers = _teachers.where((teacher) {
       final name = teacher['name'].toString().toLowerCase();
       return name.contains(_searchQuery.toLowerCase());
@@ -1010,6 +1018,10 @@ class _UsersSectionState extends State<UsersSection>
   }
 
   Widget _buildParentList() {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    
     final filteredParents = _parents.where((parent) {
       final name = parent['name'].toString().toLowerCase();
       return name.contains(_searchQuery.toLowerCase());

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
+import 'screens/reset_password_screen.dart';
 import 'screens/admin/admin_dashboard.dart';
 import 'screens/super_admin/super_admin_dashboard.dart';
 import 'services/language_service.dart';
@@ -104,6 +105,7 @@ class EdConaApp extends StatelessWidget {
         '/home': (context) => const HomeScreen(),
         '/admin': (context) => const AdminDashboard(),
         '/super_admin': (context) => const SuperAdminDashboard(),
+        '/reset-password': (context) => const ResetPasswordScreen(),
       },
     );
   }

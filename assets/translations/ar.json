@@ -43,6 +43,7 @@
     "attendance_count": "الحضور",
     "recent_activity": "النشاط الأخير",
     "no_recent_activity": "لا يوجد نشاط حديث",
+    "select_student_detail": "اختر طالب لعرض التفاصيل",
     "schedule": "الجدول",
     "exams": "الاختبارات",
     "no_students": "لم يتم العثور على طلاب",
@@ -337,6 +338,7 @@
     "total_parents": "إجمالي أولياء الأمور",
     "active_homework": "الواجبات النشطة",
     "assignments_this_week": "التكليفات هذا الأسبوع",
+    "class_name_hint_2": "مثال: الصف 5-أ، الشعبة 1",
     "create_class_title": "إنشاء صف",
     "class_name_label": "اسم الصف *",
     "class_name_hint": "مثال: الصف الخامس - أ، الصف الأول",
@@ -477,7 +479,13 @@
     "total_issues": "إجمالي المشكلات التي تم العثور عليها: ",
     "total_fixes": "إجمالي الإصلاحات المطبقة: ",
     "issues_found": "المشكلات التي تم العثور عليها:",
-    "fixes_applied": "الإصلاحات المطبقة:"
+    "fixes_applied": "الإصلاحات المطبقة:",
+    "export_data": "تصدير البيانات",
+    "create_backup": "إنشاء نسخة احتياطية",
+    "export_success": "تم تصدير البيانات بنجاح! تحقق من السجلات.",
+    "export_failed": "فشل تصدير البيانات",
+    "backup_created": "تم إنشاء النسخة الاحتياطية",
+    "backup_failed": "فشل إنشاء النسخة الاحتياطية"
   },
   "super_admin": {
     "dashboard": "لوحة تحكم المشرف العام",

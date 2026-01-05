@@ -101,4 +101,30 @@ class AuthService {
     }
     return null;
   }
+
+  Future<Map<String, dynamic>> resetPassword(String currentPassword, String newPassword) async {
+    try {
+      final response = await ApiService.dio.post(
+        '/api/auth/reset-password',
+        data: {
+          'currentPassword': currentPassword,
+          'newPassword': newPassword,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return {'success': true};
+      } else {
+        return {'success': false, 'message': 'Password reset failed'};
+      }
+    } on DioException catch (e) {
+      String message = 'Network error';
+      if (e.response?.data != null && e.response!.data['message'] != null) {
+        message = e.response!.data['message'];
+      }
+      return {'success': false, 'message': message};
+    } catch (e) {
+      return {'success': false, 'message': 'An error occurred: ${e.toString()}'};
+    }
+  }
 }
