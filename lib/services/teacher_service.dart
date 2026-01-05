@@ -4,26 +4,14 @@ class TeacherService {
   // Get teacher's classes
   Future<List<Map<String, dynamic>>> getTeacherClasses(String teacherId) async {
     try {
-      final response = await ApiService.dio.get('/api/auth/user/$teacherId');
+      final response = await ApiService.dio.get('/api/classes/teacher/$teacherId');
       if (response.statusCode == 200) {
-        final teacher = response.data;
-        final classIds = teacher['classIds'] as List<dynamic>? ?? [];
-        
-        if (classIds.isEmpty) return [];
-        
-        // Get all classes
-        final classesResponse = await ApiService.dio.get('/api/classes');
-        if (classesResponse.statusCode == 200) {
-          final allClasses = classesResponse.data as List<dynamic>;
-          return allClasses
-              .where((c) => classIds.contains(c['id']))
-              .map((c) => c as Map<String, dynamic>)
-              .toList();
-        }
+         return (response.data as List<dynamic>)
+            .map((c) => c as Map<String, dynamic>)
+            .toList();
       }
       return [];
     } catch (e) {
-
       return [];
     }
   }

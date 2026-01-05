@@ -918,14 +918,14 @@ class _UsersSectionState extends State<UsersSection>
                 const SizedBox(height: 4),
                 if (role == 'STUDENT') ...[
                   Text(
-                    '${'admin.class_prefix'.tr()}${user['classId'] ?? 'admin.na'.tr()}',
+                    '${'admin.class_prefix'.tr()}${user['class']?['name'] ?? user['classId'] ?? 'admin.na'.tr()}',
                     style: const TextStyle(
                       fontSize: 13,
                       color: Color(0xFF86868B),
                     ),
                   ),
                   Text(
-                    '${'admin.parent_prefix'.tr()}${user['parentId'] ?? 'admin.no_parent'.tr()}',
+                    '${'admin.parent_prefix'.tr()}${user['parent']?['name'] ?? user['parentId'] ?? 'admin.no_parent'.tr()}',
                     style: const TextStyle(
                       fontSize: 13,
                       color: Color(0xFF86868B),

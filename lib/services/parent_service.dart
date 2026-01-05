@@ -19,8 +19,13 @@ class ParentService {
             if (childResponse.statusCode == 200) {
               children.add(childResponse.data);
             }
+          } on DioException catch (e) {
+             // If child not found (404), just skip them.
+             if (e.response?.statusCode == 404) {
+                 continue;
+             }
+            continue;
           } catch (e) {
-            // Continue with other children if one fails
             continue;
           }
         }
