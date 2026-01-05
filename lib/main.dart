@@ -18,6 +18,13 @@ void main() async {
   // Initialize services
   AuthService.initialize();
 
+  // Handle uncaught errors
+  FlutterError.onError = (FlutterErrorDetails details) {
+    FlutterError.presentError(details);
+    print('❌ FLUTTER ERROR: ${details.exception}');
+    print('${details.stack}');
+  };
+
   runApp(
     EasyLocalization(
       supportedLocales: const [
