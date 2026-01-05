@@ -1,9 +1,28 @@
 import 'api_service.dart';
 
 class TeacherService {
-  // Get teacher's classes
-  Future<List<Map<String, dynamic>>> getTeacherClasses(String teacherId) async {
+  // Sync teacher's class assignments based on their subject
+  // This ensures teachers are properly assigned to all classes that have their subject
+  Future<Map<String, dynamic>> syncTeacherClasses(String teacherId) async {
     try {
+      final response = await ApiService.dio.post('/api/classes/sync-teacher/$teacherId');
+      if (response.statusCode == 200) {
+        return response.data as Map<String, dynamic>;
+      }
+      return {'success': false, 'message': 'Failed to sync teacher classes'};
+    } catch (e) {
+      return {'success': false, 'message': 'Error syncing teacher classes: $e'};
+    }
+  }
+
+  // Get teacher's classes (with auto-sync)
+  Future<List<Map<String, dynamic>>> getTeacherClasses(String teacherId, {bool autoSync = true}) async {
+    try {
+      // First, sync teacher's class assignments if autoSync is enabled
+      if (autoSync) {
+        await syncTeacherClasses(teacherId);
+      }
+      
       final response = await ApiService.dio.get('/api/classes/teacher/$teacherId');
       if (response.statusCode == 200) {
          return (response.data as List<dynamic>)

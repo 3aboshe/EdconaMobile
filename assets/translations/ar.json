@@ -230,7 +230,8 @@
       "mark_all_present": "تحديد الكل حاضر",
       "mark_all_absent": "تحديد الكل غائب",
       "save_success": "تم حفظ الحضور بنجاح",
-      "save_error": "فشل في حفظ الحضور"
+      "save_error": "فشل في حفظ الحضور",
+      "no_classes_assigned": "لم يتم تعيين أي فصول لك بعد. يرجى الاتصال بالمسؤول."
     },
     "grades_page": {
       "create_exam": "إنشاء اختبار",
@@ -247,7 +248,10 @@
       "student_name": "اسم الطالب",
       "score": "النقاط",
       "select_exam": "اختر الاختبار",
-      "select_class_first": "الرجاء اختيار الفصل أولاً"
+      "select_class_first": "الرجاء اختيار الفصل أولاً",
+      "select_class": "اختر الفصل",
+      "class": "الفصل",
+      "no_classes_assigned": "لم يتم تعيين أي فصول لك بعد. يرجى الاتصال بالمسؤول."
     },
     "homework_page": {
       "create_homework": "إنشاء واجب",

@@ -195,7 +195,7 @@ class _GradesSectionState extends State<GradesSection> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'teacher.attendance.select_class'.tr(),
+            'teacher.grades_page.select_class'.tr(),
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -203,30 +203,51 @@ class _GradesSectionState extends State<GradesSection> {
             ),
           ),
           const SizedBox(height: 16),
-          DropdownButtonFormField<String>(
-            value: _selectedClassId,
-            decoration: InputDecoration(
-              labelText: 'teacher.attendance.class'.tr(),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            items: _classes.map((classData) {
-              return DropdownMenuItem<String>(
-                value: classData['id'],
-                child: Text(classData['name'] ?? 'Unknown Class'),
-              );
-            }).toList(),
-            onChanged: (value) {
-              if (value != null) {
-                setState(() {
-                  _selectedClassId = value;
-                  _selectedExam = null;
-                });
-                _loadStudents();
-              }
-            },
-          ),
+          _classes.isEmpty
+              ? Center(
+                  child: Column(
+                    children: [
+                      Icon(
+                        CupertinoIcons.exclamationmark_triangle,
+                        size: 48,
+                        color: Colors.orange[400],
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'teacher.grades_page.no_classes_assigned'.tr(),
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 14,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                )
+              : DropdownButtonFormField<String>(
+                  value: _selectedClassId,
+                  decoration: InputDecoration(
+                    labelText: 'teacher.grades_page.class'.tr(),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  items: _classes.map((classData) {
+                    return DropdownMenuItem<String>(
+                      value: classData['id'],
+                      child: Text(classData['name'] ?? 'Unknown Class'),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() {
+                        _selectedClassId = value;
+                        _selectedExam = null;
+                      });
+                      _loadStudents();
+                    }
+                  },
+                ),
         ],
       ),
     );

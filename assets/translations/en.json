@@ -127,7 +127,20 @@
       "mark_all_present": "Mark All Present",
       "mark_all_absent": "Mark All Absent",
       "save_success": "Attendance saved successfully",
-      "save_error": "Failed to save attendance"
+      "save_error": "Failed to save attendance",
+      "no_classes_assigned": "No classes assigned to you yet. Please contact your administrator."
+    },
+    "attendance": {
+      "select_date": "Select Date",
+      "change_date": "Change Date",
+      "select_class": "Select Class",
+      "class": "Class",
+      "no_students_found": "No Students Found",
+      "mark_all_present": "Mark All Present",
+      "mark_all_absent": "Mark All Absent",
+      "save_success": "Attendance saved successfully",
+      "save_error": "Failed to save attendance",
+      "no_classes_assigned": "No classes assigned to you yet. Please contact your administrator."
     },
     "grades_page": {
       "create_exam": "Create Exam",
@@ -144,7 +157,10 @@
       "student_name": "Student Name",
       "score": "Score",
       "select_exam": "Select Exam",
-      "select_class_first": "Please select a class first"
+      "select_class_first": "Please select a class first",
+      "select_class": "Select Class",
+      "class": "Class",
+      "no_classes_assigned": "No classes assigned to you yet. Please contact your administrator."
     },
     "homework_page": {
       "create_homework": "Create Homework",

@@ -246,29 +246,50 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
             ),
           ),
           const SizedBox(height: 16),
-          DropdownButtonFormField<String>(
-            value: _selectedClassId,
-            decoration: InputDecoration(
-              labelText: _getLocalizedText('select_class'),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            items: _classes.map((classData) {
-              return DropdownMenuItem<String>(
-                value: classData['id'],
-                child: Text(classData['name'] ?? 'Unknown Class'),
-              );
-            }).toList(),
-            onChanged: (value) {
-              if (value != null) {
-                setState(() {
-                  _selectedClassId = value;
-                });
-                _loadLeaderboard();
-              }
-            },
-          ),
+          _classes.isEmpty
+              ? Center(
+                  child: Column(
+                    children: [
+                      Icon(
+                        CupertinoIcons.exclamationmark_triangle,
+                        size: 48,
+                        color: Colors.orange[400],
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'No classes assigned to you yet. Please contact your administrator.',
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 14,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                )
+              : DropdownButtonFormField<String>(
+                  value: _selectedClassId,
+                  decoration: InputDecoration(
+                    labelText: _getLocalizedText('select_class'),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  items: _classes.map((classData) {
+                    return DropdownMenuItem<String>(
+                      value: classData['id'],
+                      child: Text(classData['name'] ?? 'Unknown Class'),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() {
+                        _selectedClassId = value;
+                      });
+                      _loadLeaderboard();
+                    }
+                  },
+                ),
         ],
       ),
     );

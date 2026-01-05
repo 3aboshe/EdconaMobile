@@ -223,33 +223,54 @@ class _AttendanceSectionState extends State<AttendanceSection> {
             ),
           ),
           const SizedBox(height: 16),
-          Material(
-            child: DropdownButtonFormField<String>(
-              value: _selectedClassId,
-              decoration: InputDecoration(
-                labelText: 'teacher.attendance.class'.tr(),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+          _classes.isEmpty
+              ? Center(
+                  child: Column(
+                    children: [
+                      Icon(
+                        CupertinoIcons.exclamationmark_triangle,
+                        size: 48,
+                        color: Colors.orange[400],
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'teacher.attendance.no_classes_assigned'.tr(),
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 14,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                )
+              : Material(
+                  child: DropdownButtonFormField<String>(
+                    value: _selectedClassId,
+                    decoration: InputDecoration(
+                      labelText: 'teacher.attendance.class'.tr(),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    ),
+                    items: _classes.map((classData) {
+                      return DropdownMenuItem<String>(
+                        value: classData['id'],
+                        child: Text(classData['name'] ?? 'Unknown Class'),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      if (value != null) {
+                        setState(() {
+                          _selectedClassId = value;
+                          _isLoading = true;
+                        });
+                        _loadStudents();
+                      }
+                    },
+                  ),
                 ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              ),
-              items: _classes.map((classData) {
-                return DropdownMenuItem<String>(
-                  value: classData['id'],
-                  child: Text(classData['name'] ?? 'Unknown Class'),
-                );
-              }).toList(),
-              onChanged: (value) {
-                if (value != null) {
-                  setState(() {
-                    _selectedClassId = value;
-                    _isLoading = true;
-                  });
-                  _loadStudents();
-                }
-              },
-            ),
-          ),
         ],
       ),
     );
