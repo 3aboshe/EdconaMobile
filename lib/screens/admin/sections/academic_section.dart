@@ -183,9 +183,10 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
     showDialog(
       context: context,
       builder: (context) => StatefulBuilder(
-        builder: (context, setDialogState) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        child: Container(
+        builder: (context, setDialogState) {
+          return Dialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            child: Container(
           padding: const EdgeInsets.all(28),
           width: MediaQuery.of(context).size.width < 600
               ? MediaQuery.of(context).size.width * 0.9
@@ -341,6 +342,8 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
             ],
           ),
         ),
+      );
+        },
       ),
     );
   }
