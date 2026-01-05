@@ -389,7 +389,9 @@ class _AttendanceSectionState extends State<AttendanceSection> {
   }
 
   Widget _buildAttendanceCard(Map<String, dynamic> student) {
-    final status = _attendanceStatus[student['id']] ?? '1';
+    final studentId = student['id']?.toString() ?? '';
+    final studentName = student['name']?.toString() ?? 'Unknown';
+    final status = _attendanceStatus[studentId] ?? '1';
     Color statusColor;
     String statusText;
 
@@ -436,7 +438,7 @@ class _AttendanceSectionState extends State<AttendanceSection> {
             ),
             child: Center(
               child: Text(
-                (student['name']?[0] ?? 'S').toString().toUpperCase(),
+                studentName.isNotEmpty ? studentName[0].toUpperCase() : 'S',
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 18,
@@ -451,7 +453,7 @@ class _AttendanceSectionState extends State<AttendanceSection> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  student['name'] ?? 'Unknown',
+                  studentName,
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -474,7 +476,7 @@ class _AttendanceSectionState extends State<AttendanceSection> {
             icon: Icon(Icons.more_vert, color: statusColor),
             onSelected: (value) {
               setState(() {
-                _attendanceStatus[student['id']] = value.toString();
+                _attendanceStatus[studentId] = value.toString();
               });
             },
             itemBuilder: (context) => [
@@ -500,7 +502,8 @@ class _AttendanceSectionState extends State<AttendanceSection> {
   void _markAllAttendance(String status) {
     setState(() {
       for (final student in _students) {
-        _attendanceStatus[student['id']] = status;
+        final studentId = student['id']?.toString() ?? '';
+        _attendanceStatus[studentId] = status;
       }
     });
   }
@@ -509,13 +512,14 @@ class _AttendanceSectionState extends State<AttendanceSection> {
     final currentContext = context;
     try {
       final records = _students.map((student) {
-        final status = _attendanceStatus[student['id']] ?? '1';
+        final studentId = student['id']?.toString() ?? '';
+        final status = _attendanceStatus[studentId] ?? '1';
         return {
-          'studentId': student['id'],
+          'studentId': studentId,
           'date': DateFormat('yyyy-MM-dd').format(_selectedDate),
           'status': status == '0' ? 'PRESENT' : status == '2' ? 'LATE' : 'ABSENT',
           'classId': _selectedClassId,
-          'teacherId': widget.teacher['id'],
+          'teacherId': widget.teacher['id']?.toString(),
         };
       }).toList();
 
