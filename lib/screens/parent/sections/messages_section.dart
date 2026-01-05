@@ -63,13 +63,42 @@ class _MessagesSectionState extends State<MessagesSection> {
       final response = await ApiService.dio.get('/api/auth/users/teachers');
 
       if (response.statusCode == 200) {
-        final allTeachers = List<Map<String, dynamic>>.from(response.data);
+        // Handle different response structures
+        List<Map<String, dynamic>> allTeachers = [];
+        
+        if (response.data is List) {
+          allTeachers = List<Map<String, dynamic>>.from(response.data);
+        } else if (response.data is Map) {
+          // Try common response structure patterns
+          if (response.data['data'] is List) {
+            allTeachers = List<Map<String, dynamic>>.from(response.data['data']);
+          } else if (response.data['users'] is List) {
+            allTeachers = List<Map<String, dynamic>>.from(response.data['users']);
+          } else if (response.data['teachers'] is List) {
+            allTeachers = List<Map<String, dynamic>>.from(response.data['teachers']);
+          } else {
+            print('DEBUG: Unable to parse teacher response structure');
+            print('DEBUG: Response data type: ${response.data.runtimeType}');
+            print('DEBUG: Response data keys: ${(response.data as Map).keys}');
+            allTeachers = [];
+          }
+        }
+
+        print('DEBUG: Loaded ${allTeachers.length} teachers');
+        print('DEBUG: Student classId: $studentClassId');
 
         // Filter teachers who teach this student's class
-        final relevantTeachers = allTeachers.where((teacher) {
+        var relevantTeachers = allTeachers.where((teacher) {
           final teacherClassIds = List<String>.from(teacher['classIds'] ?? []);
           return teacherClassIds.contains(studentClassId);
         }).toList();
+
+        // If no teachers found via classIds, show all teachers as fallback
+        if (relevantTeachers.isEmpty) {
+          print('DEBUG: No teachers found for classId: $studentClassId');
+          print('DEBUG: All teachers classIds: ${allTeachers.map((t) => '${t['name']} (${t['classIds']})').toList()}');
+          relevantTeachers = allTeachers;
+        }
 
         if (mounted) {
           setState(() {
@@ -79,7 +108,8 @@ class _MessagesSectionState extends State<MessagesSection> {
         }
       }
     } catch (e) {
-
+      print('DEBUG: Error loading teachers: $e');
+      print('DEBUG: Stack trace: ${StackTrace.current}');
       if (mounted) {
         setState(() {
           _teachers = [];
