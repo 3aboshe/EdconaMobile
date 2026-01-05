@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../../services/admin_service.dart';
 import '../../../services/global_notification_service.dart';
@@ -214,40 +215,74 @@ class _SchoolsSectionState extends State<SchoolsSection> {
           children: [
             const Icon(Icons.check_circle, color: Colors.green),
             const SizedBox(width: 8),
-            Text(tr('super_admin.school_created')),
+            Flexible(child: Text(tr('super_admin.school_created'), overflow: TextOverflow.ellipsis)),
           ],
         ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(tr('super_admin.save_credentials')),
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey[300]!),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(tr('super_admin.save_credentials')),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey[300]!),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(tr('login.access_code'), style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                        IconButton(
+                          icon: const Icon(Icons.copy, size: 18),
+                          onPressed: () {
+                            Clipboard.setData(ClipboardData(text: credentials['accessCode'] ?? ''));
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(tr('admin.copied_to_clipboard')), duration: const Duration(seconds: 1)),
+                            );
+                          },
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                        ),
+                      ],
+                    ),
+                    SelectableText(
+                      credentials['accessCode'] ?? 'N/A',
+                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'Courier'),
+                    ),
+                    const Divider(height: 24),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(tr('super_admin.temp_password'), style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                        IconButton(
+                          icon: const Icon(Icons.copy, size: 18),
+                          onPressed: () {
+                            Clipboard.setData(ClipboardData(text: credentials['temporaryPassword'] ?? ''));
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(tr('admin.copied_to_clipboard')), duration: const Duration(seconds: 1)),
+                            );
+                          },
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                        ),
+                      ],
+                    ),
+                    SelectableText(
+                      credentials['temporaryPassword'] ?? 'N/A',
+                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'Courier'),
+                    ),
+                  ],
+                ),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(tr('login.access_code'), style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                  Text(
-                    credentials['accessCode'] ?? 'N/A',
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'Courier'),
-                  ),
-                  const Divider(height: 24),
-                  Text(tr('super_admin.temp_password'), style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                  Text(
-                    credentials['temporaryPassword'] ?? 'N/A',
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'Courier'),
-                  ),
-                ],
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
         actions: [
           TextButton(

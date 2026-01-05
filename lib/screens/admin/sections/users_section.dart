@@ -1,5 +1,6 @@
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import '../../../services/admin_service.dart';
@@ -124,6 +125,7 @@ class _UsersSectionState extends State<UsersSection>
   Future<void> _showCreateUserDialog(String role) async {
     final formKey = GlobalKey<FormState>();
     final nameController = TextEditingController();
+    final customUsernameController = TextEditingController();
     String? selectedParentId;
     String? selectedClassId;
     String? selectedSubject;
@@ -290,6 +292,28 @@ class _UsersSectionState extends State<UsersSection>
                           return null;
                         },
                       ),
+                      const SizedBox(height: 20),
+                      TextFormField(
+                        controller: customUsernameController,
+                        decoration: InputDecoration(
+                          labelText: 'super_admin.custom_username'.tr(),
+                          hintText: 'super_admin.username_hint'.tr(),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                    ] else if (role == 'PARENT') ...[
+                      TextFormField(
+                        controller: customUsernameController,
+                        decoration: InputDecoration(
+                          labelText: 'super_admin.custom_username'.tr(),
+                          hintText: 'super_admin.username_hint'.tr(),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
                     ],
                     const SizedBox(height: 28),
                     Row(
@@ -306,6 +330,8 @@ class _UsersSectionState extends State<UsersSection>
                               final userData = {
                                 'name': nameController.text.trim(),
                                 'role': role,
+                                if (customUsernameController.text.trim().isNotEmpty)
+                                  'accessCode': customUsernameController.text.trim(),
                                 if (role == 'STUDENT' && selectedClassId != null)
                                   'classId': selectedClassId,
                                 if (role == 'STUDENT' && selectedParentId != null)
@@ -426,7 +452,8 @@ class _UsersSectionState extends State<UsersSection>
                         IconButton(
                           icon: const Icon(Icons.copy, size: 18),
                           onPressed: () {
-                            // Copy to clipboard functionality would go here
+                            final accessCode = credentials['accessCode'] ?? '';
+                            Clipboard.setData(ClipboardData(text: accessCode));
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text('admin.copied_to_clipboard'.tr()),
@@ -464,7 +491,8 @@ class _UsersSectionState extends State<UsersSection>
                         IconButton(
                           icon: const Icon(Icons.copy, size: 18),
                           onPressed: () {
-                            // Copy to clipboard functionality would go here
+                            final tempPassword = credentials['temporaryPassword'] ?? '';
+                            Clipboard.setData(ClipboardData(text: tempPassword));
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text('admin.copied_to_clipboard'.tr()),
@@ -613,6 +641,8 @@ class _UsersSectionState extends State<UsersSection>
                                       IconButton(
                                         icon: const Icon(Icons.copy, size: 18),
                                         onPressed: () {
+                                          final accessCode = credentials?['accessCode'] ?? '';
+                                          Clipboard.setData(ClipboardData(text: accessCode));
                                           ScaffoldMessenger.of(context).showSnackBar(
                                             SnackBar(
                                               content: Text('admin.copied_to_clipboard'.tr()),
@@ -677,6 +707,8 @@ class _UsersSectionState extends State<UsersSection>
                                         IconButton(
                                           icon: const Icon(Icons.copy, size: 18),
                                           onPressed: () {
+                                            final tempPassword = credentials?['temporaryPassword'] ?? '';
+                                            Clipboard.setData(ClipboardData(text: tempPassword));
                                             ScaffoldMessenger.of(context).showSnackBar(
                                               SnackBar(
                                                 content: Text('admin.copied_to_clipboard'.tr()),
