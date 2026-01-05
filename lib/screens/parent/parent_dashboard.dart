@@ -276,55 +276,61 @@ class _ParentDashboardState extends State<ParentDashboard> {
     final isSelected = _selectedIndex == iconIndex;
     final adjustedIndex = iconIndex == 0 ? 0 : iconIndex;
 
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _selectedIndex = iconIndex;
-        });
-      },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeInOut,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            // Icon Container
-            Container(
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: isSelected
-                    ? Colors.white.withValues(alpha: 0.2)
-                    : Colors.transparent,
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            _selectedIndex = iconIndex;
+          });
+        },
+        behavior: HitTestBehavior.opaque,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeInOut,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              // Icon Container
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isSelected
+                      ? Colors.white.withValues(alpha: 0.2)
+                      : Colors.transparent,
+                ),
+                child: Icon(
+                  _sectionIcons[adjustedIndex],
+                  color: isSelected
+                      ? Colors.white
+                      : Colors.white.withValues(alpha: 0.75),
+                  size: 20,
+                ),
               ),
-              child: Icon(
-                _sectionIcons[adjustedIndex],
-                color: isSelected
-                    ? Colors.white
-                    : Colors.white.withValues(alpha: 0.75),
-                size: 22,
+              // Spacing
+              const SizedBox(height: 2),
+              // Label - constrained width to prevent overlap
+              SizedBox(
+                width: double.infinity,
+                child: Text(
+                  _getSectionTitle(adjustedIndex),
+                  style: TextStyle(
+                    color: isSelected
+                        ? Colors.white
+                        : Colors.white.withValues(alpha: 0.75),
+                    fontSize: 9,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                    letterSpacing: 0,
+                    height: 1.0,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-            ),
-            // Spacing
-            const SizedBox(height: 4),
-            // Label
-            Text(
-              _getSectionTitle(adjustedIndex),
-              style: TextStyle(
-                color: isSelected
-                    ? Colors.white
-                    : Colors.white.withValues(alpha: 0.75),
-                fontSize: 11,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                letterSpacing: 0.2,
-                height: 1.0,
-              ),
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

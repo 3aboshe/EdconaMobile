@@ -246,7 +246,8 @@
       "no_students": "لا يوجد طلاب",
       "student_name": "اسم الطالب",
       "score": "النقاط",
-      "select_exam": "اختر الاختبار"
+      "select_exam": "اختر الاختبار",
+      "select_class_first": "الرجاء اختيار الفصل أولاً"
     },
     "homework_page": {
       "create_homework": "إنشاء واجب",

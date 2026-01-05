@@ -226,45 +226,56 @@ class _UsersSectionState extends State<UsersSection>
                         },
                       ),
                       const SizedBox(height: 20),
-                      TypeAheadField<String>(
-                        builder: (context, controller, focusNode) {
-                          return TextField(
-                            controller: controller,
-                            focusNode: focusNode,
-                            decoration: InputDecoration(
-                              labelText: 'admin.parent_optional_label'.tr(),
-                              hintText: 'admin.parent_search_hint'.tr(),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                          );
-                        },
-                        suggestionsCallback: (pattern) {
-                          if (pattern.isEmpty) return <String>[];
-                          return _parents
-                              .where((parent) => parent['name']
-                                  .toString()
-                                  .toLowerCase()
-                                  .contains(pattern.toLowerCase()))
-                              .map((p) => p['name'] as String)
-                              .toList();
-                        },
-                        itemBuilder: (context, suggestion) {
-                          return ListTile(
-                            title: Text(suggestion),
-                          );
-                        },
-                        onSelected: (suggestion) {
-                          final parent = _parents.firstWhere(
-                            (p) => p['name'] == suggestion,
-                          );
-                          selectedParentId = parent['id'] as String;
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('${'admin.selected_prefix'.tr()}$suggestion'),
-                              backgroundColor: Colors.green,
-                            ),
+                      Builder(
+                        builder: (context) {
+                          final parentController = TextEditingController();
+                          return TypeAheadField<String>(
+                            controller: parentController,
+                            builder: (context, controller, focusNode) {
+                              return TextField(
+                                controller: controller,
+                                focusNode: focusNode,
+                                decoration: InputDecoration(
+                                  labelText: 'admin.parent_optional_label'.tr(),
+                                  hintText: 'admin.parent_search_hint'.tr(),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  suffixIcon: controller.text.isNotEmpty
+                                      ? IconButton(
+                                          icon: const Icon(Icons.clear),
+                                          onPressed: () {
+                                            controller.clear();
+                                            selectedParentId = null;
+                                          },
+                                        )
+                                      : null,
+                                ),
+                              );
+                            },
+                            suggestionsCallback: (pattern) {
+                              if (pattern.isEmpty) return <String>[];
+                              return _parents
+                                  .where((parent) => parent['name']
+                                      .toString()
+                                      .toLowerCase()
+                                      .contains(pattern.toLowerCase()))
+                                  .map((p) => p['name'] as String)
+                                  .toList();
+                            },
+                            itemBuilder: (context, suggestion) {
+                              return ListTile(
+                                leading: const Icon(Icons.person),
+                                title: Text(suggestion),
+                              );
+                            },
+                            onSelected: (suggestion) {
+                              final parent = _parents.firstWhere(
+                                (p) => p['name'] == suggestion,
+                              );
+                              selectedParentId = parent['id'] as String;
+                              parentController.text = suggestion;
+                            },
                           );
                         },
                       ),

@@ -646,6 +646,17 @@ class _GradesSectionState extends State<GradesSection> {
             ElevatedButton(
               onPressed: () async {
                 if (titleController.text.isEmpty || maxScoreController.text.isEmpty) return;
+                
+                // Validate class is selected
+                if (_selectedClassId == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('teacher.grades_page.select_class_first'.tr()),
+                      backgroundColor: Colors.orange,
+                    ),
+                  );
+                  return;
+                }
 
                 try {
                   final examData = {

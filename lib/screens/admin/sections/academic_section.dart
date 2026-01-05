@@ -182,7 +182,8 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
 
     showDialog(
       context: context,
-      builder: (context) => Dialog(
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: Container(
           padding: const EdgeInsets.all(28),
@@ -263,14 +264,15 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
                       child: SingleChildScrollView(
                         child: Column(
                           children: subjects.map((subject) {
+                            final isSelected = selectedSubjectIds.contains(subject['id']);
                             return CheckboxListTile(
                               title: Text(
                                 subject['name'],
                                 style: const TextStyle(fontSize: 14),
                               ),
-                              value: selectedSubjectIds.contains(subject['id']),
+                              value: isSelected,
                               onChanged: (value) {
-                                setState(() {
+                                setDialogState(() {
                                   if (value == true) {
                                     selectedSubjectIds.add(subject['id']);
                                   } else {
