@@ -414,10 +414,13 @@ class _UsersSectionState extends State<UsersSection>
                         Expanded(
                           flex: 0,
                           child: ElevatedButton(
-                            onPressed: _isCreatingUser ? null : () async {
-                              if (!mounted) return;
-                              setState(() => _isCreatingUser = true);
+                            onPressed: () async {
+                              // Synchronous check to prevent multiple clicks
+                              if (_isCreatingUser) return;
+                              _isCreatingUser = true;
+                              setState(() {});
 
+                              if (!mounted) return;
                               if (formKey.currentState!.validate()) {
                                 final userData = {
                                   'name': nameController.text.trim(),
