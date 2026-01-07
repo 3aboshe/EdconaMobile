@@ -5,16 +5,19 @@ import 'package:flutter/services.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import '../../../services/admin_service.dart';
+import '../../../services/admin_data_provider.dart';
 
 class UsersSection extends StatefulWidget {
   const UsersSection({
     super.key,
     this.pendingCreateRole,
     this.onCreateComplete,
+    required this.dataProvider,
   });
 
   final String? pendingCreateRole;
   final VoidCallback? onCreateComplete;
+  final AdminDataProvider dataProvider;
 
   @override
   State<UsersSection> createState() => _UsersSectionState();
@@ -25,13 +28,14 @@ class _UsersSectionState extends State<UsersSection>
   final AdminService _adminService = AdminService();
   late TabController _tabController;
 
-  List<Map<String, dynamic>> _students = [];
-  List<Map<String, dynamic>> _teachers = [];
-  List<Map<String, dynamic>> _parents = [];
-  List<Map<String, dynamic>> _classes = [];
-  List<Map<String, dynamic>> _subjects = [];
+  // Use data from provider instead of local state
+  List<Map<String, dynamic>> get _students => widget.dataProvider.students;
+  List<Map<String, dynamic>> get _teachers => widget.dataProvider.teachers;
+  List<Map<String, dynamic>> get _parents => widget.dataProvider.parents;
+  List<Map<String, dynamic>> get _classes => widget.dataProvider.classes;
+  List<Map<String, dynamic>> get _subjects => widget.dataProvider.subjects;
 
-  bool _isLoading = true;
+  bool get _isLoading => widget.dataProvider.isLoading && !widget.dataProvider.isInitialized;
   String _searchQuery = '';
   bool _isCreatingUser = false;
 
@@ -56,7 +60,12 @@ class _UsersSectionState extends State<UsersSection>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    _loadData();
+    
+    // Listen to data provider changes
+    widget.dataProvider.addListener(_onDataChanged);
+    
+    // Data is already loaded by AdminDashboard, just ensure it's ready
+    _ensureDataLoaded();
 
     // If a pending role is provided, show the create dialog
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -64,6 +73,20 @@ class _UsersSectionState extends State<UsersSection>
         _showCreateDialogForRole(widget.pendingCreateRole!);
       }
     });
+  }
+
+  void _onDataChanged() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  Future<void> _ensureDataLoaded() async {
+    _loadDataCompleter = Completer<void>();
+    await widget.dataProvider.ensureLoaded();
+    if (_loadDataCompleter != null && !_loadDataCompleter!.isCompleted) {
+      _loadDataCompleter!.complete();
+    }
   }
 
   @override
@@ -103,60 +126,15 @@ class _UsersSectionState extends State<UsersSection>
 
   @override
   void dispose() {
+    widget.dataProvider.removeListener(_onDataChanged);
     _tabController.dispose();
     super.dispose();
   }
 
+  // Data is now managed by AdminDataProvider
+  // This method triggers a refresh if needed
   Future<void> _loadData() async {
-    if (!mounted) return;
-
-    _loadDataCompleter = Completer<void>();
-
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final users = await _adminService.getAllUsers();
-      final classes = await _adminService.getAllClasses();
-      final subjects = await _adminService.getAllSubjects();
-
-      if (!mounted) return;
-
-      setState(() {
-        _students = users.where((u) => u['role'] == 'STUDENT').toList();
-        _teachers = users.where((u) => u['role'] == 'TEACHER').toList();
-        _parents = users.where((u) => u['role'] == 'PARENT').toList();
-        _classes = classes;
-        _subjects = subjects;
-        _isLoading = false;
-      });
-
-      // Mark data loading as complete
-      if (_loadDataCompleter != null && !_loadDataCompleter!.isCompleted) {
-        _loadDataCompleter!.complete();
-      }
-    } catch (e) {
-      if (!mounted) return;
-
-      setState(() {
-        _isLoading = false;
-      });
-
-      // Mark data loading as complete even on error
-      if (_loadDataCompleter != null && !_loadDataCompleter!.isCompleted) {
-        _loadDataCompleter!.complete();
-      }
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${'admin.failed_load_data'.tr()}${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
+    await widget.dataProvider.refresh();
   }
 
   Future<void> _showCreateUserDialog(String role) async {

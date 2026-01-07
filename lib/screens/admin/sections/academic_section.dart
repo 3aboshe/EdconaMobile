@@ -2,16 +2,19 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../../services/admin_service.dart';
+import '../../../services/admin_data_provider.dart';
 
 class AcademicSection extends StatefulWidget {
   const AcademicSection({
     super.key,
     this.pendingCreateType,
     this.onCreateComplete,
+    required this.dataProvider,
   });
 
   final String? pendingCreateType; // 'class' or 'subject'
   final VoidCallback? onCreateComplete;
+  final AdminDataProvider dataProvider;
 
   @override
   State<AcademicSection> createState() => _AcademicSectionState();
@@ -21,9 +24,10 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
   final AdminService _adminService = AdminService();
   late TabController _tabController;
 
-  List<Map<String, dynamic>> _subjects = [];
-  List<Map<String, dynamic>> _classes = [];
-  bool _isLoading = true;
+  // Use data from provider instead of local state
+  List<Map<String, dynamic>> get _subjects => widget.dataProvider.subjects;
+  List<Map<String, dynamic>> get _classes => widget.dataProvider.classes;
+  bool get _isLoading => widget.dataProvider.isLoading && !widget.dataProvider.isInitialized;
 
   // Completer to track when data loading is complete
   Completer<void>? _loadDataCompleter;
@@ -40,7 +44,12 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    _loadData();
+    
+    // Listen to data provider changes
+    widget.dataProvider.addListener(_onDataChanged);
+    
+    // Data is already loaded by AdminDashboard, just ensure it's ready
+    _ensureDataLoaded();
 
     // If a pending create type is provided, show the create dialog
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -50,57 +59,31 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
     });
   }
 
+  void _onDataChanged() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  Future<void> _ensureDataLoaded() async {
+    _loadDataCompleter = Completer<void>();
+    await widget.dataProvider.ensureLoaded();
+    if (_loadDataCompleter != null && !_loadDataCompleter!.isCompleted) {
+      _loadDataCompleter!.complete();
+    }
+  }
+
   @override
   void dispose() {
+    widget.dataProvider.removeListener(_onDataChanged);
     _tabController.dispose();
     super.dispose();
   }
 
+  // Data is now managed by AdminDataProvider
+  // This method triggers a refresh if needed
   Future<void> _loadData() async {
-    if (!mounted) return;
-    _loadDataCompleter = Completer<void>();
-
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final subjects = await _adminService.getAllSubjects();
-      final classes = await _adminService.getAllClasses();
-
-      if (!mounted) return;
-
-      setState(() {
-        _subjects = subjects;
-        _classes = classes;
-        _isLoading = false;
-      });
-
-      // Mark data loading as complete
-      if (_loadDataCompleter != null && !_loadDataCompleter!.isCompleted) {
-        _loadDataCompleter!.complete();
-      }
-    } catch (e) {
-      if (!mounted) return;
-
-      setState(() {
-        _isLoading = false;
-      });
-
-      // Mark data loading as complete even on error
-      if (_loadDataCompleter != null && !_loadDataCompleter!.isCompleted) {
-        _loadDataCompleter!.complete();
-      }
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${'admin.failed_load_data'.tr()}${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
+    await widget.dataProvider.refresh();
   }
 
   void _showCreateDialogForType(String createType) async {

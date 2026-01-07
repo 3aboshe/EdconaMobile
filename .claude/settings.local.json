@@ -46,7 +46,18 @@
       "Bash(flutter analyze lib/screens/admin/admin_dashboard.dart lib/screens/admin/sections/dashboard_section.dart lib/screens/admin/sections/users_section.dart --no-fatal-infos)",
       "Bash(flutter analyze lib/screens/teacher/sections/profile_section.dart --no-fatal-infos)",
       "Bash(flutter analyze lib/screens/login_screen.dart --no-fatal-infos)",
-      "Bash(flutter analyze lib/screens/admin/admin_dashboard.dart lib/screens/admin/sections/users_section.dart)"
+      "Bash(flutter analyze lib/screens/admin/admin_dashboard.dart lib/screens/admin/sections/users_section.dart)",
+      "Bash(flutter analyze:*)",
+      "Bash(wc:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git -C /Users/abdalrahmanmajed/Desktop/edcon-app status:*)",
+      "Bash(git -C /Users/abdalrahmanmajed/Desktop/edcon-app add server/routes/auth.js)",
+      "Bash(git -C /Users/abdalrahmanmajed/Desktop/edcon-app commit -m \"$\\(cat <<''EOF''\nfix: check temporaryPasswordHash in login and populate class/parent objects\n\n- Fix password reset bug: Login now checks both passwordHash and temporaryPasswordHash\n- Populate class and parent objects in /api/auth/users endpoint to return names instead of IDs\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git -C /Users/abdalrahmanmajed/Desktop/edcon-app push:*)",
+      "Bash(git -C /Users/abdalrahmanmajed/Desktop/edcon-app commit -m \"$\\(cat <<''EOF''\nfix: accept temporary password in reset-password endpoint\n\n- Check both passwordHash and temporaryPasswordHash when validating current password\n- Allows users to reset password after logging in with temporary password\n- Maintains security by requiring authentication before reset\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(ls:*)"
     ],
     "deny": [],
     "ask": []

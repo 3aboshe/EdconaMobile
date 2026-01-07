@@ -8,6 +8,7 @@ import 'sections/analytics_section.dart';
 import 'sections/users_section.dart';
 import 'sections/academic_section.dart';
 import '../../services/admin_service.dart';
+import '../../services/admin_data_provider.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
@@ -23,10 +24,14 @@ class _AdminDashboardState extends State<AdminDashboard> {
   String? _pendingCreateRole;
   String? _pendingCreateType; // For academic section: 'class' or 'subject'
 
+  // Centralized data provider - shares data between all sections
+  final AdminDataProvider _dataProvider = AdminDataProvider();
+
   List<Widget> get _sections => [
     DashboardSection(
       onNavigateToUsers: _navigateToUsers,
       onNavigateToAcademic: _navigateToAcademic,
+      dataProvider: _dataProvider,
     ),
     const AnalyticsSection(),
     UsersSection(
@@ -36,6 +41,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
           _pendingCreateRole = null;
         });
       },
+      dataProvider: _dataProvider,
     ),
     AcademicSection(
       pendingCreateType: _pendingCreateType,
@@ -44,6 +50,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
           _pendingCreateType = null;
         });
       },
+      dataProvider: _dataProvider,
     ),
   ];
 
@@ -79,9 +86,17 @@ class _AdminDashboardState extends State<AdminDashboard> {
   void initState() {
     super.initState();
     _checkSchoolContext();
+    // Load all admin data once on init using the combined endpoint
+    _dataProvider.loadDashboardData();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkScreenSize();
     });
+  }
+
+  @override
+  void dispose() {
+    _dataProvider.dispose();
+    super.dispose();
   }
 
   Future<void> _checkSchoolContext() async {

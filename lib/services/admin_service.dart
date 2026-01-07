@@ -4,6 +4,23 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'api_service.dart';
 
 class AdminService {
+  /// Get all dashboard data in a single API call
+  /// This is the preferred method for initial admin panel load
+  /// Uses the combined /api/admin/dashboard endpoint for efficiency
+  Future<Map<String, dynamic>> getDashboardData() async {
+    try {
+      final response = await ApiService.dio.get('/api/admin/dashboard');
+      if (response.statusCode == 200) {
+        return Map<String, dynamic>.from(response.data);
+      }
+      return {'success': false, 'message': 'Failed to load dashboard data'};
+    } catch (e) {
+      // Return error response instead of throwing
+      // This allows fallback to individual API calls
+      return {'success': false, 'message': e.toString()};
+    }
+  }
+
   // Get all users
   Future<List<Map<String, dynamic>>> getAllUsers() async {
     try {

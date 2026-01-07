@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../../services/admin_service.dart';
+import '../../../services/admin_data_provider.dart';
 
 class DashboardSection extends StatefulWidget {
   const DashboardSection({
     super.key,
     required this.onNavigateToUsers,
     required this.onNavigateToAcademic,
+    required this.dataProvider,
   });
 
   final Function(int tabIndex) onNavigateToUsers;
   final Function(String createType) onNavigateToAcademic;
+  final AdminDataProvider dataProvider;
 
   @override
   State<DashboardSection> createState() => _DashboardSectionState();
@@ -18,44 +21,33 @@ class DashboardSection extends StatefulWidget {
 
 class _DashboardSectionState extends State<DashboardSection> {
   final AdminService _adminService = AdminService();
-  bool _isLoading = true;
-  Map<String, dynamic>? _analytics;
+
+  // Use the dataProvider's analytics instead of local state
+  Map<String, dynamic>? get _analytics => 
+      widget.dataProvider.isInitialized ? widget.dataProvider.analytics : null;
+  
+  bool get _isLoading => widget.dataProvider.isLoading && !widget.dataProvider.isInitialized;
 
   @override
   void initState() {
     super.initState();
-    _loadAnalytics();
+    // Listen to data provider changes
+    widget.dataProvider.addListener(_onDataChanged);
+    // Data is already being loaded by AdminDashboard, just ensure it's loaded
+    if (!widget.dataProvider.isInitialized && !widget.dataProvider.isLoading) {
+      widget.dataProvider.loadDashboardData();
+    }
   }
 
-  Future<void> _loadAnalytics() async {
-    if (!mounted) return;
-    
-    setState(() {
-      _isLoading = true;
-    });
+  @override
+  void dispose() {
+    widget.dataProvider.removeListener(_onDataChanged);
+    super.dispose();
+  }
 
-    try {
-      final data = await _adminService.getAnalytics();
-      if (!mounted) return;
-      
-      setState(() {
-        _analytics = data;
-        _isLoading = false;
-      });
-    } catch (e) {
-      if (!mounted) return;
-      
-      setState(() {
-        _isLoading = false;
-      });
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${'admin.failed_load_analytics'.tr()}${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+  void _onDataChanged() {
+    if (mounted) {
+      setState(() {});
     }
   }
 
