@@ -124,6 +124,31 @@ class _MessagesSectionState extends State<MessagesSection> {
     return ['ar', 'ckb', 'ku', 'bhn', 'arc', 'bad', 'bdi', 'sdh', 'kmr'].contains(locale.languageCode);
   }
 
+  bool _checkAvailability(Map<String, dynamic>? availability) {
+    if (availability == null) return true;
+
+    final now = TimeOfDay.now();
+    final from = availability['from'] as String?;
+    final to = availability['to'] as String?;
+
+    if (from == null || to == null) return true;
+
+    final fromTime = TimeOfDay(
+      hour: int.parse(from.split(':')[0]),
+      minute: int.parse(from.split(':')[1]),
+    );
+    final toTime = TimeOfDay(
+      hour: int.parse(to.split(':')[0]),
+      minute: int.parse(to.split(':')[1]),
+    );
+
+    final nowMinutes = now.hour * 60 + now.minute;
+    final fromMinutes = fromTime.hour * 60 + fromTime.minute;
+    final toMinutes = toTime.hour * 60 + toTime.minute;
+
+    return nowMinutes >= fromMinutes && nowMinutes <= toMinutes;
+  }
+
   @override
   Widget build(BuildContext context) {
     final isRTL = _isRTL();
@@ -180,6 +205,9 @@ class _MessagesSectionState extends State<MessagesSection> {
   }
 
   Widget _buildTeacherCard(Map<String, dynamic> teacher) {
+    final availability = teacher['messagingAvailability'] as Map<String, dynamic>?;
+    final isAvailable = _checkAvailability(availability);
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
@@ -204,28 +232,49 @@ class _MessagesSectionState extends State<MessagesSection> {
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-                // Avatar
-                Container(
-                  width: 56,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF007AFF), Color(0xFF5AC8FA)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Center(
-                    child: Text(
-                      teacher['name']?[0]?.toUpperCase() ?? 'T',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
+                // Avatar with green dot indicator
+                Stack(
+                  children: [
+                    Container(
+                      width: 56,
+                      height: 56,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF007AFF), Color(0xFF5AC8FA)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Center(
+                        child: Text(
+                          teacher['name']?[0]?.toUpperCase() ?? 'T',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                    if (isAvailable)
+                      Positioned(
+                        right: 0,
+                        bottom: 0,
+                        child: Container(
+                          width: 16,
+                          height: 16,
+                          decoration: BoxDecoration(
+                            color: Colors.green,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.white,
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
                 const SizedBox(width: 16),
                 // Info
@@ -242,12 +291,27 @@ class _MessagesSectionState extends State<MessagesSection> {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Text(
-                        teacher['subject']?.toString() ?? 'messages.subject_teacher'.tr(),
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[600],
-                        ),
+                      Row(
+                        children: [
+                          Text(
+                            teacher['subject']?.toString() ?? 'messages.subject_teacher'.tr(),
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                          if (isAvailable) ...[
+                            const SizedBox(width: 6),
+                            Container(
+                              width: 6,
+                              height: 6,
+                              decoration: const BoxDecoration(
+                                color: Colors.green,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
                     ],
                   ),

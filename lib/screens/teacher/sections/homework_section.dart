@@ -243,13 +243,22 @@ class _HomeworkSectionState extends State<HomeworkSection> {
                         () => _viewSubmissions(homework),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: _buildActionButton(
                         'common.edit'.tr(),
                         CupertinoIcons.pencil,
                         const Color(0xFF007AFF),
                         () => _editHomework(homework),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: _buildActionButton(
+                        'common.delete'.tr(),
+                        CupertinoIcons.delete,
+                        const Color(0xFFFF3B30),
+                        () => _confirmDeleteHomework(homework),
                       ),
                     ),
                   ],
@@ -350,6 +359,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
     await showDialog(
       context: context,
       builder: (context) {
+        bool isCreating = false;
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
@@ -465,7 +475,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
                   child: Text('common.cancel'.tr()),
                 ),
                 ElevatedButton(
-                  onPressed: () async {
+                  onPressed: isCreating ? null : () async {
                       if (titleController.text.isEmpty) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
@@ -484,6 +494,8 @@ class _HomeworkSectionState extends State<HomeworkSection> {
                         );
                         return;
                       }
+
+                      setDialogState(() => isCreating = true);
 
                       try {
                         final result = await _teacherService.createHomework({
@@ -508,6 +520,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
                           _loadData();
                         }
                       } catch (e) {
+                        setDialogState(() => isCreating = false);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text('common.error_details'.tr(namedArgs: {'error': e.toString()})),
@@ -517,13 +530,23 @@ class _HomeworkSectionState extends State<HomeworkSection> {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF0D47A1),
+                      backgroundColor: isCreating ? Colors.grey : const Color(0xFF0D47A1),
+                      disabledBackgroundColor: Colors.grey.shade400,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: Text('teacher.homework_page.create'.tr()),
+                    child: isCreating
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : Text('teacher.homework_page.create'.tr()),
                 ),
               ],
             );
@@ -740,6 +763,79 @@ class _HomeworkSectionState extends State<HomeworkSection> {
       },
     );
   }
+
+  void _confirmDeleteHomework(Map<String, dynamic> homework) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: Text(
+          'common.confirm_delete'.tr(),
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF0D47A1),
+          ),
+        ),
+        content: Text(
+          'teacher.delete_homework_confirm'.tr(args: [homework['title']?.toString() ?? 'common.untitled'.tr()]),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('common.cancel'.tr()),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _deleteHomework(homework);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFFF3B30),
+              foregroundColor: Colors.white,
+            ),
+            child: Text('common.delete'.tr()),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _deleteHomework(Map<String, dynamic> homework) async {
+    try {
+      final result = await _teacherService.deleteHomework(homework['id']);
+
+      if (!mounted) return;
+
+      if (result['success']) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('teacher.homework_deleted'.tr()),
+            backgroundColor: Colors.green,
+          ),
+        );
+        _loadData();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('teacher.delete_failed'.tr()),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('common.delete_error'.tr(namedArgs: {'error': e.toString()})),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
 }
 
 class SubmissionsScreen extends StatefulWidget {
@@ -761,6 +857,7 @@ class SubmissionsScreen extends StatefulWidget {
 class _SubmissionsScreenState extends State<SubmissionsScreen> {
   final TeacherService _teacherService = TeacherService();
   List<Map<String, dynamic>> _students = [];
+  Map<String, dynamic>? _updatedHomework;
   bool _isLoading = true;
   bool _hasUnsavedChanges = false;
   final Set<String> _pendingSubmissions = {};
@@ -768,6 +865,7 @@ class _SubmissionsScreenState extends State<SubmissionsScreen> {
   @override
   void initState() {
     super.initState();
+    _updatedHomework = widget.homework;
     _loadSubmissions();
   }
 
@@ -776,7 +874,7 @@ class _SubmissionsScreenState extends State<SubmissionsScreen> {
 
     try {
       // Get classId from classIds array
-      final classIds = widget.homework['classIds'] as List<dynamic>?;
+      final classIds = (_updatedHomework ?? widget.homework)['classIds'] as List<dynamic>?;
       if (classIds == null || classIds.isEmpty) {
         setState(() {
           _students = [];
@@ -788,7 +886,7 @@ class _SubmissionsScreenState extends State<SubmissionsScreen> {
       final students = await _teacherService.getStudentsByClass(classIds[0].toString());
 
       // Add submission status to each student
-      final submitted = widget.homework['submitted'] as List<dynamic>? ?? [];
+      final submitted = (_updatedHomework ?? widget.homework)['submitted'] as List<dynamic>? ?? [];
       final studentsWithStatus = students.map((student) {
         return {
           ...student,
@@ -1146,6 +1244,20 @@ class _SubmissionsScreenState extends State<SubmissionsScreen> {
       }
 
       if (!mounted) return;
+
+      // Reload the homework data from server to get the latest submitted list
+      try {
+        final homeworks = await _teacherService.getTeacherHomework(widget.teacher['id']);
+        final updatedHomework = homeworks.firstWhere(
+          (hw) => hw['id'] == widget.homework['id'],
+          orElse: () => widget.homework,
+        );
+        setState(() {
+          _updatedHomework = updatedHomework;
+        });
+      } catch (e) {
+        // If reload fails, continue with the original homework
+      }
 
       // Reload to get the latest data from server FIRST
       await _loadSubmissions();

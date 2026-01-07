@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:intl/intl.dart';
 import '../../../services/teacher_service.dart';
 
 class AnnouncementsSection extends StatefulWidget {
@@ -52,6 +53,7 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
     await showDialog(
       context: currentContext,
       builder: (context) {
+        bool isCreating = false;
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
@@ -117,8 +119,10 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
                   child: Text('common.cancel'.tr()),
                 ),
                 ElevatedButton(
-                  onPressed: () async {
+                  onPressed: isCreating ? null : () async {
                     if (titleController.text.isEmpty || contentController.text.isEmpty) return;
+
+                    setDialogState(() => isCreating = true);
 
                     try {
                       final result = await _teacherService.createAnnouncement({
@@ -145,6 +149,7 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
                       }
                     } catch (e) {
                       if (mounted) {
+                        setDialogState(() => isCreating = false);
                         ScaffoldMessenger.of(currentContext).showSnackBar(
                           SnackBar(
                             content: Text('teacher.failed_create_announcement'.tr()),
@@ -154,7 +159,21 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
                       }
                     }
                   },
-                  child: Text('common.create'.tr()),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: isCreating ? Colors.grey : const Color(0xFF0D47A1),
+                    disabledBackgroundColor: Colors.grey.shade400,
+                    foregroundColor: Colors.white,
+                  ),
+                  child: isCreating
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : Text('common.create'.tr()),
                 ),
               ],
             );
