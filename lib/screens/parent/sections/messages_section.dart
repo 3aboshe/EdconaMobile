@@ -516,6 +516,9 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final availability = widget.otherUser['messagingAvailability'] as Map<String, dynamic>?;
+    final isAvailable = _checkAvailability(availability);
+
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
@@ -545,12 +548,27 @@ class _ChatScreenState extends State<ChatScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    widget.otherUser['name']?.toString() ?? 'common.unknown'.tr(),
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  Row(
+                    children: [
+                      Text(
+                        widget.otherUser['name']?.toString() ?? 'common.unknown'.tr(),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      if (isAvailable) ...[
+                        const SizedBox(width: 6),
+                        Container(
+                          width: 8,
+                          height: 8,
+                          decoration: const BoxDecoration(
+                            color: Colors.green,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                   Text(
                     widget.otherUser['subject']?.toString() ?? 'messages.teacher_role_fallback'.tr(),
@@ -766,5 +784,32 @@ class _ChatScreenState extends State<ChatScreen> {
         ],
       ),
     );
+  }
+
+  bool _checkAvailability(Map<String, dynamic>? availability) {
+    if (availability == null) return true;
+
+    final now = TimeOfDay.now();
+    final from = availability['from'] as String?;
+    final to = availability['to'] as String?;
+
+    if (from == null || to == null) return true;
+
+    final fromTime = TimeOfDay(
+      hour: int.parse(from.split(':')[0]),
+      minute: int.parse(from.split(':')[1]),
+    );
+
+    final toTime = TimeOfDay(
+      hour: int.parse(to.split(':')[0]),
+      minute: int.parse(to.split(':')[1]),
+    );
+
+    // Check if current time is within availability range
+    if (now.hour > fromTime.hour && now.hour < toTime.hour) {
+      return true;
+    }
+
+    return false;
   }
 }
