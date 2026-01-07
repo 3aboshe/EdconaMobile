@@ -322,7 +322,7 @@ class _ChildSelectionScreenState extends State<ChildSelectionScreen> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '${'parent.grade_label'.tr()} ${student['classId'] ?? 'N/A'}',
+                        '${'parent.grade_label'.tr()} ${student['class']?['name'] ?? student['classId'] ?? 'N/A'}',
                         style: TextStyle(
                           fontSize: 15,
                           color: Colors.grey[600],

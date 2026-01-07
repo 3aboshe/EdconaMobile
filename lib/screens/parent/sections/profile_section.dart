@@ -124,7 +124,7 @@ class _ProfileSectionState extends State<ProfileSection> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  '${'parent.grade_label'.tr()} ${widget.student['classId'] ?? 'N/A'}',
+                  '${'parent.grade_label'.tr()} ${widget.student['class']?['name'] ?? widget.student['classId'] ?? 'N/A'}',
                   style: TextStyle(
                     color: Colors.white.withValues(alpha: 0.9),
                     fontSize: 16,
@@ -239,7 +239,7 @@ class _ProfileSectionState extends State<ProfileSection> {
           const SizedBox(height: 12),
           _buildInfoCard('parent.name'.tr(), widget.student['name'] ?? 'N/A', CupertinoIcons.person),
           const SizedBox(height: 12),
-          _buildInfoCard('parent.grade_label'.tr(), widget.student['classId'] ?? 'N/A', CupertinoIcons.book),
+          _buildInfoCard('parent.grade_label'.tr(), widget.student['class']?['name'] ?? widget.student['classId'] ?? 'N/A', CupertinoIcons.book),
           const SizedBox(height: 12),
           _buildInfoCard('parent.role'.tr(), widget.student['role'] ?? 'Student', CupertinoIcons.person_badge_plus),
 
