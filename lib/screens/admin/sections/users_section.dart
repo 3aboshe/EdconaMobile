@@ -33,6 +33,7 @@ class _UsersSectionState extends State<UsersSection>
 
   bool _isLoading = true;
   String _searchQuery = '';
+  bool _isCreatingUser = false;
 
   // Completer to track when data loading is complete
   Completer<void>? _loadDataCompleter;
@@ -413,7 +414,10 @@ class _UsersSectionState extends State<UsersSection>
                         Expanded(
                           flex: 0,
                           child: ElevatedButton(
-                            onPressed: () async {
+                            onPressed: _isCreatingUser ? null : () async {
+                              if (!mounted) return;
+                              setState(() => _isCreatingUser = true);
+
                               if (formKey.currentState!.validate()) {
                                 final userData = {
                                   'name': nameController.text.trim(),
@@ -431,34 +435,53 @@ class _UsersSectionState extends State<UsersSection>
                                 final result =
                                     await _adminService.createUser(userData);
 
-                                if (result['success']) {
-                                  Navigator.pop(context);
+                                if (mounted) {
+                                  if (result['success']) {
+                                    Navigator.pop(context);
 
-                                  // Show credentials dialog
-                                  if (result['credentials'] != null) {
-                                    _showCredentialsDialog(result['credentials'], role);
+                                    // Show credentials dialog
+                                    if (result['credentials'] != null) {
+                                      _showCredentialsDialog(result['credentials'], role);
+                                    }
+
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                            'admin.user_created_success'.tr(args: [role.toLowerCase()])),
+                                        backgroundColor: Colors.green,
+                                      ),
+                                    );
+                                    _loadData();
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                            '${'admin.create_user_error'.tr()}${result['message']}'),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
                                   }
-
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                          'admin.user_created_success'.tr(args: [role.toLowerCase()])),
-                                      backgroundColor: Colors.green,
-                                    ),
-                                  );
-                                  _loadData();
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                          '${'admin.create_user_error'.tr()}${result['message']}'),
-                                      backgroundColor: Colors.red,
-                                    ),
-                                  );
                                 }
                               }
+
+                              if (mounted) {
+                                setState(() => _isCreatingUser = false);
+                              }
                             },
-                            child: Text('admin.create_button'.tr()),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: _isCreatingUser ? Colors.grey : const Color(0xFF1E3A8A),
+                              disabledBackgroundColor: Colors.grey,
+                            ),
+                            child: _isCreatingUser
+                                ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : Text('admin.create_button'.tr()),
                           ),
                         ),
                       ],

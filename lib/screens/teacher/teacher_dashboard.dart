@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../services/teacher_service.dart';
-import 'sections/dashboard_section.dart';
 import 'sections/grades_section.dart';
 import 'sections/homework_section.dart';
 import 'sections/attendance_section.dart';
@@ -136,7 +135,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
             );
           },
           child: Padding(
-            padding: const EdgeInsets.only(right: 16),
+            padding: const EdgeInsetsDirectional.only(end: 16),
             child: CircleAvatar(
               radius: 20,
               backgroundColor: Colors.white.withValues(alpha: 0.2),
@@ -276,14 +275,6 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
 
   Widget _buildMainSections() {
     final sections = [
-      {
-        'title': 'teacher.dashboard'.tr(),
-        'subtitle': 'teacher.dashboard_subtitle'.tr(),
-        'icon': CupertinoIcons.home,
-        'color': const Color(0xFF007AFF),
-        'gradient': [const Color(0xFF007AFF), const Color(0xFF0051D5)],
-        'key': 'dashboard',
-      },
       {
         'title': 'teacher.grades'.tr(),
         'subtitle': 'teacher.grades_subtitle'.tr(),
@@ -430,9 +421,6 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
   void _navigateToSection(String sectionKey) {
     Widget page;
     switch (sectionKey) {
-      case 'dashboard':
-        page = DashboardSection(teacher: widget.teacher);
-        break;
       case 'grades':
         page = GradesSection(teacher: widget.teacher);
         break;
@@ -452,7 +440,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
         page = LeaderboardSection(teacher: widget.teacher);
         break;
       default:
-        page = DashboardSection(teacher: widget.teacher);
+        page = GradesSection(teacher: widget.teacher);
     }
 
     Navigator.push(
