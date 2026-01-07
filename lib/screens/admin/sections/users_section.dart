@@ -6,6 +6,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import '../../../services/admin_service.dart';
 import '../../../services/admin_data_provider.dart';
+import '../../../utils/animated_dialog.dart';
 
 class UsersSection extends StatefulWidget {
   const UsersSection({
@@ -146,7 +147,7 @@ class _UsersSectionState extends State<UsersSection>
     String? selectedClassId;
     String? selectedSubject;
 
-    showDialog(
+    showAnimatedDialog(
       context: context,
       builder: (context) => Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -480,7 +481,7 @@ class _UsersSectionState extends State<UsersSection>
   }
 
   void _showCredentialsDialog(Map<String, dynamic> credentials, String role) {
-    showDialog(
+    showAnimatedDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(

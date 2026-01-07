@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../../services/admin_service.dart';
 import '../../../services/admin_data_provider.dart';
+import '../../../utils/animated_dialog.dart';
 
 class AcademicSection extends StatefulWidget {
   const AcademicSection({
@@ -110,7 +111,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
     final formKey = GlobalKey<FormState>();
     final nameController = TextEditingController();
 
-    showDialog(
+    showAnimatedDialog(
       context: context,
       builder: (context) => Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -247,7 +248,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
 
     final subjects = await _adminService.getAllSubjects();
 
-    showDialog(
+    showAnimatedDialog(
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) {
@@ -795,7 +796,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
   }
 
   void _showDeleteSubjectConfirm(Map<String, dynamic> subject) {
-    showDialog(
+    showAnimatedDialog(
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -836,7 +837,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
   }
 
   void _showDeleteClassConfirm(Map<String, dynamic> classItem) {
-    showDialog(
+    showAnimatedDialog(
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -881,7 +882,7 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
     final nameController = TextEditingController(text: classItem['name']);
     List<String> selectedSubjectIds = List<String>.from(classItem['subjectIds'] ?? []);
 
-    showDialog(
+    showAnimatedDialog(
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) {

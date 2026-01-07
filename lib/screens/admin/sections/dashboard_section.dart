@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../../services/admin_service.dart';
 import '../../../services/admin_data_provider.dart';
+import '../../../utils/animated_dialog.dart';
 
 class DashboardSection extends StatefulWidget {
   const DashboardSection({
@@ -55,7 +56,7 @@ class _DashboardSectionState extends State<DashboardSection> {
     final formKey = GlobalKey<FormState>();
     final nameController = TextEditingController();
 
-    showDialog(
+    showAnimatedDialog(
       context: context,
       builder: (context) => Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -181,7 +182,7 @@ class _DashboardSectionState extends State<DashboardSection> {
     final formKey = GlobalKey<FormState>();
     final nameController = TextEditingController();
 
-    showDialog(
+    showAnimatedDialog(
       context: context,
       builder: (context) => Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
