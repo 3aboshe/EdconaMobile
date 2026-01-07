@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../services/auth_service.dart';
 import '../services/parent_service.dart';
+import '../utils/date_formatter.dart';
 
 class ParentHomeScreen extends StatefulWidget {
   const ParentHomeScreen({super.key});
@@ -738,7 +739,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
               children: [
                 if (hw['dueDate'] != null)
                   Text(
-                    '${'parent.due_colon'.tr()} ${hw['dueDate']}',
+                    '${'parent.due_colon'.tr()} ${_formatDate(hw['dueDate'])}',
                     style: TextStyle(color: Colors.grey[600]),
                   ),
                 if (hw['subject'] != null)
@@ -821,7 +822,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
             ),
             title: Text(grade['subject']?.toString() ?? 'common.unknown'.tr()),
             subtitle: Text(
-              '${'common.date_colon'.tr()} ${grade['date']?.toString() ?? 'common.na'.tr()}',
+              '${'common.date_colon'.tr()} ${_formatDate(grade['date'])}',
             ),
             trailing: Text(
               '${grade['score'] ?? ''} / ${grade['totalScore'] ?? ''}',
@@ -877,7 +878,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
               ),
             ),
             title: Text(
-              '${'common.date_colon'.tr()} ${attendance['date'] ?? 'common.na'.tr()}',
+              '${'common.date_colon'.tr()} ${_formatDate(attendance['date'])}',
             ),
             subtitle: Text(
               attendance['subject'] ?? 'common.all_subjects'.tr(),
@@ -954,5 +955,22 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
         ],
       ),
     );
+  }
+
+  String _formatDate(dynamic dateValue) {
+    if (dateValue == null) return 'common.na'.tr();
+    try {
+      DateTime date;
+      if (dateValue is String) {
+        date = DateTime.parse(dateValue);
+      } else if (dateValue is DateTime) {
+        date = dateValue;
+      } else {
+        return 'common.na'.tr();
+      }
+      return DateFormatter.formatShortDate(date, context);
+    } catch (e) {
+      return 'common.na'.tr();
+    }
   }
 }

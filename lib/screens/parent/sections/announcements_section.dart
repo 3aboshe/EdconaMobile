@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import '../../../services/parent_service.dart';
+import '../../../utils/date_formatter.dart';
 
 
 
@@ -196,7 +197,7 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            announcement['date'] ?? 'N/A',
+                            _formatDate(announcement['date']),
                             style: TextStyle(
                               fontSize: 13,
                               color: Colors.grey[600],
@@ -245,6 +246,23 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
       case 'normal':
       default:
         return CupertinoIcons.bell_fill;
+    }
+  }
+
+  String _formatDate(dynamic dateValue) {
+    if (dateValue == null) return 'common.na'.tr();
+    try {
+      DateTime date;
+      if (dateValue is String) {
+        date = DateTime.parse(dateValue);
+      } else if (dateValue is DateTime) {
+        date = dateValue;
+      } else {
+        return 'common.na'.tr();
+      }
+      return DateFormatter.formatShortDate(date, context);
+    } catch (e) {
+      return 'common.na'.tr();
     }
   }
 }
