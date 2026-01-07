@@ -33,7 +33,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
       onNavigateToAcademic: _navigateToAcademic,
       dataProvider: _dataProvider,
     ),
-    const AnalyticsSection(),
     UsersSection(
       pendingCreateRole: _pendingCreateRole,
       onCreateComplete: () {
@@ -52,11 +51,12 @@ class _AdminDashboardState extends State<AdminDashboard> {
       },
       dataProvider: _dataProvider,
     ),
+    AnalyticsSection(dataProvider: _dataProvider),
   ];
 
   void _navigateToUsers(int tabIndex) {
     setState(() {
-      _selectedIndex = 2; // Navigate to Users section (index 2)
+      _selectedIndex = 1; // Users section is now at index 1
       // Set the role to create based on the tab index
       if (tabIndex == 0) {
         _pendingCreateRole = 'STUDENT';
@@ -70,16 +70,16 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
   void _navigateToAcademic(String createType) {
     setState(() {
-      _selectedIndex = 3; // Navigate to Academic section (index 3)
+      _selectedIndex = 2; // Academic section is now at index 2
       _pendingCreateType = createType; // 'class' or 'subject'
     });
   }
 
   final List<Map<String, dynamic>> _sectionInfo = [
     {'title': 'admin.dashboard', 'icon': Icons.dashboard_outlined},
-    {'title': 'admin.analytics', 'icon': Icons.analytics_outlined},
     {'title': 'admin.users', 'icon': Icons.people_outline},
     {'title': 'admin.academic', 'icon': Icons.school_outlined},
+    {'title': 'admin.analytics', 'icon': Icons.analytics_outlined},
   ];
 
   @override
