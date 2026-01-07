@@ -230,6 +230,8 @@
     "homework_details": "وردەکاری ئەرک",
     "delete_failed": "شکستی هێنا لە سڕینەوە",
     "delete_error": "هەڵە لە سڕینەوە: {error}",
+    "exam_deleted": "تاقیکردنە بە سەرکەوتوویی سڕایەوە",
+    "delete_exam_confirm": "دڵنیایت لە سڕینەوەی '{0}'؟",
     "homework_updated": "ئەرک بە سەرکەوتوویی نوێکرایەوە",
     "late": "دواکەوتوو",
     "low": "نزم",

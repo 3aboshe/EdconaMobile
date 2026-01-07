@@ -304,6 +304,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   List<Message> _messages = [];
   bool _isLoading = true;
+  bool _isSending = false;
 
   @override
   void initState() {
@@ -345,7 +346,9 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Future<void> _sendMessage() async {
     final messageContent = _messageController.text.trim();
-    if (messageContent.isEmpty) return;
+    if (messageContent.isEmpty || _isSending) return;
+
+    setState(() => _isSending = true);
 
     try {
       final messageData = {
@@ -355,7 +358,7 @@ class _ChatScreenState extends State<ChatScreen> {
         'type': 'TEXT',
         'schoolId': widget.currentUser['schoolId'] ?? 'default_school', // Fallback or handle properly
       };
-      
+
       if (widget.otherUser['childId'] != null) {
         messageData['childId'] = widget.otherUser['childId'];
       }
@@ -365,11 +368,13 @@ class _ChatScreenState extends State<ChatScreen> {
       if (result != null) {
         _messageController.clear();
         if (mounted) {
+          setState(() => _isSending = false);
           _loadMessages();
         }
       }
     } catch (e) {
       if (mounted) {
+        setState(() => _isSending = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(e.toString()),
@@ -626,16 +631,25 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           const SizedBox(width: 8),
           Container(
-            decoration: const BoxDecoration(
-              color: Color(0xFF0D47A1),
+            decoration: BoxDecoration(
+              color: _isSending ? Colors.grey : const Color(0xFF0D47A1),
               shape: BoxShape.circle,
             ),
             child: IconButton(
-              onPressed: _sendMessage,
-              icon: const Icon(
-                Icons.send,
-                color: Colors.white,
-              ),
+              onPressed: _isSending ? null : _sendMessage,
+              icon: _isSending
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : const Icon(
+                      Icons.send,
+                      color: Colors.white,
+                    ),
             ),
           ),
         ],

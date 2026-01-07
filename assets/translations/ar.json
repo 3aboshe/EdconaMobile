@@ -188,6 +188,8 @@
     "homework_deleted": "تم حذف الواجب بنجاح",
     "delete_failed": "فشل في الحذف",
     "delete_error": "خطأ في الحذف: {error}",
+    "exam_deleted": "تم حذف الاختبار بنجاح",
+    "delete_exam_confirm": "هل أنت متأكد من حذف '{0}'؟",
     "announcement_posted": "تم نشر الإعلان بنجاح",
     "announcement_updated": "تم تحديث الإعلان بنجاح",
     "announcement_deleted": "تم حذف الإعلان بنجاح",

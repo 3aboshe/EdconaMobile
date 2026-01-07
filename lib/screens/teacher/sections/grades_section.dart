@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../../services/teacher_service.dart';
 import '../../../services/api_service.dart';
+import '../../../utils/date_formatter.dart';
 import 'dart:ui' as ui;
 
 class GradesSection extends StatefulWidget {
@@ -374,7 +375,7 @@ class _GradesSectionState extends State<GradesSection> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '${'teacher.grades_page.exam_date'.tr()}: ${exam['date']}',
+                    '${'teacher.grades_page.exam_date'.tr()}: ${_formatExamDate(exam['date'])}',
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.grey[600],
@@ -382,6 +383,16 @@ class _GradesSectionState extends State<GradesSection> {
                   ),
                 ],
               ),
+            ),
+            const SizedBox(width: 8),
+            IconButton(
+              onPressed: () => _confirmDeleteExam(exam),
+              icon: const Icon(
+                CupertinoIcons.delete,
+                color: Color(0xFFFF3B30),
+                size: 20,
+              ),
+              tooltip: 'common.delete'.tr(),
             ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -947,6 +958,98 @@ class _GradesSectionState extends State<GradesSection> {
           backgroundColor: Colors.red,
         ),
       );
+    }
+  }
+
+  String _formatExamDate(dynamic dateValue) {
+    if (dateValue == null) return 'common.na'.tr();
+
+    try {
+      DateTime date;
+      if (dateValue is String) {
+        date = DateTime.parse(dateValue);
+      } else if (dateValue is DateTime) {
+        date = dateValue;
+      } else {
+        return 'common.na'.tr();
+      }
+
+      return DateFormatter.formatShortDate(date, context);
+    } catch (e) {
+      return 'common.na'.tr();
+    }
+  }
+
+  void _confirmDeleteExam(Map<String, dynamic> exam) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: Text(
+          'common.confirm_delete'.tr(),
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF0D47A1),
+          ),
+        ),
+        content: Text(
+          'teacher.delete_exam_confirm'.tr(args: [exam['title']?.toString() ?? 'common.untitled'.tr()]),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('common.cancel'.tr()),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _deleteExam(exam);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFFF3B30),
+              foregroundColor: Colors.white,
+            ),
+            child: Text('common.delete'.tr()),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _deleteExam(Map<String, dynamic> exam) async {
+    try {
+      final result = await _teacherService.deleteExam(exam['id']);
+
+      if (!mounted) return;
+
+      if (result['success']) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('teacher.exam_deleted'.tr()),
+            backgroundColor: Colors.green,
+          ),
+        );
+        _loadExams();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('teacher.delete_failed'.tr()),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('common.delete_error'.tr(namedArgs: {'error': e.toString()})),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 }

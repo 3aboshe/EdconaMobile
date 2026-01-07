@@ -274,6 +274,8 @@
     "homework_details": "Homework Details",
     "delete_failed": "Failed to delete",
     "delete_error": "Error deleting: {error}",
+    "exam_deleted": "Exam deleted successfully",
+    "delete_exam_confirm": "Are you sure you want to delete '{0}'?",
     "homework_updated": "Homework updated successfully",
     "late": "Late",
     "low": "Low",

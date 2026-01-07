@@ -228,6 +228,18 @@ class TeacherService {
     }
   }
 
+  Future<Map<String, dynamic>> deleteExam(String examId) async {
+    try {
+      final response = await ApiService.dio.delete('/api/exams/$examId');
+      if (response.statusCode == 200) {
+        return {'success': true};
+      }
+      return {'success': false, 'message': 'Failed to delete exam'};
+    } catch (e) {
+      return {'success': false, 'message': 'Error: $e'};
+    }
+  }
+
   // Grade Management
   Future<Map<String, dynamic>> addGrade(Map<String, dynamic> gradeData) async {
     try {

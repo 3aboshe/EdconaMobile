@@ -240,6 +240,8 @@
     "homework_details": "ܝܕܥܬܐ ܕܥܒܕܐ",
     "delete_failed": "ܚܛܐ ܒܫܢܝܐ",
     "delete_error": "ܚܦܪܐ ܒܫܢܝܐ: {error}",
+    "exam_deleted": "ܨܢܘܒܐ ܐܫܬܢܝ",
+    "delete_exam_confirm": "ܗܘ ܐܬܐ ܒܗ ܕܫܢܝܗ ܕܫܢܝ '{0}'؟",
     "homework_updated": "ܥܒܕܐ ܐܬܚܕܬ",
     "late": "ܡܥܒܪ ܙܒܢܐ",
     "low": "ܡܟܝܟܐ",
