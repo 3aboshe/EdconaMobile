@@ -494,18 +494,43 @@ class _AdminDashboardState extends State<AdminDashboard> {
           // Content with smooth animation
           Expanded(
             child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 300),
+              duration: const Duration(milliseconds: 350),
               switchInCurve: Curves.easeOutCubic,
               switchOutCurve: Curves.easeInCubic,
               transitionBuilder: (Widget child, Animation<double> animation) {
+                // Fade transition
+                final fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+                  CurvedAnimation(
+                    parent: animation,
+                    curve: const Interval(0.0, 0.7, curve: Curves.easeOut),
+                  ),
+                );
+                
+                // Slide transition - more noticeable
+                final slideAnimation = Tween<Offset>(
+                  begin: const Offset(0.08, 0),
+                  end: Offset.zero,
+                ).animate(CurvedAnimation(
+                  parent: animation,
+                  curve: Curves.easeOutCubic,
+                ));
+                
+                // Subtle scale for polish
+                final scaleAnimation = Tween<double>(begin: 0.97, end: 1.0).animate(
+                  CurvedAnimation(
+                    parent: animation,
+                    curve: Curves.easeOutCubic,
+                  ),
+                );
+                
                 return FadeTransition(
-                  opacity: animation,
+                  opacity: fadeAnimation,
                   child: SlideTransition(
-                    position: Tween<Offset>(
-                      begin: const Offset(0.03, 0),
-                      end: Offset.zero,
-                    ).animate(animation),
-                    child: child,
+                    position: slideAnimation,
+                    child: ScaleTransition(
+                      scale: scaleAnimation,
+                      child: child,
+                    ),
                   ),
                 );
               },
