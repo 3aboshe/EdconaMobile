@@ -231,10 +231,6 @@ class _UsersSectionState extends State<UsersSection>
                         ),
                         errorStyle: const TextStyle(color: Colors.red),
                       ),
-                      onChanged: (value) {
-                        // Real-time validation feedback - always validate to clear errors when fixed
-                        formKey.currentState?.validate();
-                      },
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'admin.name_error'.tr();
@@ -360,10 +356,6 @@ class _UsersSectionState extends State<UsersSection>
                           ),
                           errorStyle: const TextStyle(color: Colors.red),
                         ),
-                        onChanged: (value) {
-                          // Real-time validation feedback - always validate to clear errors when fixed
-                          formKey.currentState?.validate();
-                        },
                         validator: (value) {
                           if (value != null && value.isNotEmpty) {
                             if (!_isValidUsername(value)) {
@@ -390,10 +382,6 @@ class _UsersSectionState extends State<UsersSection>
                           ),
                           errorStyle: const TextStyle(color: Colors.red),
                         ),
-                        onChanged: (value) {
-                          // Real-time validation feedback - always validate to clear errors when fixed
-                          formKey.currentState?.validate();
-                        },
                         validator: (value) {
                           if (value != null && value.isNotEmpty) {
                             if (!_isValidUsername(value)) {

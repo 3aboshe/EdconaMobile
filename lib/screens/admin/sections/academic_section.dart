@@ -181,11 +181,6 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
                     ),
                     errorStyle: const TextStyle(color: Colors.red),
                   ),
-                  onChanged: (value) {
-                    if (value.isNotEmpty && !_isValidName(value)) {
-                      formKey.currentState?.validate();
-                    }
-                  },
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'admin.subject_name_error'.tr();
@@ -327,11 +322,6 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
                         ),
                         errorStyle: const TextStyle(color: Colors.red),
                       ),
-                      onChanged: (value) {
-                        if (value.isNotEmpty && !_isValidName(value)) {
-                          formKey.currentState?.validate();
-                        }
-                      },
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'admin.class_name_error'.tr();
@@ -966,11 +956,6 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
                             ),
                             errorStyle: const TextStyle(color: Colors.red),
                           ),
-                          onChanged: (value) {
-                            if (value.isNotEmpty && !_isValidName(value)) {
-                              formKey.currentState?.validate();
-                            }
-                          },
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'admin.class_name_error'.tr();
