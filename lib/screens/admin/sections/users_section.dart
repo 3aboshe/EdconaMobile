@@ -146,10 +146,13 @@ class _UsersSectionState extends State<UsersSection>
     String? selectedParentId;
     String? selectedClassId;
     String? selectedSubject;
+    bool isCreating = false;
 
     showAnimatedDialog(
       context: context,
-      builder: (context) => Dialog(
+      barrierDismissible: false,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) => Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: Container(
           padding: const EdgeInsets.all(28),
@@ -394,14 +397,14 @@ class _UsersSectionState extends State<UsersSection>
                         Expanded(
                           flex: 0,
                           child: ElevatedButton(
-                            onPressed: () async {
-                              // Synchronous check to prevent multiple clicks
-                              if (_isCreatingUser) return;
-                              _isCreatingUser = true;
-                              setState(() {});
-
-                              if (!mounted) return;
+                            onPressed: isCreating ? null : () async {
+                              // Prevent multiple clicks
+                              if (isCreating) return;
+                              
                               if (formKey.currentState!.validate()) {
+                                // Update dialog loading state
+                                setDialogState(() => isCreating = true);
+                                
                                 final userData = {
                                   'name': nameController.text.trim(),
                                   'role': role,
@@ -415,47 +418,53 @@ class _UsersSectionState extends State<UsersSection>
                                     'subject': selectedSubject,
                                 };
 
-                                final result =
-                                    await _adminService.createUser(userData);
+                                final result = await _adminService.createUser(userData);
 
                                 if (mounted) {
+                                  // Close the create dialog with smooth exit
+                                  Navigator.pop(context);
+                                  
                                   if (result['success']) {
-                                    Navigator.pop(context);
-
+                                    // Small delay for smooth transition between dialogs
+                                    await Future.delayed(const Duration(milliseconds: 200));
+                                    
                                     // Show credentials dialog
-                                    if (result['credentials'] != null) {
+                                    if (result['credentials'] != null && mounted) {
                                       _showCredentialsDialog(result['credentials'], role);
                                     }
 
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                            'admin.user_created_success'.tr(args: [role.toLowerCase()])),
-                                        backgroundColor: Colors.green,
-                                      ),
-                                    );
-                                    _loadData();
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                              'admin.user_created_success'.tr(args: [role.toLowerCase()])),
+                                          backgroundColor: Colors.green,
+                                        ),
+                                      );
+                                    }
+                                    // Refresh data in background
+                                    widget.dataProvider.refresh();
                                   } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                            '${'admin.create_user_error'.tr()}${result['message']}'),
-                                        backgroundColor: Colors.red,
-                                      ),
-                                    );
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                              '${'admin.create_user_error'.tr()}${result['message']}'),
+                                          backgroundColor: Colors.red,
+                                        ),
+                                      );
+                                    }
                                   }
                                 }
                               }
-
-                              if (mounted) {
-                                setState(() => _isCreatingUser = false);
-                              }
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: _isCreatingUser ? Colors.grey : const Color(0xFF1E3A8A),
-                              disabledBackgroundColor: Colors.grey,
+                              backgroundColor: isCreating ? Colors.grey : const Color(0xFF1E3A8A),
+                              disabledBackgroundColor: Colors.grey.shade400,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
                             ),
-                            child: _isCreatingUser
+                            child: isCreating
                                 ? const SizedBox(
                                     width: 20,
                                     height: 20,
@@ -476,6 +485,7 @@ class _UsersSectionState extends State<UsersSection>
           ),
           ),
         ),
+      ),
       ),
     );
   }
