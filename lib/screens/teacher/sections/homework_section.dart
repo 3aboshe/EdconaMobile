@@ -63,7 +63,10 @@ class _HomeworkSectionState extends State<HomeworkSection> {
         appBar: AppBar(
           backgroundColor: const Color(0xFF0D47A1),
           elevation: 0,
-          automaticallyImplyLeading: false,
+          leading: IconButton(
+            icon: Icon(isRTL ? Icons.arrow_forward_ios : Icons.arrow_back_ios, color: Colors.white),
+            onPressed: () => Navigator.pop(context),
+          ),
           title: Text(
             'teacher.homework'.tr(),
             style: const TextStyle(
@@ -219,7 +222,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
                       child: _buildInfoItem(
                         CupertinoIcons.calendar,
                         'teacher.due_date'.tr(),
-                        homework['dueDate']?.toString() ?? 'common.na'.tr(),
+                        _formatHomeworkDate(homework['dueDate']),
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -227,7 +230,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
                       child: _buildInfoItem(
                         CupertinoIcons.clock,
                         'teacher.assigned_date'.tr(),
-                        homework['assignedDate']?.toString() ?? 'common.na'.tr(),
+                        _formatHomeworkDate(homework['assignedDate']),
                       ),
                     ),
                   ],
@@ -345,6 +348,25 @@ class _HomeworkSectionState extends State<HomeworkSection> {
         ),
       ),
     );
+  }
+
+  String _formatHomeworkDate(dynamic dateValue) {
+    if (dateValue == null) return 'common.na'.tr();
+
+    try {
+      DateTime date;
+      if (dateValue is String) {
+        date = DateTime.parse(dateValue);
+      } else if (dateValue is DateTime) {
+        date = dateValue;
+      } else {
+        return 'common.na'.tr();
+      }
+
+      return DateFormatter.formatShortDate(date, context);
+    } catch (e) {
+      return 'common.na'.tr();
+    }
   }
 
   Future<void> _showCreateHomeworkDialog() async {
