@@ -149,6 +149,27 @@ class _MessagesSectionState extends State<MessagesSection> {
     return nowMinutes >= fromMinutes && nowMinutes <= toMinutes;
   }
 
+  String _formatTime12Hour(String time24) {
+    try {
+      final parts = time24.split(':');
+      final hour = int.parse(parts[0]);
+      final minute = parts[1];
+      
+      if (hour == 0) {
+        return '12:$minute AM';
+      } else if (hour < 12) {
+        return '$hour:$minute AM';
+      } else if (hour == 12) {
+        return '12:$minute PM';
+      } else {
+        return '${hour - 12}:$minute PM';
+      }
+    } catch (e) {
+      return time24; // Return original if parsing fails
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final isRTL = _isRTL();
@@ -318,7 +339,7 @@ class _MessagesSectionState extends State<MessagesSection> {
                         Padding(
                           padding: const EdgeInsets.only(top: 4),
                           child: Text(
-                            '${isAvailable ? 'parent.available'.tr() : 'parent.unavailable'.tr()} (${availability['from']} - ${availability['to']})',
+                            '${isAvailable ? 'parent.available'.tr() : 'parent.unavailable'.tr()} (${_formatTime12Hour(availability['from'])} - ${_formatTime12Hour(availability['to'])})',
                             style: TextStyle(
                               fontSize: 12,
                               color: isAvailable ? Colors.green : Colors.grey[500],
