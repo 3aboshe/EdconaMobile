@@ -15,7 +15,8 @@
     "help_text": "خوێندکاران: S123456 | مامۆستایان: T123 | دایک و باوک: P123",
     "error_required": "تکایە کۆد بنووسە",
     "error_password_required": "تکایە وشەی نهێنی بنووسە",
-    "error_invalid": "کۆدی ھەڵە"
+    "error_invalid": "کۆدی ھەڵە",
+    "welcome_user_role": "بەخێربێیت {name}! تۆ چووتەژوورەوە وەک {role}"
   },
   "parent": {
     "welcome": "به‌خێربێیت لە ده‌روازه‌ی دایك و باوك",
@@ -105,6 +106,7 @@
   "teacher": {
     "welcome": "به‌خێربێیت بۆ په‌نجه‌ره‌ی مامۆستا",
     "welcome_back": "به‌خێربێیتەوە",
+    "welcome_message": "بەخێربێیت بۆ پەنجەرەی سەرەکی مامۆستا",
     "dashboard": "په‌نجه‌ره‌ی سه‌ره‌كی",
     "attendance": "ئامادەبوون",
     "homework": "ئەركی ماڵەوە",
@@ -179,6 +181,7 @@
     "pending_homework": "ئه‌ركی چاوه‌ڕوانكراو",
     "recent_grades": "نمره‌ی دوایی",
     "unread_messages": "په‌یامی نه‌خوێندراوه‌",
+    "quick_access": "دەستڕاگەیشتنی خێرا",
     "subject": "بابه‌ت",
     "date": "ڕێکه‌وت",
     "time": "كات",
@@ -372,7 +375,15 @@
     "select": "هەڵبژێرە",
     "hours_ago": "{count} کاتژمێر پێش",
     "days_ago": "{count} ڕۆژ پێش",
-    "day_ago": "{count} ڕۆژ پێش"
+    "day_ago": "{count} ڕۆژ پێش",
+    "today": "ئەمڕۆ",
+    "yesterday": "دوێنێ",
+    "tomorrow": "سێیەنێ",
+    "at": "لە",
+    "due": "بەرواری کۆتایی",
+    "assigned": "بەرواری دەستپێکردن",
+    "submitted": "بەرواری ناردن",
+    "overdue": "دواخراو"
   },
   "admin": {
     "panel_title": "پانێلی سه‌رۆكایه‌تی",
@@ -525,7 +536,14 @@
     "activity_science_project_due": "کاتی تەسلیمی پڕۆژەی زانست",
     "activity_holiday_notice": "ئاگاداری پشوو بڵاوکرایەوە",
     "class_name_hint_2": "نمونە: پۆلی 5-أ، پۆل 1",
-    "analytics_pie_section_title": "{grade}\n{percentage}٪"
+    "analytics_pie_section_title": "{grade}\n{percentage}٪",
+    "edit_class_title": "دەستکاری پۆل",
+    "update_button": "نوێکردنەوە",
+    "class_updated_success": "پۆل بە سەرکەوتوویی نوێکرایەوە",
+    "class_update_error": "شکستی ھێنا لە نوێکردنەوەی پۆل",
+    "name_too_short": "ناو دەبێت لایەنی کەم ٣ نووسین بێت",
+    "name_too_long": "ناو نابێت زیاتر لە ٥٠ نووسین بێت",
+    "name_invalid_error": "تکایە ناوێکی دروست بنووسە"
   },
   "days": {
     "mon": "دووشه‌ممه‌",

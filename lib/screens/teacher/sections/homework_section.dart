@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../../services/teacher_service.dart';
 import 'dart:ui' as ui;
+import '../../../utils/date_formatter.dart';
 
 class HomeworkSection extends StatefulWidget {
   final Map<String, dynamic> teacher;
@@ -262,6 +263,18 @@ class _HomeworkSectionState extends State<HomeworkSection> {
   }
 
   Widget _buildInfoItem(IconData icon, String label, String value) {
+    String displayValue = value;
+    
+    // Format dates if this is a date field
+    if (label.contains('Date') || label.contains('date')) {
+      try {
+        final date = DateTime.parse(value);
+        displayValue = DateFormatter.formatReadableDate(date, context);
+      } catch (e) {
+        displayValue = value;
+      }
+    }
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -281,7 +294,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
         ),
         const SizedBox(height: 4),
         Text(
-          value,
+          displayValue,
           style: const TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w600,

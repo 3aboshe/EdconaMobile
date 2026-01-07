@@ -15,7 +15,8 @@
     "help_text": "ܐܣܟܪܝܐ: S123456 | ܡܠܦܢܐ: T123 | ܐܒܐ ܘܐܡܐ: P123",
     "error_required": "ܐܬܒ ܩܘܕܟ",
     "error_password_required": "ܐܬܒ ܡܠܬܐ ܕܥܒܪܐ",
-    "error_invalid": "ܩܘܕܐ ܚܛܐ"
+    "error_invalid": "ܩܘܕܐ ܚܛܐ",
+    "welcome_user_role": "ܫܠܡܐ {name}! ܐܢܬ ܥܠܝܬ ܒܓܘ {role}"
   },
   "parent": {
     "welcome": "ܫܠܡܐ ܠܟ ܒܬܪܥܐ ܕܐܒܐ ܘܐܡܐ",
@@ -105,6 +106,7 @@
   "teacher": {
     "welcome": "ܫܠܡܐ ܠܟ ܒܬܪܥܐ ܕܡܠܦܢܐ",
     "welcome_back": "ܫܠܡܐ ܠܟ ܬܘܒ",
+    "welcome_message": "ܫܠܡܐ ܠܟ ܒܠܘܚܐ ܪܝܫܝܐ ܕܡܠܦܢܐ",
     "home": "ܒܝܬܐ",
     "dashboard": "ܠܘܚܐ ܪܝܫܝܐ",
     "attendance": "ܥܘܕܪܢܐ",
@@ -126,6 +128,7 @@
     "present_today": "ܐܝܬܘܗܝ ܝܘܡܐ",
     "pending_homework": "ܥܒܕ̈ܐ ܡܣܟܝ̈ܐ",
     "unread_messages": "ܐܓܪ̈ܬܐ ܕܠܐ ܐܬܩܪܝ̈ܢ",
+    "quick_access": "ܕܘܬܐ ܚܫܝܬܐ",
     "no_classes": "ܠܐ ܐܝܬ ܕܪܓܝ̈ܐ",
     "attendance_page": {
       "select_date": "ܓܠܐ ܝܘܡܐ",
@@ -372,7 +375,15 @@
     "select": "ܓܠܝ",
     "hours_ago": "{count} ܫܥ̈ܐ ܒܪܘܡܐ",
     "days_ago": "{count} ܝܘܡܝܢ ܒܪܘܡܐ",
-    "day_ago": "{count} ܝܘܡܐ ܒܪܘܡܐ"
+    "day_ago": "{count} ܝܘܡܐ ܒܪܘܡܐ",
+    "today": "ܝܘܡܢܐ",
+    "yesterday": "ܬܪܝܢܝܐ",
+    "tomorrow": "ܬܠܝܬܝܐ",
+    "at": "ܒ",
+    "due": "ܝܘܡܐ ܕܙܒܢܐ",
+    "assigned": "ܝܘܡܐ ܕܝܗܒܐ",
+    "submitted": "ܝܘܡܐ ܕܫܕܪܐ",
+    "overdue": "ܡܥܒܪ ܙܒܢܐ"
   },
   "admin": {
     "panel_title": "ܠܘܝܬܐ ܕܐܕܡܝܢ",
@@ -525,7 +536,14 @@
     "activity_school_meeting": "ܐܘܕܥܬܐ ܕܡܘܥܕܐ ܐܟܕܡܝܬܐ",
     "activity_science_project_due": "ܙܒܢܐ ܕܓܡܘܪܐ ܕܦܪܘܛܝܩܛܘܣ ܣܓܕܘܬܐ",
     "activity_holiday_notice": "ܐܘܕܥܬܐ ܕܦܛܪܐ ܡܦܪܫܬܐ",
-    "analytics_pie_section_title": "{grade}\n{percentage}٪"
+    "analytics_pie_section_title": "{grade}\n{percentage}٪",
+    "edit_class_title": "ܫܚܠܦ ܕܪܓܐ",
+    "update_button": "ܚܕܬ",
+    "class_updated_success": "ܕܪܓܐ ܚܕܬ ܒܗܘܕܝܐ",
+    "class_update_error": "ܫܠܝ ܠܚܕܬܘܬܐ ܕܕܪܓܐ",
+    "name_too_short": "ܫܡܐ ܠܒܕ ܬܪܝܢ ܐܪ̈ܬܐ",
+    "name_too_long": "ܫܡܐ ܠܐ ܓܝܪ ܚܡܫܝܢ ܐܪ̈ܬܐ",
+    "name_invalid_error": "ܐܬܒ ܫܡܐ ܬܪܝܨܐ"
   },
   "days": {
     "mon": "ܬܪܝܢ",

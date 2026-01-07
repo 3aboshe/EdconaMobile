@@ -24,7 +24,8 @@
     "help_text": "الطلاب: S123456 | المعلمون: T123 | أولياء الأمور: P123",
     "error_required": "يرجى إدخال الرمز الخاص بك",
     "error_password_required": "يرجى إدخال كلمة المرور",
-    "error_invalid": "رمز غير صحيح"
+    "error_invalid": "رمز غير صحيح",
+    "welcome_user_role": "مرحباً {name}! أنت مسجل الدخول بصفتك {role}"
   },
   "password_reset": {
     "title": "إنشاء كلمة مرور جديدة",
@@ -129,6 +130,7 @@
   "teacher": {
     "welcome": "أهلاً بك في بوابة المعلم",
     "welcome_back": "مرحباً بعودتك",
+    "welcome_message": "مرحباً بك في لوحة تحكم المعلم",
     "overview": "نظرة عامة",
     "manage_grades": "إدارة الدرجات",
     "manage_homework": "إدارة الواجبات",
@@ -240,6 +242,7 @@
     "pending_homework": "الواجبات المعلقة",
     "recent_grades": "الدرجات الأخيرة",
     "unread_messages": "الرسائل غير المقروءة",
+    "quick_access": "الوصول السريع",
     "subject": "المادة",
     "date": "التاريخ",
     "time": "الوقت",
@@ -407,7 +410,15 @@
     "select": "اختر",
     "hours_ago": "قبل {count} ساعات",
     "days_ago": "قبل {count} أيام",
-    "day_ago": "قبل {count} يوم"
+    "day_ago": "قبل {count} يوم",
+    "today": "اليوم",
+    "yesterday": "أمس",
+    "tomorrow": "غداً",
+    "at": "الساعة",
+    "due": "تاريخ الاستحقاق",
+    "assigned": "تاريخ التعيين",
+    "submitted": "تاريخ التسليم",
+    "overdue": "متأخر"
   },
   "admin": {
     "panel_title": "لوحة الإدارة",
@@ -560,7 +571,17 @@
     "password_reset_failed": "فشل في إعادة تعيين كلمة المرور",
     "has_temporary_password_info": "هذا المستخدم لديه كلمة مرور مؤقتة. انقر 'إعادة تعيين كلمة المرور' أدناه لإنشاء كلمة جديدة.",
     "close": "إغلاق",
-    "analytics_pie_section_title": "{grade}\n{percentage}٪"
+    "analytics_pie_section_title": "{grade}\n{percentage}٪",
+    "username_invalid_error": "Username can only contain English letters, numbers, underscores, and dots (3-20 characters)",
+    "username_too_short": "Username must be at least 3 characters",
+    "username_too_long": "Username must be 20 characters or less",
+    "edit_class_title": "تعديل الفصل",
+    "update_button": "تحديث",
+    "class_updated_success": "تم تحديث الفصل بنجاح",
+    "class_update_error": "فشل في تحديث الفصل",
+    "name_too_short": "يجب أن يكون الاسم 3 أحرف على الأقل",
+    "name_too_long": "يجب ألا يتجاوز الاسم 50 حرفاً",
+    "name_invalid_error": "يرجى إدخال اسم صحيح"
   },
   "days": {
     "mon": "الإثنين",

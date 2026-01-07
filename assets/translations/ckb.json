@@ -15,7 +15,8 @@
     "help_text": "خوێندكاران: S123456 | مامۆستایان: T123 | دایك و باوك: P123",
     "error_required": "تکایه‌ كۆد بنووسه‌",
     "error_password_required": "تکایە وشەی نهێنی بنووسە",
-    "error_invalid": "كۆدی هه‌ڵه‌"
+    "error_invalid": "كۆدی هه‌ڵه‌",
+    "welcome_user_role": "به‌خێربێیت {name}! تۆ چووتەژوورەوە وەک {role}"
   },
   "parent": {
     "welcome": "به‌خێربێیت بۆ دەروازەی دایک و باوک",
@@ -105,6 +106,7 @@
   "teacher": {
     "welcome": "به‌خێربێیت بۆ دەروازەی مامۆستا",
     "welcome_back": "مرحبا بعودتك",
+    "welcome_message": "به‌خێربێیت بۆ پەنجەرەی سەرەکی مامۆستا",
     "home": "سەرەکی",
     "dashboard": "پەنجەرەی سەرەکی",
     "attendance": "ئامادەبوون",
@@ -126,6 +128,7 @@
     "present_today": "ئامادە ئەمڕۆ",
     "pending_homework": "ئەرکی چاوەڕوانکراو",
     "unread_messages": "پەیامەخوێنەکراوەکان",
+    "quick_access": "دەستڕاگەیشتنی خێرا",
     "no_classes": "هیچ پۆلێک نییە",
     "attendance_page": {
       "select_date": "ڕێکەوت هەڵبژێرە",
@@ -374,7 +377,15 @@
     "select": "هەڵبژێرە",
     "hours_ago": "{count} کاتژمێر پێش",
     "days_ago": "{count} ڕۆژ پێش",
-    "day_ago": "{count} ڕۆژ پێش"
+    "day_ago": "{count} ڕۆژ پێش",
+    "today": "ئەمڕۆ",
+    "yesterday": "دوێنێ",
+    "tomorrow": "سێیەنێ",
+    "at": "لە",
+    "due": "بەرواری کۆتایی",
+    "assigned": "بەرواری دەستپێکردن",
+    "submitted": "بەرواری ناردن",
+    "overdue": "دواخراو"
   },
   "admin": {
     "panel_title": "پانێلی سەرۆکایەتی",
@@ -527,7 +538,17 @@
     "classes_this_week": "پۆلەکانی ئەم هەفتەیە",
     "top_class": "پۆلی پێشەنگ",
     "attendance_percent": "ئامادەبوون",
-    "analytics_pie_section_title": "{grade}\n{percentage}٪"
+    "analytics_pie_section_title": "{grade}\n{percentage}٪",
+    "username_invalid_error": "زانیارا تەنها گەشکا گەزاری لە نیشانگا (گەشێک تەربوەما، خاڵە، ٣ و . بسە 3-20)",
+    "username_too_short": "زانیارایا دەبێت لە ناوێ 3",
+    "username_too_long": "زانیارایا دەبێت لە 20 نیشە",
+    "edit_class_title": "دەستکاری پۆل",
+    "update_button": "نوێکردنەوە",
+    "class_updated_success": "پۆل بە سەرکەوتوویی نوێکرایەوە",
+    "class_update_error": "شکستی هێنا لە نوێکردنەوەی پۆل",
+    "name_too_short": "ناو دەبێت لایەنی کەم ٣ نووسین بێت",
+    "name_too_long": "ناو نابێت زیاتر لە ٥٠ نووسین بێت",
+    "name_invalid_error": "تکایە ناوێکی دروست بنووسە"
   },
   "days": {
     "mon": "دووشەممە",

@@ -21,9 +21,13 @@ class _AdminDashboardState extends State<AdminDashboard> {
   bool _isMobile = false;
 
   String? _pendingCreateRole;
+  String? _pendingCreateType; // For academic section: 'class' or 'subject'
 
   List<Widget> get _sections => [
-    DashboardSection(onNavigateToUsers: _navigateToUsers),
+    DashboardSection(
+      onNavigateToUsers: _navigateToUsers,
+      onNavigateToAcademic: _navigateToAcademic,
+    ),
     const AnalyticsSection(),
     UsersSection(
       pendingCreateRole: _pendingCreateRole,
@@ -33,7 +37,14 @@ class _AdminDashboardState extends State<AdminDashboard> {
         });
       },
     ),
-    const AcademicSection(),
+    AcademicSection(
+      pendingCreateType: _pendingCreateType,
+      onCreateComplete: () {
+        setState(() {
+          _pendingCreateType = null;
+        });
+      },
+    ),
   ];
 
   void _navigateToUsers(int tabIndex) {
@@ -47,6 +58,13 @@ class _AdminDashboardState extends State<AdminDashboard> {
       } else if (tabIndex == 2) {
         _pendingCreateRole = 'PARENT';
       }
+    });
+  }
+
+  void _navigateToAcademic(String createType) {
+    setState(() {
+      _selectedIndex = 3; // Navigate to Academic section (index 3)
+      _pendingCreateType = createType; // 'class' or 'subject'
     });
   }
 

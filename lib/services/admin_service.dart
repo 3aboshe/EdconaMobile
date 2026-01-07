@@ -55,8 +55,25 @@ class AdminService {
         };
       }
       return {'success': false, 'message': 'Failed to create user'};
+    } on DioException catch (e) {
+      String message = 'Failed to create user';
+
+      if (e.response?.data != null) {
+        // Extract backend error message
+        if (e.response!.data is Map && e.response!.data['message'] != null) {
+          message = e.response!.data['message'];
+        } else if (e.response!.data is Map && e.response!.data['error'] != null) {
+          message = e.response!.data['error'];
+        }
+      } else if (e.type == DioExceptionType.connectionTimeout) {
+        message = 'Connection timeout. Please check your internet.';
+      } else if (e.type == DioExceptionType.connectionError) {
+        message = 'No internet connection.';
+      }
+
+      return {'success': false, 'message': message};
     } catch (e) {
-      return {'success': false, 'message': e.toString()};
+      return {'success': false, 'message': 'An error occurred: ${e.toString()}'};
     }
   }
 
@@ -68,8 +85,24 @@ class AdminService {
         return {'success': true, 'user': response.data['user']};
       }
       return {'success': false, 'message': 'Failed to update user'};
+    } on DioException catch (e) {
+      String message = 'Failed to update user';
+
+      if (e.response?.data != null) {
+        if (e.response!.data is Map && e.response!.data['message'] != null) {
+          message = e.response!.data['message'];
+        } else if (e.response!.data is Map && e.response!.data['error'] != null) {
+          message = e.response!.data['error'];
+        }
+      } else if (e.type == DioExceptionType.connectionTimeout) {
+        message = 'Connection timeout. Please check your internet.';
+      } else if (e.type == DioExceptionType.connectionError) {
+        message = 'No internet connection.';
+      }
+
+      return {'success': false, 'message': message};
     } catch (e) {
-      return {'success': false, 'message': e.toString()};
+      return {'success': false, 'message': 'An error occurred: ${e.toString()}'};
     }
   }
 
@@ -81,8 +114,24 @@ class AdminService {
         return {'success': true, 'message': 'User deleted successfully'};
       }
       return {'success': false, 'message': 'Failed to delete user'};
+    } on DioException catch (e) {
+      String message = 'Failed to delete user';
+
+      if (e.response?.data != null) {
+        if (e.response!.data is Map && e.response!.data['message'] != null) {
+          message = e.response!.data['message'];
+        } else if (e.response!.data is Map && e.response!.data['error'] != null) {
+          message = e.response!.data['error'];
+        }
+      } else if (e.type == DioExceptionType.connectionTimeout) {
+        message = 'Connection timeout. Please check your internet.';
+      } else if (e.type == DioExceptionType.connectionError) {
+        message = 'No internet connection.';
+      }
+
+      return {'success': false, 'message': message};
     } catch (e) {
-      return {'success': false, 'message': e.toString()};
+      return {'success': false, 'message': 'An error occurred: ${e.toString()}'};
     }
   }
 
@@ -140,8 +189,24 @@ class AdminService {
         return {'success': true, 'subject': response.data['subject']};
       }
       return {'success': false, 'message': 'Failed to create subject'};
+    } on DioException catch (e) {
+      String message = 'Failed to create subject';
+
+      if (e.response?.data != null) {
+        if (e.response!.data is Map && e.response!.data['message'] != null) {
+          message = e.response!.data['message'];
+        } else if (e.response!.data is Map && e.response!.data['error'] != null) {
+          message = e.response!.data['error'];
+        }
+      } else if (e.type == DioExceptionType.connectionTimeout) {
+        message = 'Connection timeout. Please check your internet.';
+      } else if (e.type == DioExceptionType.connectionError) {
+        message = 'No internet connection.';
+      }
+
+      return {'success': false, 'message': message};
     } catch (e) {
-      return {'success': false, 'message': e.toString()};
+      return {'success': false, 'message': 'An error occurred: ${e.toString()}'};
     }
   }
 
@@ -152,8 +217,24 @@ class AdminService {
         return {'success': true, 'message': 'Subject deleted successfully'};
       }
       return {'success': false, 'message': 'Failed to delete subject'};
+    } on DioException catch (e) {
+      String message = 'Failed to delete subject';
+
+      if (e.response?.data != null) {
+        if (e.response!.data is Map && e.response!.data['message'] != null) {
+          message = e.response!.data['message'];
+        } else if (e.response!.data is Map && e.response!.data['error'] != null) {
+          message = e.response!.data['error'];
+        }
+      } else if (e.type == DioExceptionType.connectionTimeout) {
+        message = 'Connection timeout. Please check your internet.';
+      } else if (e.type == DioExceptionType.connectionError) {
+        message = 'No internet connection.';
+      }
+
+      return {'success': false, 'message': message};
     } catch (e) {
-      return {'success': false, 'message': e.toString()};
+      return {'success': false, 'message': 'An error occurred: ${e.toString()}'};
     }
   }
 
@@ -180,8 +261,24 @@ class AdminService {
         return {'success': true, 'class': response.data['class']};
       }
       return {'success': false, 'message': 'Failed to create class'};
+    } on DioException catch (e) {
+      String message = 'Failed to create class';
+
+      if (e.response?.data != null) {
+        if (e.response!.data is Map && e.response!.data['message'] != null) {
+          message = e.response!.data['message'];
+        } else if (e.response!.data is Map && e.response!.data['error'] != null) {
+          message = e.response!.data['error'];
+        }
+      } else if (e.type == DioExceptionType.connectionTimeout) {
+        message = 'Connection timeout. Please check your internet.';
+      } else if (e.type == DioExceptionType.connectionError) {
+        message = 'No internet connection.';
+      }
+
+      return {'success': false, 'message': message};
     } catch (e) {
-      return {'success': false, 'message': e.toString()};
+      return {'success': false, 'message': 'An error occurred: ${e.toString()}'};
     }
   }
 
@@ -195,8 +292,24 @@ class AdminService {
         return {'success': true, 'class': response.data['class']};
       }
       return {'success': false, 'message': 'Failed to update class'};
+    } on DioException catch (e) {
+      String message = 'Failed to update class';
+
+      if (e.response?.data != null) {
+        if (e.response!.data is Map && e.response!.data['message'] != null) {
+          message = e.response!.data['message'];
+        } else if (e.response!.data is Map && e.response!.data['error'] != null) {
+          message = e.response!.data['error'];
+        }
+      } else if (e.type == DioExceptionType.connectionTimeout) {
+        message = 'Connection timeout. Please check your internet.';
+      } else if (e.type == DioExceptionType.connectionError) {
+        message = 'No internet connection.';
+      }
+
+      return {'success': false, 'message': message};
     } catch (e) {
-      return {'success': false, 'message': e.toString()};
+      return {'success': false, 'message': 'An error occurred: ${e.toString()}'};
     }
   }
 
@@ -207,8 +320,24 @@ class AdminService {
         return {'success': true, 'message': 'Class deleted successfully'};
       }
       return {'success': false, 'message': 'Failed to delete class'};
+    } on DioException catch (e) {
+      String message = 'Failed to delete class';
+
+      if (e.response?.data != null) {
+        if (e.response!.data is Map && e.response!.data['message'] != null) {
+          message = e.response!.data['message'];
+        } else if (e.response!.data is Map && e.response!.data['error'] != null) {
+          message = e.response!.data['error'];
+        }
+      } else if (e.type == DioExceptionType.connectionTimeout) {
+        message = 'Connection timeout. Please check your internet.';
+      } else if (e.type == DioExceptionType.connectionError) {
+        message = 'No internet connection.';
+      }
+
+      return {'success': false, 'message': message};
     } catch (e) {
-      return {'success': false, 'message': e.toString()};
+      return {'success': false, 'message': 'An error occurred: ${e.toString()}'};
     }
   }
 

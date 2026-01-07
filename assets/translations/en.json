@@ -24,7 +24,8 @@
     "help_text": "Students: S123456 | Teachers: T123 | Parents: P123",
     "error_required": "Please enter your code",
     "error_password_required": "Please enter your password",
-    "error_invalid": "Invalid code"
+    "error_invalid": "Invalid code",
+    "welcome_user_role": "Welcome, {name}! You are logged in as {role}"
   },
   "parent": {
     "welcome": "Welcome to Parent Portal",
@@ -114,6 +115,7 @@
   "teacher": {
     "welcome": "Welcome to Teacher Portal",
     "welcome_back": "Welcome Back",
+    "welcome_message": "Welcome to your teacher dashboard",
     "overview": "Overview",
     "manage_grades": "Manage Grades",
     "manage_homework": "Manage Homework",
@@ -162,6 +164,7 @@
     "present_today": "Present Today",
     "pending_homework": "Pending Homework",
     "unread_messages": "Unread Messages",
+    "quick_access": "Quick Access",
     "no_classes": "No Classes",
     "attendance_page": {
       "select_date": "Select Date",
@@ -398,10 +401,17 @@
     "unknown_class": "Unknown Class",
     "untitled": "Untitled",
     "no_content": "No content",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "tomorrow": "Tomorrow",
+    "at": "at",
+    "due": "Due",
+    "assigned": "Assigned",
+    "submitted": "Submitted",
+    "pending": "Pending",
     "date": "Date",
     "date_colon": "Date:",
     "na": "N/A",
-    "pending": "Pending",
     "selected": "Selected",
     "select": "Select",
     "hours_ago": "{count} hours ago",
@@ -559,7 +569,18 @@
     "password_reset_success": "Password reset successfully! New temporary password has been generated.",
     "password_reset_failed": "Failed to reset password",
     "has_temporary_password_info": "This user has a temporary password. Click 'Reset Password' below to generate a new one.",
-    "close": "Close"
+    "close": "Close",
+    "analytics_pie_section_title": "{grade}\n{percentage}%",
+    "username_invalid_error": "Username can only contain English letters, numbers, underscores, and dots (3-20 characters)",
+    "username_too_short": "Username must be at least 3 characters",
+    "username_too_long": "Username must be 20 characters or less",
+    "edit_class_title": "Edit Class",
+    "update_button": "Update",
+    "class_updated_success": "Class updated successfully",
+    "class_update_error": "Failed to update class",
+    "name_too_short": "Name must be at least 3 characters",
+    "name_too_long": "Name must not exceed 50 characters",
+    "name_invalid_error": "Please enter a valid name"
   },
   "system": {
     "title": "System Settings & Maintenance",

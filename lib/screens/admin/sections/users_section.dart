@@ -1,4 +1,5 @@
 import 'dart:ui' as ui;
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -33,6 +34,23 @@ class _UsersSectionState extends State<UsersSection>
   bool _isLoading = true;
   String _searchQuery = '';
 
+  // Completer to track when data loading is complete
+  Completer<void>? _loadDataCompleter;
+
+  // Username validation: Only English letters, numbers, underscores, and dots
+  bool _isValidUsername(String username) {
+    final regex = RegExp(r'^[a-zA-Z0-9_.]{3,20}$');
+    return regex.hasMatch(username);
+  }
+
+  // Name validation: Letters, spaces, and basic punctuation, 2-100 characters
+  bool _isValidName(String name) {
+    if (name.length < 2 || name.length > 100) return false;
+    // Allow letters (including Unicode), spaces, hyphens, apostrophes
+    final regex = RegExp(r"^[\p{L}\s\-'.]+$", unicode: true);
+    return regex.hasMatch(name);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -57,7 +75,7 @@ class _UsersSectionState extends State<UsersSection>
     }
   }
 
-  void _showCreateDialogForRole(String role) {
+  void _showCreateDialogForRole(String role) async {
     // Switch to the appropriate tab first
     if (role == 'STUDENT') {
       _tabController.index = 0;
@@ -67,14 +85,19 @@ class _UsersSectionState extends State<UsersSection>
       _tabController.index = 2;
     }
 
-    // Show the create dialog after a short delay to ensure the tab has switched
-    Future.delayed(const Duration(milliseconds: 300), () {
-      if (mounted) {
-        _showCreateUserDialog(role);
-        // Notify parent that we're handling the role
-        widget.onCreateComplete?.call();
-      }
-    });
+    // Wait for data to load before showing dialog
+    if (_loadDataCompleter != null) {
+      await _loadDataCompleter!.future;
+    }
+
+    // Small delay to ensure tab switch animation completes
+    await Future.delayed(const Duration(milliseconds: 200));
+
+    if (mounted) {
+      _showCreateUserDialog(role);
+      // Notify parent that we're handling the role
+      widget.onCreateComplete?.call();
+    }
   }
 
   @override
@@ -85,6 +108,8 @@ class _UsersSectionState extends State<UsersSection>
 
   Future<void> _loadData() async {
     if (!mounted) return;
+
+    _loadDataCompleter = Completer<void>();
 
     setState(() {
       _isLoading = true;
@@ -105,12 +130,23 @@ class _UsersSectionState extends State<UsersSection>
         _subjects = subjects;
         _isLoading = false;
       });
+
+      // Mark data loading as complete
+      if (_loadDataCompleter != null && !_loadDataCompleter!.isCompleted) {
+        _loadDataCompleter!.complete();
+      }
     } catch (e) {
       if (!mounted) return;
 
       setState(() {
         _isLoading = false;
       });
+
+      // Mark data loading as complete even on error
+      if (_loadDataCompleter != null && !_loadDataCompleter!.isCompleted) {
+        _loadDataCompleter!.complete();
+      }
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -126,6 +162,7 @@ class _UsersSectionState extends State<UsersSection>
     final formKey = GlobalKey<FormState>();
     final nameController = TextEditingController();
     final customUsernameController = TextEditingController();
+    final parentController = TextEditingController();
     String? selectedParentId;
     String? selectedClassId;
     String? selectedSubject;
@@ -192,10 +229,24 @@ class _UsersSectionState extends State<UsersSection>
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
+                        errorStyle: const TextStyle(color: Colors.red),
                       ),
+                      onChanged: (value) {
+                        // Real-time validation feedback - always validate to clear errors when fixed
+                        formKey.currentState?.validate();
+                      },
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'admin.name_error'.tr();
+                        }
+                        if (value.length < 2) {
+                          return 'admin.name_too_short'.tr();
+                        }
+                        if (value.length > 100) {
+                          return 'admin.name_too_long'.tr();
+                        }
+                        if (!_isValidName(value)) {
+                          return 'admin.name_invalid_error'.tr();
                         }
                         return null;
                       },
@@ -226,57 +277,52 @@ class _UsersSectionState extends State<UsersSection>
                         },
                       ),
                       const SizedBox(height: 20),
-                      Builder(
-                        builder: (context) {
-                          final parentController = TextEditingController();
-                          return TypeAheadField<String>(
-                            controller: parentController,
-                            builder: (context, controller, focusNode) {
-                              return TextField(
-                                controller: controller,
-                                focusNode: focusNode,
-                                decoration: InputDecoration(
-                                  labelText: 'admin.parent_optional_label'.tr(),
-                                  hintText: 'admin.parent_search_hint'.tr(),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  suffixIcon: controller.text.isNotEmpty
-                                      ? IconButton(
-                                          icon: const Icon(Icons.clear),
-                                          onPressed: () {
-                                            controller.clear();
-                                            selectedParentId = null;
-                                          },
-                                        )
-                                      : null,
-                                ),
-                              );
-                            },
-                            suggestionsCallback: (pattern) {
-                              if (pattern.isEmpty) return <String>[];
-                              return _parents
-                                  .where((parent) => parent['name']
-                                      .toString()
-                                      .toLowerCase()
-                                      .contains(pattern.toLowerCase()))
-                                  .map((p) => p['name'] as String)
-                                  .toList();
-                            },
-                            itemBuilder: (context, suggestion) {
-                              return ListTile(
-                                leading: const Icon(Icons.person),
-                                title: Text(suggestion),
-                              );
-                            },
-                            onSelected: (suggestion) {
-                              final parent = _parents.firstWhere(
-                                (p) => p['name'] == suggestion,
-                              );
-                              selectedParentId = parent['id'] as String;
-                              parentController.text = suggestion;
-                            },
+                      TypeAheadField<String>(
+                        controller: parentController,
+                        builder: (context, controller, focusNode) {
+                          return TextField(
+                            controller: controller,
+                            focusNode: focusNode,
+                            decoration: InputDecoration(
+                              labelText: 'admin.parent_optional_label'.tr(),
+                              hintText: 'admin.parent_search_hint'.tr(),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              suffixIcon: controller.text.isNotEmpty
+                                  ? IconButton(
+                                      icon: const Icon(Icons.clear),
+                                      onPressed: () {
+                                        controller.clear();
+                                        selectedParentId = null;
+                                      },
+                                    )
+                                  : null,
+                            ),
                           );
+                        },
+                        suggestionsCallback: (pattern) {
+                          if (pattern.isEmpty) return <String>[];
+                          return _parents
+                              .where((parent) => parent['name']
+                                  .toString()
+                                  .toLowerCase()
+                                  .contains(pattern.toLowerCase()))
+                              .map((p) => p['name'] as String)
+                              .toList();
+                        },
+                        itemBuilder: (context, suggestion) {
+                          return ListTile(
+                            leading: const Icon(Icons.person),
+                            title: Text(suggestion),
+                          );
+                        },
+                        onSelected: (suggestion) {
+                          final parent = _parents.firstWhere(
+                            (p) => p['name'] == suggestion,
+                          );
+                          selectedParentId = parent['id'] as String;
+                          parentController.text = suggestion;
                         },
                       ),
                     ] else if (role == 'TEACHER') ...[
@@ -312,7 +358,26 @@ class _UsersSectionState extends State<UsersSection>
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
+                          errorStyle: const TextStyle(color: Colors.red),
                         ),
+                        onChanged: (value) {
+                          // Real-time validation feedback - always validate to clear errors when fixed
+                          formKey.currentState?.validate();
+                        },
+                        validator: (value) {
+                          if (value != null && value.isNotEmpty) {
+                            if (!_isValidUsername(value)) {
+                              return 'admin.username_invalid_error'.tr();
+                            }
+                            if (value.length < 3) {
+                              return 'admin.username_too_short'.tr();
+                            }
+                            if (value.length > 20) {
+                              return 'admin.username_too_long'.tr();
+                            }
+                          }
+                          return null;
+                        },
                       ),
                     ] else if (role == 'PARENT') ...[
                       TextFormField(
@@ -323,65 +388,90 @@ class _UsersSectionState extends State<UsersSection>
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
+                          errorStyle: const TextStyle(color: Colors.red),
                         ),
+                        onChanged: (value) {
+                          // Real-time validation feedback - always validate to clear errors when fixed
+                          formKey.currentState?.validate();
+                        },
+                        validator: (value) {
+                          if (value != null && value.isNotEmpty) {
+                            if (!_isValidUsername(value)) {
+                              return 'admin.username_invalid_error'.tr();
+                            }
+                            if (value.length < 3) {
+                              return 'admin.username_too_short'.tr();
+                            }
+                            if (value.length > 20) {
+                              return 'admin.username_too_long'.tr();
+                            }
+                          }
+                          return null;
+                        },
                       ),
                     ],
                     const SizedBox(height: 28),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: Text('admin.cancel'.tr()),
+                        Expanded(
+                          flex: 0,
+                          child: TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: Text('admin.cancel'.tr()),
+                          ),
                         ),
                         const SizedBox(width: 12),
-                        ElevatedButton(
-                          onPressed: () async {
-                            if (formKey.currentState!.validate()) {
-                              final userData = {
-                                'name': nameController.text.trim(),
-                                'role': role,
-                                if (customUsernameController.text.trim().isNotEmpty)
-                                  'accessCode': customUsernameController.text.trim(),
-                                if (role == 'STUDENT' && selectedClassId != null)
-                                  'classId': selectedClassId,
-                                if (role == 'STUDENT' && selectedParentId != null)
-                                  'parentId': selectedParentId,
-                                if (role == 'TEACHER' && selectedSubject != null)
-                                  'subject': selectedSubject,
-                              };
+                        Expanded(
+                          flex: 0,
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              if (formKey.currentState!.validate()) {
+                                final userData = {
+                                  'name': nameController.text.trim(),
+                                  'role': role,
+                                  if (customUsernameController.text.trim().isNotEmpty)
+                                    'accessCode': customUsernameController.text.trim(),
+                                  if (role == 'STUDENT' && selectedClassId != null)
+                                    'classId': selectedClassId,
+                                  if (role == 'STUDENT' && selectedParentId != null)
+                                    'parentId': selectedParentId,
+                                  if (role == 'TEACHER' && selectedSubject != null)
+                                    'subject': selectedSubject,
+                                };
 
-                              final result =
-                                  await _adminService.createUser(userData);
+                                final result =
+                                    await _adminService.createUser(userData);
 
-                              if (result['success']) {
-                                Navigator.pop(context);
-                                
-                                // Show credentials dialog
-                                if (result['credentials'] != null) {
-                                  _showCredentialsDialog(result['credentials'], role);
+                                if (result['success']) {
+                                  Navigator.pop(context);
+
+                                  // Show credentials dialog
+                                  if (result['credentials'] != null) {
+                                    _showCredentialsDialog(result['credentials'], role);
+                                  }
+
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                          'admin.user_created_success'.tr(args: [role.toLowerCase()])),
+                                      backgroundColor: Colors.green,
+                                    ),
+                                  );
+                                  _loadData();
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                          '${'admin.create_user_error'.tr()}${result['message']}'),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
                                 }
-                                
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                        'admin.user_created_success'.tr(args: [role.toLowerCase()])),
-                                    backgroundColor: Colors.green,
-                                  ),
-                                );
-                                _loadData();
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                        '${'admin.create_user_error'.tr()}${result['message']}'),
-                                    backgroundColor: Colors.red,
-                                  ),
-                                );
                               }
-                            }
-                          },
-                          child: Text('admin.create_button'.tr()),
+                            },
+                            child: Text('admin.create_button'.tr()),
+                          ),
                         ),
                       ],
                     ),

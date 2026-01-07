@@ -6,9 +6,11 @@ class DashboardSection extends StatefulWidget {
   const DashboardSection({
     super.key,
     required this.onNavigateToUsers,
+    required this.onNavigateToAcademic,
   });
 
   final Function(int tabIndex) onNavigateToUsers;
+  final Function(String createType) onNavigateToAcademic;
 
   @override
   State<DashboardSection> createState() => _DashboardSectionState();
@@ -127,43 +129,49 @@ class _DashboardSectionState extends State<DashboardSection> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: Text('admin.cancel'.tr()),
+                        Expanded(
+                          flex: 0,
+                          child: TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: Text('admin.cancel'.tr()),
+                          ),
                         ),
                         const SizedBox(width: 12),
-                        ElevatedButton(
-                          onPressed: () async {
-                            if (formKey.currentState!.validate()) {
-                              final result = await _adminService.createClass(
-                                nameController.text.trim(),
-                                [], // Empty list of subject IDs for now
-                              );
+                        Expanded(
+                          flex: 0,
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              if (formKey.currentState!.validate()) {
+                                final result = await _adminService.createClass(
+                                  nameController.text.trim(),
+                                  [], // Empty list of subject IDs for now
+                                );
 
-                              if (result['success']) {
-                                Navigator.pop(context);
-                                if (mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text('admin.class_created_success'.tr()),
-                                      backgroundColor: Colors.green,
-                                    ),
-                                  );
-                                }
-                              } else {
-                                if (mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                          '${'admin.class_create_error'.tr()}${result['message']}'),
-                                      backgroundColor: Colors.red,
-                                    ),
-                                  );
+                                if (result['success']) {
+                                  Navigator.pop(context);
+                                  if (mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('admin.class_created_success'.tr()),
+                                        backgroundColor: Colors.green,
+                                      ),
+                                    );
+                                  }
+                                } else {
+                                  if (mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                            '${'admin.class_create_error'.tr()}${result['message']}'),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                  }
                                 }
                               }
-                            }
-                          },
-                          child: Text('admin.create'.tr()),
+                            },
+                            child: Text('admin.create'.tr()),
+                          ),
                         ),
                       ],
                     ),
@@ -247,42 +255,48 @@ class _DashboardSectionState extends State<DashboardSection> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: Text('admin.cancel'.tr()),
+                        Expanded(
+                          flex: 0,
+                          child: TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: Text('admin.cancel'.tr()),
+                          ),
                         ),
                         const SizedBox(width: 12),
-                        ElevatedButton(
-                          onPressed: () async {
-                            if (formKey.currentState!.validate()) {
-                              final result = await _adminService.createSubject(
-                                nameController.text.trim(),
-                              );
+                        Expanded(
+                          flex: 0,
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              if (formKey.currentState!.validate()) {
+                                final result = await _adminService.createSubject(
+                                  nameController.text.trim(),
+                                );
 
-                              if (result['success']) {
-                                Navigator.pop(context);
-                                if (mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text('admin.subject_added_success'.tr()),
-                                      backgroundColor: Colors.green,
-                                    ),
-                                  );
-                                }
-                              } else {
-                                if (mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                          '${'admin.subject_add_error'.tr()}${result['message']}'),
-                                      backgroundColor: Colors.red,
-                                    ),
-                                  );
+                                if (result['success']) {
+                                  Navigator.pop(context);
+                                  if (mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('admin.subject_added_success'.tr()),
+                                        backgroundColor: Colors.green,
+                                      ),
+                                    );
+                                  }
+                                } else {
+                                  if (mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                            '${'admin.subject_add_error'.tr()}${result['message']}'),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                  }
                                 }
                               }
-                            }
-                          },
-                          child: Text('admin.add'.tr()),
+                            },
+                            child: Text('admin.add'.tr()),
+                          ),
                         ),
                       ],
                     ),
@@ -565,7 +579,7 @@ class _DashboardSectionState extends State<DashboardSection> {
                     icon: Icons.class_,
                     color: const Color(0xFF1E3A8A),
                     onTap: () {
-                      _showCreateClassDialog();
+                      widget.onNavigateToAcademic('class');
                     },
                   ),
                   _buildQuickActionCard(
@@ -574,7 +588,7 @@ class _DashboardSectionState extends State<DashboardSection> {
                     icon: Icons.book,
                     color: const Color(0xFF1E3A8A),
                     onTap: () {
-                      _showCreateSubjectDialog();
+                      widget.onNavigateToAcademic('subject');
                     },
                   ),
                 ],

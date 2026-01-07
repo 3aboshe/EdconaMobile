@@ -53,7 +53,11 @@ class AuthService {
 
   static Future<Map<String, dynamic>> logout() async {
     try {
-      // Create a Dio instance without interceptors for logout
+      // Clear local storage FIRST to ensure logout persists
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.clear();
+
+      // Then call backend (fire and forget style)
       final dio = Dio();
       dio.options = BaseOptions(
         baseUrl: ApiService.dio.options.baseUrl,
@@ -64,27 +68,13 @@ class AuthService {
       );
 
       // Call backend logout endpoint without auth headers
-      final response = await dio.post(
-        '/api/auth/logout',
-      );
+      await dio.post('/api/auth/logout');
 
-      if (response.statusCode == 200) {
-        return {'success': true};
-      } else {
-        return {'success': false, 'message': 'Logout failed'};
-      }
-    } on DioException catch (e) {
-      String message = 'Network error';
-      if (e.response?.data != null && e.response!.data['message'] != null) {
-        message = e.response!.data['message'];
-      } else if (e.type == DioExceptionType.connectionTimeout) {
-        message = 'Connection timeout';
-      } else if (e.type == DioExceptionType.connectionError) {
-        message = 'No internet connection';
-      }
-      return {'success': false, 'message': message};
+      // Return success even if backend call fails - storage is already cleared
+      return {'success': true};
     } catch (e) {
-      return {'success': false, 'message': 'An error occurred: ${e.toString()}'};
+      // Even if backend call fails, storage is cleared - return success
+      return {'success': true};
     }
   }
 

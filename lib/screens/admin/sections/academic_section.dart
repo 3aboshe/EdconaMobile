@@ -1,9 +1,17 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../../services/admin_service.dart';
 
 class AcademicSection extends StatefulWidget {
-  const AcademicSection({super.key});
+  const AcademicSection({
+    super.key,
+    this.pendingCreateType,
+    this.onCreateComplete,
+  });
+
+  final String? pendingCreateType; // 'class' or 'subject'
+  final VoidCallback? onCreateComplete;
 
   @override
   State<AcademicSection> createState() => _AcademicSectionState();
@@ -17,11 +25,29 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
   List<Map<String, dynamic>> _classes = [];
   bool _isLoading = true;
 
+  // Completer to track when data loading is complete
+  Completer<void>? _loadDataCompleter;
+
+  // Name validation: Letters, spaces, and basic punctuation, 2-100 characters
+  bool _isValidName(String name) {
+    if (name.length < 2 || name.length > 100) return false;
+    // Allow letters (including Unicode), spaces, hyphens, apostrophes
+    final regex = RegExp(r"^[\p{L}\s\-'.]+$", unicode: true);
+    return regex.hasMatch(name);
+  }
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _loadData();
+
+    // If a pending create type is provided, show the create dialog
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.pendingCreateType != null) {
+        _showCreateDialogForType(widget.pendingCreateType!);
+      }
+    });
   }
 
   @override
@@ -32,7 +58,8 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
 
   Future<void> _loadData() async {
     if (!mounted) return;
-    
+    _loadDataCompleter = Completer<void>();
+
     setState(() {
       _isLoading = true;
     });
@@ -42,18 +69,29 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
       final classes = await _adminService.getAllClasses();
 
       if (!mounted) return;
-      
+
       setState(() {
         _subjects = subjects;
         _classes = classes;
         _isLoading = false;
       });
+
+      // Mark data loading as complete
+      if (_loadDataCompleter != null && !_loadDataCompleter!.isCompleted) {
+        _loadDataCompleter!.complete();
+      }
     } catch (e) {
       if (!mounted) return;
-      
+
       setState(() {
         _isLoading = false;
       });
+
+      // Mark data loading as complete even on error
+      if (_loadDataCompleter != null && !_loadDataCompleter!.isCompleted) {
+        _loadDataCompleter!.complete();
+      }
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -65,7 +103,28 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
     }
   }
 
+  void _showCreateDialogForType(String createType) async {
+    // Wait for data to load before showing dialog
+    if (_loadDataCompleter != null) {
+      await _loadDataCompleter!.future;
+    }
+
+    // Small delay to ensure section has loaded
+    await Future.delayed(const Duration(milliseconds: 200));
+
+    if (mounted) {
+      if (createType == 'class') {
+        await _showCreateClassDialog();
+      } else if (createType == 'subject') {
+        await _showCreateSubjectDialog();
+      }
+      // Notify parent that we're handling the creation
+      widget.onCreateComplete?.call();
+    }
+  }
+
   Future<void> _showCreateSubjectDialog() async {
+    final formKey = GlobalKey<FormState>();
     final nameController = TextEditingController();
 
     showDialog(
@@ -110,58 +169,88 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
                 ],
               ),
               const SizedBox(height: 28),
-              TextField(
-                controller: nameController,
-                decoration: InputDecoration(
-                  labelText: 'admin.subject_name_label'.tr(),
-                  hintText: 'admin.subject_name_hint_2'.tr(),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+              Form(
+                key: formKey,
+                child: TextFormField(
+                  controller: nameController,
+                  decoration: InputDecoration(
+                    labelText: 'admin.subject_name_label'.tr(),
+                    hintText: 'admin.subject_name_hint_2'.tr(),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    errorStyle: const TextStyle(color: Colors.red),
                   ),
+                  onChanged: (value) {
+                    if (value.isNotEmpty && !_isValidName(value)) {
+                      formKey.currentState?.validate();
+                    }
+                  },
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'admin.subject_name_error'.tr();
+                    }
+                    if (value.length < 2) {
+                      return 'admin.name_too_short'.tr();
+                    }
+                    if (value.length > 100) {
+                      return 'admin.name_too_long'.tr();
+                    }
+                    if (!_isValidName(value)) {
+                      return 'admin.name_invalid_error'.tr();
+                    }
+                    return null;
+                  },
                 ),
               ),
               const SizedBox(height: 28),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text('admin.cancel'.tr()),
+                  Expanded(
+                    flex: 0,
+                    child: TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text('admin.cancel'.tr()),
+                    ),
                   ),
                   const SizedBox(width: 12),
-                  ElevatedButton(
-                    onPressed: () async {
-                      if (nameController.text.trim().isNotEmpty) {
-                        final result = await _adminService.createSubject(
-                          nameController.text.trim(),
-                        );
+                  Expanded(
+                    flex: 0,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        if (formKey.currentState!.validate()) {
+                          final result = await _adminService.createSubject(
+                            nameController.text.trim(),
+                          );
 
-                        if (result['success']) {
-                          Navigator.pop(context);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('admin.subject_created_success'.tr()),
-                              backgroundColor: Colors.green,
-                            ),
-                          );
-                          _loadData();
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('admin.subject_create_error_simple'.tr()),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
+                          if (result['success']) {
+                            Navigator.pop(context);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('admin.subject_created_success'.tr()),
+                                backgroundColor: Colors.green,
+                              ),
+                            );
+                            _loadData();
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('admin.subject_create_error_simple'.tr()),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
                         }
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF1E3A8A),
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    ),
-                    child: Text(
-                      'admin.create_button'.tr(),
-                      style: const TextStyle(color: Colors.white),
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF1E3A8A),
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      ),
+                      child: Text(
+                        'admin.create_button'.tr(),
+                        style: const TextStyle(color: Colors.white),
+                      ),
                     ),
                   ),
                 ],
@@ -236,10 +325,25 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
+                        errorStyle: const TextStyle(color: Colors.red),
                       ),
+                      onChanged: (value) {
+                        if (value.isNotEmpty && !_isValidName(value)) {
+                          formKey.currentState?.validate();
+                        }
+                      },
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'admin.class_name_error'.tr();
+                        }
+                        if (value.length < 2) {
+                          return 'admin.name_too_short'.tr();
+                        }
+                        if (value.length > 100) {
+                          return 'admin.name_too_long'.tr();
+                        }
+                        if (!_isValidName(value)) {
+                          return 'admin.name_invalid_error'.tr();
                         }
                         return null;
                       },
@@ -296,45 +400,51 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text('admin.cancel'.tr()),
+                  Expanded(
+                    flex: 0,
+                    child: TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text('admin.cancel'.tr()),
+                    ),
                   ),
                   const SizedBox(width: 12),
-                  ElevatedButton(
-                    onPressed: () async {
-                      if (formKey.currentState!.validate()) {
-                        final result = await _adminService.createClass(
-                          nameController.text.trim(),
-                          selectedSubjectIds,
-                        );
+                  Expanded(
+                    flex: 0,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        if (formKey.currentState!.validate()) {
+                          final result = await _adminService.createClass(
+                            nameController.text.trim(),
+                            selectedSubjectIds,
+                          );
 
-                        if (result['success']) {
-                          Navigator.pop(context);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('admin.class_created_success'.tr()),
-                              backgroundColor: Colors.green,
-                            ),
-                          );
-                          _loadData();
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('admin.class_create_error'.tr()),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
+                          if (result['success']) {
+                            Navigator.pop(context);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('admin.class_created_success'.tr()),
+                                backgroundColor: Colors.green,
+                              ),
+                            );
+                            _loadData();
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('admin.class_create_error'.tr()),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
                         }
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF1E3A8A),
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    ),
-                    child: Text(
-                      'admin.create'.tr(),
-                      style: const TextStyle(color: Colors.white),
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF1E3A8A),
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      ),
+                      child: Text(
+                        'admin.create'.tr(),
+                        style: const TextStyle(color: Colors.white),
+                      ),
                     ),
                   ),
                 ],
@@ -794,6 +904,197 @@ class _AcademicSectionState extends State<AcademicSection> with TickerProviderSt
   }
 
   void _showEditClassDialog(Map<String, dynamic> classItem) {
-    // TODO: Implement edit class dialog
+    final formKey = GlobalKey<FormState>();
+    final nameController = TextEditingController(text: classItem['name']);
+    List<String> selectedSubjectIds = List<String>.from(classItem['subjectIds'] ?? []);
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) {
+          return Dialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            child: Container(
+              padding: const EdgeInsets.all(28),
+              width: MediaQuery.of(context).size.width < 600
+                  ? MediaQuery.of(context).size.width * 0.9
+                  : 600,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF2563EB).withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: const Icon(
+                          Icons.edit,
+                          color: Color(0xFF2563EB),
+                          size: 28,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Text(
+                          'admin.edit_class_title'.tr(),
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF1D1D1F),
+                            letterSpacing: -0.3,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 28),
+                  Form(
+                    key: formKey,
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          controller: nameController,
+                          decoration: InputDecoration(
+                            labelText: 'admin.class_name_label'.tr(),
+                            hintText: 'admin.class_name_hint'.tr(),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            errorStyle: const TextStyle(color: Colors.red),
+                          ),
+                          onChanged: (value) {
+                            if (value.isNotEmpty && !_isValidName(value)) {
+                              formKey.currentState?.validate();
+                            }
+                          },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'admin.class_name_error'.tr();
+                            }
+                            if (value.length < 2) {
+                              return 'admin.name_too_short'.tr();
+                            }
+                            if (value.length > 100) {
+                              return 'admin.name_too_long'.tr();
+                            }
+                            if (!_isValidName(value)) {
+                              return 'admin.name_invalid_error'.tr();
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          'admin.select_subjects'.tr(),
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF1D1D1F),
+                            letterSpacing: -0.1,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Container(
+                          height: 200,
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey.shade300),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: SingleChildScrollView(
+                            child: Column(
+                              children: _subjects.map((subject) {
+                                final isSelected = selectedSubjectIds.contains(subject['id']);
+                                return CheckboxListTile(
+                                  title: Text(
+                                    subject['name'],
+                                    style: const TextStyle(fontSize: 14),
+                                  ),
+                                  value: isSelected,
+                                  onChanged: (value) {
+                                    setDialogState(() {
+                                      if (value == true) {
+                                        selectedSubjectIds.add(subject['id']);
+                                      } else {
+                                        selectedSubjectIds.remove(subject['id']);
+                                      }
+                                    });
+                                  },
+                                  controlAffinity: ListTileControlAffinity.leading,
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                                  dense: true,
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 28),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Expanded(
+                        flex: 0,
+                        child: TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: Text('admin.cancel'.tr()),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        flex: 0,
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            if (formKey.currentState!.validate()) {
+                              final result = await _adminService.updateClass(
+                                classItem['id'],
+                                nameController.text.trim(),
+                                selectedSubjectIds,
+                              );
+
+                              if (result['success']) {
+                                Navigator.pop(context);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('admin.class_updated_success'.tr()),
+                                    backgroundColor: Colors.green,
+                                  ),
+                                );
+                                _loadData();
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('admin.class_update_error'.tr()),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              }
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF2563EB),
+                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                          ),
+                          child: Text(
+                            'admin.update_button'.tr(),
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 }

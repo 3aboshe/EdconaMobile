@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import '../../../services/parent_service.dart';
+import '../../../utils/date_formatter.dart';
 
 
 
@@ -254,6 +255,15 @@ class _AttendanceSectionState extends State<AttendanceSection> {
     final status = att['status']?.toLowerCase() ?? 'present';
     final statusColor = _getStatusColor(status);
     final statusIcon = _getStatusIcon(status);
+    
+    // Parse and format the date
+    String displayDate;
+    try {
+      final date = DateTime.parse(att['date']);
+      displayDate = DateFormatter.formatReadableDate(date, context);
+    } catch (e) {
+      displayDate = att['date'] ?? 'N/A';
+    }
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -292,7 +302,7 @@ class _AttendanceSectionState extends State<AttendanceSection> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    att['date'] ?? 'N/A',
+                    displayDate,
                     style: const TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w600,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import '../../../services/parent_service.dart';
+import '../../../utils/date_formatter.dart';
 
 
 
@@ -347,11 +348,13 @@ class _HomeworkSectionState extends State<HomeworkSection> {
                   color: Colors.grey[500],
                 ),
                 const SizedBox(width: 6),
-                Text(
-                  'Due: ${hw['dueDate'] ?? 'N/A'}',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey[600],
+                Expanded(
+                  child: Text(
+                    _formatDueDate(hw['dueDate']),
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.grey[600],
+                    ),
                   ),
                 ),
                 if (hw['submittedDate'] != null) ...[
@@ -362,11 +365,13 @@ class _HomeworkSectionState extends State<HomeworkSection> {
                     color: Colors.grey[500],
                   ),
                   const SizedBox(width: 6),
-                  Text(
-                    'Submitted: ${hw['submittedDate']}',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.grey[600],
+                  Expanded(
+                    child: Text(
+                      _formatSubmittedDate(hw['submittedDate']),
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey[600],
+                      ),
                     ),
                   ),
                 ],
@@ -437,6 +442,26 @@ class _HomeworkSectionState extends State<HomeworkSection> {
         return CupertinoIcons.exclamationmark_triangle_fill;
       default:
         return CupertinoIcons.doc_text_fill;
+    }
+  }
+
+  String _formatDueDate(String? dueDateStr) {
+    if (dueDateStr == null) return 'N/A';
+    try {
+      final dueDate = DateTime.parse(dueDateStr);
+      return '${'common.due'.tr()}: ${DateFormatter.formatReadableDate(dueDate, context)}';
+    } catch (e) {
+      return '${'common.due'.tr()}: $dueDateStr';
+    }
+  }
+
+  String _formatSubmittedDate(String? submittedDateStr) {
+    if (submittedDateStr == null) return 'N/A';
+    try {
+      final submittedDate = DateTime.parse(submittedDateStr);
+      return '${'common.submitted'.tr()}: ${DateFormatter.formatReadableDate(submittedDate, context)}';
+    } catch (e) {
+      return '${'common.submitted'.tr()}: $submittedDateStr';
     }
   }
 }
