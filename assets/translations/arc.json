@@ -530,6 +530,7 @@
     "password_reset_failed": "ܚܛܐ ܒܬܘܕܬܐ ܕܦܬܓܡܐ",
     "has_temporary_password_info": "ܐܚܢܐ ܚܕܬܘܫܢܐ ܐܝܬ ܦܬܓܡܐ ܙܒܢܝܐ. ܒܨܚ ܥܠ 'ܬܘܕܬܐ ܦܬܓܡܐ' ܠܬܒܪܝ ܚܕܬܐ.",
     "close": "ܣܚܝܪܐ",
+    "done": "ܡܠܝ",
     "average_grade": "ܡܥܕܠܐ ܕܢܩܘܕܐ",
     "latest_activities": "ܦܥܠܘܬ̈ܐ ܚܕܬ̈ܐ",
     "activity_new_homework_math": "ܥܒܕܐ ܕܒܝܬܐ ܚܕܬܐ ܒܡܢܝܢܘܬܐ",

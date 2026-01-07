@@ -570,6 +570,7 @@
     "password_reset_failed": "Failed to reset password",
     "has_temporary_password_info": "This user has a temporary password. Click 'Reset Password' below to generate a new one.",
     "close": "Close",
+    "done": "Done",
     "analytics_pie_section_title": "{grade}\n{percentage}%",
     "username_invalid_error": "Username can only contain English letters, numbers, underscores, and dots (3-20 characters)",
     "username_too_short": "Username must be at least 3 characters",

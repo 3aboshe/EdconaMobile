@@ -571,6 +571,7 @@
     "password_reset_failed": "فشل في إعادة تعيين كلمة المرور",
     "has_temporary_password_info": "هذا المستخدم لديه كلمة مرور مؤقتة. انقر 'إعادة تعيين كلمة المرور' أدناه لإنشاء كلمة جديدة.",
     "close": "إغلاق",
+    "done": "تم",
     "analytics_pie_section_title": "{grade}\n{percentage}٪",
     "username_invalid_error": "Username can only contain English letters, numbers, underscores, and dots (3-20 characters)",
     "username_too_short": "Username must be at least 3 characters",
