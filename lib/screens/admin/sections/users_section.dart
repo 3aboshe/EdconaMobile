@@ -155,7 +155,8 @@ class _UsersSectionState extends State<UsersSection>
           width: MediaQuery.of(context).size.width < 600
               ? MediaQuery.of(context).size.width * 0.9
               : 500,
-          child: Column(
+          child: SingleChildScrollView(
+            child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -471,6 +472,7 @@ class _UsersSectionState extends State<UsersSection>
                 ),
               ),
             ],
+          ),
           ),
         ),
       ),
