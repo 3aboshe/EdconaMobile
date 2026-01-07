@@ -123,6 +123,9 @@
     "welcome_user": "مرحباً بك {}",
     "students_count": "لديك {} طالب",
     "grade_colon": "الصف:",
+    "class_colon": "الفصل:",
+    "available": "متاح",
+    "unavailable": "غير متاح",
     "role_colon": "الدور:",
     "due_colon": "تاريخ التسليم:",
     "subject_colon": "المادة:"

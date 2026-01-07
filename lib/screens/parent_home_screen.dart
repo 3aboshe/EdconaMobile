@@ -365,7 +365,7 @@ class _ParentHomeScreenState extends State<ParentHomeScreen>
                     ),
                     const SizedBox(height: 4),
                       Text(
-                      '${'parent.grade_colon'.tr()} ${student['classId']?.toString() ?? 'common.na'.tr()}',
+                      '${'parent.class_colon'.tr()} ${student['class']?['name']?.toString() ?? student['classId']?.toString() ?? 'common.na'.tr()}',
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey[600],
@@ -562,7 +562,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen>
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      '${'parent.grade_colon'.tr()} ${widget.student['classId']?.toString() ?? 'common.na'.tr()}',
+                                      '${'parent.class_colon'.tr()} ${widget.student['class']?['name']?.toString() ?? widget.student['classId']?.toString() ?? 'common.na'.tr()}',
                                       style: TextStyle(
                                         fontSize: 14,
                                         color: Colors.grey[600],

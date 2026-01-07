@@ -108,6 +108,9 @@
     "welcome_user": "Welcome, {}",
     "students_count": "You have {} students",
     "grade_colon": "Grade:",
+    "class_colon": "Class:",
+    "available": "Available",
+    "unavailable": "Unavailable",
     "role_colon": "Role:",
     "due_colon": "Due:",
     "subject_colon": "Subject:"

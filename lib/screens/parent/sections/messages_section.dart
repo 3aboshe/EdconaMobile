@@ -313,6 +313,18 @@ class _MessagesSectionState extends State<MessagesSection> {
                           ],
                         ],
                       ),
+                      // Display availability times
+                      if (availability != null && availability['from'] != null && availability['to'] != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: Text(
+                            '${isAvailable ? 'parent.available'.tr() : 'parent.unavailable'.tr()} (${availability['from']} - ${availability['to']})',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: isAvailable ? Colors.green : Colors.grey[500],
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                 ),
