@@ -481,15 +481,14 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void _scrollToBottom() {
-    if (_scrollController.hasClients) {
+    // Use nested post-frame callback to ensure ListView is fully rendered
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
+        if (_scrollController.hasClients) {
+          _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+        }
       });
-    }
+    });
   }
 
   Future<void> _sendMessage() async {
@@ -672,7 +671,7 @@ class _ChatScreenState extends State<ChatScreen> {
       itemCount: _messages.length,
       itemBuilder: (context, index) {
         final message = _messages[index];
-        final isFromMe = message.senderId == widget.currentUser['id'];
+        final isFromMe = message.senderId.toString() == widget.currentUser['id']?.toString();
 
         return _buildMessageBubble(message, isFromMe);
       },
@@ -682,19 +681,21 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget _buildMessageBubble(Message message, bool isFromMe) {
     final messageTime = message.timestamp;
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        mainAxisAlignment: isFromMe
-            ? MainAxisAlignment.end
-            : MainAxisAlignment.start,
-        children: [
-          if (isFromMe) const SizedBox(width: 40),
-          Flexible(
-            child: Container(
-              constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.7,
-              ),
+    return Directionality(
+      textDirection: TextDirection.ltr, // Force LTR for consistent chat bubble alignment
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 8),
+        child: Row(
+          mainAxisAlignment: isFromMe
+              ? MainAxisAlignment.end
+              : MainAxisAlignment.start,
+          children: [
+            if (isFromMe) const SizedBox(width: 40),
+            Flexible(
+              child: Container(
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width * 0.7,
+                ),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               decoration: BoxDecoration(
                 color: isFromMe
@@ -743,7 +744,8 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ),
           if (!isFromMe) const SizedBox(width: 40),
-        ],
+          ],
+        ),
       ),
     );
   }

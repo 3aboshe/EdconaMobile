@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb, kDebugMode;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/config.dart';
 
@@ -47,8 +47,8 @@ class ApiService {
         handler.next(options);
       },
       onError: (error, handler) async {
-        // Log error for debugging on web
-        if (kIsWeb) {
+        // SECURITY: Only log in debug mode
+        if (kDebugMode) {
           print('API Error: ${error.type} - ${error.message}');
           print('Request URL: ${error.requestOptions.uri}');
           if (error.response != null) {

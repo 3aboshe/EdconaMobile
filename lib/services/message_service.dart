@@ -1,5 +1,7 @@
 import '../models/message.dart';
 import 'api_service.dart';
+import 'encryption_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MessageService {
   Future<List<Message>> getMessages({String? userId, String? otherUserId}) async {
@@ -10,9 +12,29 @@ class MessageService {
 
       final response = await ApiService.dio.get('/api/messages', queryParameters: queryParams);
       if (response.statusCode == 200) {
-        return (response.data as List)
+        final messages = (response.data as List)
             .map((json) => Message.fromJson(json))
             .toList();
+
+        // Decrypt encrypted messages
+        final decryptedMessages = <Message>[];
+        for (final message in messages) {
+          if (message.isEncrypted && message.encryptedContent != null && userId != null) {
+            final decrypted = await EncryptionService.decryptMessage(
+              {
+                'encryptedContent': message.encryptedContent,
+                'encryptedAesKey': message.encryptedAesKey,
+                'iv': message.iv,
+              },
+              userId,
+            );
+            decryptedMessages.add(message.copyWith(content: decrypted));
+          } else {
+            decryptedMessages.add(message);
+          }
+        }
+
+        return decryptedMessages;
       }
       return [];
     } catch (e) {
@@ -22,6 +44,26 @@ class MessageService {
 
   Future<Message?> sendMessage(Map<String, dynamic> messageData) async {
     try {
+      final prefs = await SharedPreferences.getInstance();
+      final userId = prefs.getString('user_id');
+
+      // Get receiver's public key and encrypt message
+      final receiverId = messageData['receiverId'] as String;
+      final receiverPublicKey = await EncryptionService.getPublicKey(receiverId);
+
+      if (receiverPublicKey != null && messageData['content'] != null) {
+        final content = messageData['content'] as String;
+        final encryptedData = await EncryptionService.encryptMessage(content, receiverPublicKey);
+
+        // Replace plaintext with encrypted data
+        messageData['encryptedContent'] = encryptedData['encryptedContent'];
+        messageData['encryptedAesKey'] = encryptedData['encryptedAesKey'];
+        messageData['iv'] = encryptedData['iv'];
+        messageData['encryptionVersion'] = encryptedData['encryptionVersion'];
+        messageData['isEncrypted'] = true;
+        messageData.remove('content'); // Remove plaintext
+      }
+
       final response = await ApiService.dio.post('/api/messages', data: messageData);
       if (response.statusCode == 201) {
         return Message.fromJson(response.data);
@@ -143,6 +185,23 @@ class MessageService {
        return [];
     } catch (e) {
       return [];
+    }
+  }
+
+  /// Initialize encryption keys for user (call after login)
+  Future<bool> initializeEncryptionKeys(String userId) async {
+    try {
+      // Check if keys already exist
+      final hasKeys = await EncryptionService.hasKeys(userId);
+      if (hasKeys) {
+        return true;
+      }
+
+      // Generate and store new keys
+      return await EncryptionService.generateAndStoreKeys(userId);
+    } catch (e) {
+      print('Error initializing encryption keys: $e');
+      return false;
     }
   }
 }

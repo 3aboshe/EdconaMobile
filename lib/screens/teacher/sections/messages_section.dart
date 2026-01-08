@@ -333,15 +333,14 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void _scrollToBottom() {
-    if (_scrollController.hasClients) {
+    // Use nested post-frame callback to ensure ListView is fully rendered
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
+        if (_scrollController.hasClients) {
+          _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+        }
       });
-    }
+    });
   }
 
   Future<void> _sendMessage() async {
@@ -502,7 +501,7 @@ class _ChatScreenState extends State<ChatScreen> {
       itemCount: _messages.length,
       itemBuilder: (context, index) {
         final message = _messages[index];
-        final isFromMe = message.senderId == widget.currentUser['id'];
+        final isFromMe = message.senderId.toString() == widget.currentUser['id']?.toString();
 
         return _buildMessageBubble(message, isFromMe);
       },
@@ -512,81 +511,84 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget _buildMessageBubble(Message message, bool isFromMe) {
     final messageTime = message.timestamp;
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        mainAxisAlignment: isFromMe
-            ? MainAxisAlignment.end
-            : MainAxisAlignment.start,
-        children: [
-          if (isFromMe) const SizedBox(width: 40),
-          Flexible(
-            child: Container(
-              constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.7,
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              decoration: BoxDecoration(
-                color: isFromMe
-                    ? const Color(0xFF0D47A1)
-                    : Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: const Radius.circular(20),
-                  topRight: const Radius.circular(20),
-                  bottomLeft: isFromMe
-                      ? const Radius.circular(20)
-                      : const Radius.circular(4),
-                  bottomRight: isFromMe
-                      ? const Radius.circular(4)
-                      : const Radius.circular(20),
+    return Directionality(
+      textDirection: ui.TextDirection.ltr, // Force LTR for consistent chat bubble alignment
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 8),
+        child: Row(
+          mainAxisAlignment: isFromMe
+              ? MainAxisAlignment.end
+              : MainAxisAlignment.start,
+          children: [
+            if (isFromMe) const SizedBox(width: 40),
+            Flexible(
+              child: Container(
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width * 0.7,
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 5,
-                    offset: const Offset(0, 2),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                decoration: BoxDecoration(
+                  color: isFromMe
+                      ? const Color(0xFF0D47A1)
+                      : Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: const Radius.circular(20),
+                    topRight: const Radius.circular(20),
+                    bottomLeft: isFromMe
+                        ? const Radius.circular(20)
+                        : const Radius.circular(4),
+                    bottomRight: isFromMe
+                        ? const Radius.circular(4)
+                        : const Radius.circular(20),
                   ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    message.content ?? '',
-                    style: TextStyle(
-                      color: isFromMe ? Colors.white : Colors.black87,
-                      fontSize: 15,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 5,
+                      offset: const Offset(0, 2),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        _formatTime(messageTime),
-                        style: TextStyle(
-                          color: isFromMe
-                              ? Colors.white.withValues(alpha: 0.7)
-                              : Colors.grey[600],
-                          fontSize: 11,
-                        ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      message.content ?? '',
+                      style: TextStyle(
+                        color: isFromMe ? Colors.white : Colors.black87,
+                        fontSize: 15,
                       ),
-                      if (isFromMe) ...[
-                        const SizedBox(width: 4),
-                        Icon(
-                          message.isRead ? Icons.done_all : Icons.done,
-                          size: 14,
-                          color: Colors.white.withValues(alpha: 0.7),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          _formatTime(messageTime),
+                          style: TextStyle(
+                            color: isFromMe
+                                ? Colors.white.withValues(alpha: 0.7)
+                                : Colors.grey[600],
+                            fontSize: 11,
+                          ),
                         ),
+                        if (isFromMe) ...[
+                          const SizedBox(width: 4),
+                          Icon(
+                            message.isRead ? Icons.done_all : Icons.done,
+                            size: 14,
+                            color: Colors.white.withValues(alpha: 0.7),
+                          ),
+                        ],
                       ],
-                    ],
-                  ),
-                ],
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          if (!isFromMe) const SizedBox(width: 40),
-        ],
+            if (!isFromMe) const SizedBox(width: 40),
+          ],
+        ),
       ),
     );
   }

@@ -17,6 +17,13 @@ class Message {
   final Map<String, dynamic>? attachments;
   final DateTime createdAt;
 
+  // Encryption fields for end-to-end encryption
+  final String? encryptedContent;
+  final String? encryptedAesKey;
+  final String? iv;
+  final int? encryptionVersion;
+  final bool isEncrypted;
+
   Message({
     required this.id,
     required this.senderId,
@@ -29,6 +36,11 @@ class Message {
     this.audioSrc,
     this.attachments,
     required this.createdAt,
+    this.encryptedContent,
+    this.encryptedAesKey,
+    this.iv,
+    this.encryptionVersion,
+    this.isEncrypted = false,
   });
 
   factory Message.fromJson(Map<String, dynamic> json) {
@@ -44,6 +56,12 @@ class Message {
       audioSrc: json['audioSrc'] as String?,
       attachments: json['attachments'] as Map<String, dynamic>?,
       createdAt: DateTime.parse(json['createdAt'] as String),
+      // Encryption fields
+      encryptedContent: json['encryptedContent'] as String?,
+      encryptedAesKey: json['encryptedAesKey'] as String?,
+      iv: json['iv'] as String?,
+      encryptionVersion: json['encryptionVersion'] as int?,
+      isEncrypted: json['isEncrypted'] as bool? ?? false,
     );
   }
 
@@ -60,6 +78,12 @@ class Message {
       'audioSrc': audioSrc,
       'attachments': attachments,
       'createdAt': createdAt.toIso8601String(),
+      // Encryption fields
+      'encryptedContent': encryptedContent,
+      'encryptedAesKey': encryptedAesKey,
+      'iv': iv,
+      'encryptionVersion': encryptionVersion,
+      'isEncrypted': isEncrypted,
     };
   }
 
@@ -68,6 +92,31 @@ class Message {
     return MessageType.values.firstWhere(
       (e) => e.toString().split('.').last == type,
       orElse: () => MessageType.TEXT,
+    );
+  }
+
+  /// Create a copy with updated fields (useful for decryption)
+  Message copyWith({
+    String? content,
+    bool? isEncrypted,
+  }) {
+    return Message(
+      id: id,
+      senderId: senderId,
+      receiverId: receiverId,
+      schoolId: schoolId,
+      timestamp: timestamp,
+      isRead: isRead,
+      type: type,
+      content: content ?? this.content,
+      audioSrc: audioSrc,
+      attachments: attachments,
+      createdAt: createdAt,
+      encryptedContent: encryptedContent,
+      encryptedAesKey: encryptedAesKey,
+      iv: iv,
+      encryptionVersion: encryptionVersion,
+      isEncrypted: isEncrypted ?? this.isEncrypted,
     );
   }
 }
