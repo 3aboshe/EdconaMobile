@@ -30,7 +30,9 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
     setState(() => _isLoading = true);
 
     try {
-      final announcements = await _teacherService.getTeacherAnnouncements(widget.teacher['id']);
+      final announcements = await _teacherService.getTeacherAnnouncements(
+        widget.teacher['id'],
+      );
       if (!mounted) return;
       setState(() {
         _announcements = announcements;
@@ -98,9 +100,18 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
                           border: const OutlineInputBorder(),
                         ),
                         items: [
-                          DropdownMenuItem(value: 'normal', child: Text('common.normal'.tr())),
-                          DropdownMenuItem(value: 'high', child: Text('common.high'.tr())),
-                          DropdownMenuItem(value: 'urgent', child: Text('common.urgent'.tr())),
+                          DropdownMenuItem(
+                            value: 'normal',
+                            child: Text('common.normal'.tr()),
+                          ),
+                          DropdownMenuItem(
+                            value: 'high',
+                            child: Text('common.high'.tr()),
+                          ),
+                          DropdownMenuItem(
+                            value: 'urgent',
+                            child: Text('common.urgent'.tr()),
+                          ),
                         ],
                         onChanged: (value) {
                           if (value != null) {
@@ -120,48 +131,104 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
                   child: Text('common.cancel'.tr()),
                 ),
                 ElevatedButton(
-                  onPressed: isCreating ? null : () async {
-                    if (titleController.text.isEmpty || contentController.text.isEmpty) return;
+                  onPressed: isCreating
+                      ? null
+                      : () async {
+                          if (titleController.text.isEmpty ||
+                              contentController.text.isEmpty)
+                            return;
 
-                    setDialogState(() => isCreating = true);
+                          setDialogState(() => isCreating = true);
 
-                    try {
-                      final result = await _teacherService.createAnnouncement({
-                        'title': titleController.text,
-                        'content': contentController.text,
-                        'date': DateFormat('yyyy-MM-dd').format(DateTime.now()),
-                        'teacherId': widget.teacher['id'],
-                        'priority': priority,
-                        'classIds': [],
-                      });
+                          final tempId =
+                              'temp_ann_${DateTime.now().millisecondsSinceEpoch}';
 
-                      if (!mounted) return;
-                      Navigator.pop(currentContext);
-                      if (result['success']) {
-                        if (mounted) {
-                          ScaffoldMessenger.of(currentContext).showSnackBar(
-                            SnackBar(
-                              content: Text('teacher.announcement_posted'.tr()),
-                              backgroundColor: Colors.green,
-                            ),
-                          );
-                          _loadAnnouncements();
-                        }
-                      }
-                    } catch (e) {
-                      if (mounted) {
-                        setDialogState(() => isCreating = false);
-                        ScaffoldMessenger.of(currentContext).showSnackBar(
-                          SnackBar(
-                            content: Text('teacher.failed_create_announcement'.tr()),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
-                      }
-                    }
-                  },
+                          final optimisticAnnouncement = {
+                            'id': tempId,
+                            'title': titleController.text,
+                            'content': contentController.text,
+                            'date': DateTime.now().toIso8601String(),
+                            'teacherId': widget.teacher['id'],
+                            'schoolId': widget.teacher['schoolId'],
+                            'priority': priority,
+                            'classIds': <String>[],
+                            'teacherName': widget.teacher['name'],
+                            'teacherSubject': widget.teacher['subject'],
+                            'createdAt': DateTime.now().toIso8601String(),
+                          };
+
+                          setState(() {
+                            _announcements.insert(0, optimisticAnnouncement);
+                          });
+
+                          Navigator.pop(currentContext);
+
+                          try {
+                            final result = await _teacherService
+                                .createAnnouncement({
+                                  'title': titleController.text,
+                                  'content': contentController.text,
+                                  'date': DateFormat(
+                                    'yyyy-MM-dd',
+                                  ).format(DateTime.now()),
+                                  'teacherId': widget.teacher['id'],
+                                  'priority': priority,
+                                  'classIds': [],
+                                });
+
+                            if (!mounted) return;
+
+                            if (result['success']) {
+                              if (mounted) {
+                                setState(() {
+                                  final index = _announcements.indexWhere(
+                                    (a) => a['id'] == tempId,
+                                  );
+                                  if (index != -1) {
+                                    _announcements[index] = {
+                                      ..._announcements[index],
+                                      'id':
+                                          result['announcement']?['id'] ??
+                                          tempId,
+                                    };
+                                  }
+                                });
+                                ScaffoldMessenger.of(
+                                  currentContext,
+                                ).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'teacher.announcement_posted'.tr(),
+                                    ),
+                                    backgroundColor: Colors.green,
+                                  ),
+                                );
+                              }
+                            } else {
+                              if (mounted) {
+                                _showAnnouncementError(
+                                  tempId,
+                                  titleController.text,
+                                  contentController.text,
+                                  priority,
+                                );
+                              }
+                            }
+                          } catch (e) {
+                            if (mounted) {
+                              _showAnnouncementError(
+                                tempId,
+                                titleController.text,
+                                contentController.text,
+                                priority,
+                              );
+                            }
+                          }
+                        },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: isCreating ? Colors.grey : const Color(0xFF0D47A1),
+                    backgroundColor: isCreating
+                        ? Colors.grey
+                        : const Color(0xFF0D47A1),
                     disabledBackgroundColor: Colors.grey.shade400,
                     foregroundColor: Colors.white,
                   ),
@@ -184,6 +251,102 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
     );
   }
 
+  void _showAnnouncementError(
+    String tempId,
+    String title,
+    String content,
+    String priority,
+  ) {
+    setState(() {
+      final index = _announcements.indexWhere((a) => a['id'] == tempId);
+      if (index != -1) {
+        _announcements.removeAt(index);
+      }
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('teacher.failed_create_announcement'.tr()),
+        backgroundColor: Colors.red,
+        action: SnackBarAction(
+          label: 'Retry',
+          textColor: Colors.white,
+          onPressed: () {
+            _showCreateAnnouncementWithRetry(title, content, priority);
+          },
+        ),
+        duration: const Duration(seconds: 4),
+      ),
+    );
+  }
+
+  Future<void> _showCreateAnnouncementWithRetry(
+    String title,
+    String content,
+    String priority,
+  ) async {
+    final tempId = 'temp_ann_${DateTime.now().millisecondsSinceEpoch}';
+
+    final optimisticAnnouncement = {
+      'id': tempId,
+      'title': title,
+      'content': content,
+      'date': DateTime.now().toIso8601String(),
+      'teacherId': widget.teacher['id'],
+      'schoolId': widget.teacher['schoolId'],
+      'priority': priority,
+      'classIds': <String>[],
+      'teacherName': widget.teacher['name'],
+      'teacherSubject': widget.teacher['subject'],
+      'createdAt': DateTime.now().toIso8601String(),
+    };
+
+    setState(() {
+      _announcements.insert(0, optimisticAnnouncement);
+    });
+
+    try {
+      final result = await _teacherService.createAnnouncement({
+        'title': title,
+        'content': content,
+        'date': DateFormat('yyyy-MM-dd').format(DateTime.now()),
+        'teacherId': widget.teacher['id'],
+        'priority': priority,
+        'classIds': [],
+      });
+
+      if (!mounted) return;
+
+      if (result['success']) {
+        if (mounted) {
+          setState(() {
+            final index = _announcements.indexWhere((a) => a['id'] == tempId);
+            if (index != -1) {
+              _announcements[index] = {
+                ..._announcements[index],
+                'id': result['announcement']?['id'] ?? tempId,
+              };
+            }
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('teacher.announcement_posted'.tr()),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      } else {
+        if (mounted) {
+          _showAnnouncementError(tempId, title, content, priority);
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        _showAnnouncementError(tempId, title, content, priority);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isRTL = context.locale.languageCode == 'ar';
@@ -196,10 +359,7 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
         elevation: 0,
         title: Text(
           'teacher.announcements'.tr(),
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
         ),
         leading: IconButton(
           icon: Icon(isRTL ? Icons.arrow_forward_ios : Icons.arrow_back_ios),
@@ -212,18 +372,16 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
               'assets/logowhite.png',
               height: 32,
               errorBuilder: (context, error, stackTrace) {
-                return const Icon(
-                  Icons.school,
-                  color: Colors.white,
-                  size: 32,
-                );
+                return const Icon(Icons.school, color: Colors.white, size: 32);
               },
             ),
           ),
         ],
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF0D47A1)))
+          ? const Center(
+              child: CircularProgressIndicator(color: Color(0xFF0D47A1)),
+            )
           : RefreshIndicator(
               onRefresh: _loadAnnouncements,
               child: _announcements.isEmpty
@@ -249,26 +407,16 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            CupertinoIcons.bell,
-            size: 80,
-            color: Colors.grey[400],
-          ),
+          Icon(CupertinoIcons.bell, size: 80, color: Colors.grey[400]),
           const SizedBox(height: 16),
           Text(
             'teacher.no_announcements'.tr(),
-            style: const TextStyle(
-              fontSize: 18,
-              color: Colors.grey,
-            ),
+            style: const TextStyle(fontSize: 18, color: Colors.grey),
           ),
           const SizedBox(height: 8),
           Text(
             'teacher.tap_create_announcement'.tr(),
-            style: const TextStyle(
-              fontSize: 14,
-              color: Colors.grey,
-            ),
+            style: const TextStyle(fontSize: 14, color: Colors.grey),
           ),
         ],
       ),
@@ -307,7 +455,7 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
         children: [
           Row(
             children: [
-                Expanded(
+              Expanded(
                 child: Text(
                   announcement['title'] ?? 'common.untitled'.tr(),
                   style: const TextStyle(
@@ -318,13 +466,18 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: priorityColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  'common.${announcement['priority'] ?? 'normal'}'.tr().toUpperCase(),
+                  'common.${announcement['priority'] ?? 'normal'}'
+                      .tr()
+                      .toUpperCase(),
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w600,
@@ -337,18 +490,36 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
           const SizedBox(height: 12),
           Text(
             announcement['content'] ?? 'common.no_content'.tr(),
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[700],
-            ),
+            style: TextStyle(fontSize: 14, color: Colors.grey[700]),
           ),
           const SizedBox(height: 12),
+          if (announcement['teacherName'] != null)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  announcement['teacherName'] ?? '',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF0D47A1),
+                  ),
+                ),
+                if (announcement['teacherSubject'] != null &&
+                    announcement['teacherSubject'].isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2),
+                    child: Text(
+                      announcement['teacherSubject'] ?? '',
+                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                    ),
+                  ),
+                const SizedBox(height: 8),
+              ],
+            ),
           Text(
             '${'common.date'.tr()}: ${_formatDate(announcement['date'])}',
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey[600],
-            ),
+            style: TextStyle(fontSize: 12, color: Colors.grey[600]),
           ),
         ],
       ),

@@ -1,8 +1,4 @@
-enum AnnouncementPriority {
-  HIGH,
-  MEDIUM,
-  LOW,
-}
+enum AnnouncementPriority { HIGH, MEDIUM, LOW }
 
 class Announcement {
   final String id;
@@ -14,6 +10,8 @@ class Announcement {
   final List<String> classIds;
   final AnnouncementPriority priority;
   final DateTime createdAt;
+  final String? teacherName;
+  final String? teacherSubject;
 
   Announcement({
     required this.id,
@@ -25,9 +23,12 @@ class Announcement {
     this.classIds = const [],
     this.priority = AnnouncementPriority.MEDIUM,
     required this.createdAt,
+    this.teacherName,
+    this.teacherSubject,
   });
 
   factory Announcement.fromJson(Map<String, dynamic> json) {
+    final teacher = json['teacher'] as Map<String, dynamic>?;
     return Announcement(
       id: json['id'] as String,
       title: json['title'] as String,
@@ -38,6 +39,8 @@ class Announcement {
       classIds: (json['classIds'] as List?)?.cast<String>() ?? [],
       priority: _parsePriority(json['priority'] as String?),
       createdAt: DateTime.parse(json['createdAt'] as String),
+      teacherName: teacher?['name'] as String?,
+      teacherSubject: teacher?['subject'] as String?,
     );
   }
 
@@ -52,6 +55,8 @@ class Announcement {
       'classIds': classIds,
       'priority': priority.toString().split('.').last,
       'createdAt': createdAt.toIso8601String(),
+      'teacherName': teacherName,
+      'teacherSubject': teacherSubject,
     };
   }
 

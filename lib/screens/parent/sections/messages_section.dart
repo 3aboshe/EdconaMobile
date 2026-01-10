@@ -6,19 +6,12 @@ import '../../../services/api_service.dart';
 import '../../../services/auth_service.dart';
 import 'package:edconamobile/models/message.dart';
 
-
 class MessagesSection extends StatefulWidget {
-
-
-// TextDirection constants to work around analyzer issue
-
+  // TextDirection constants to work around analyzer issue
 
   final Map<String, dynamic> student;
 
-  const MessagesSection({
-    super.key,
-    required this.student,
-  });
+  const MessagesSection({super.key, required this.student});
 
   @override
   State<MessagesSection> createState() => _MessagesSectionState();
@@ -65,17 +58,23 @@ class _MessagesSectionState extends State<MessagesSection> {
       if (response.statusCode == 200) {
         // Handle different response structures
         List<Map<String, dynamic>> allTeachers = [];
-        
+
         if (response.data is List) {
           allTeachers = List<Map<String, dynamic>>.from(response.data);
         } else if (response.data is Map) {
           // Try common response structure patterns
           if (response.data['data'] is List) {
-            allTeachers = List<Map<String, dynamic>>.from(response.data['data']);
+            allTeachers = List<Map<String, dynamic>>.from(
+              response.data['data'],
+            );
           } else if (response.data['users'] is List) {
-            allTeachers = List<Map<String, dynamic>>.from(response.data['users']);
+            allTeachers = List<Map<String, dynamic>>.from(
+              response.data['users'],
+            );
           } else if (response.data['teachers'] is List) {
-            allTeachers = List<Map<String, dynamic>>.from(response.data['teachers']);
+            allTeachers = List<Map<String, dynamic>>.from(
+              response.data['teachers'],
+            );
           } else {
             print('DEBUG: Unable to parse teacher response structure');
             print('DEBUG: Response data type: ${response.data.runtimeType}');
@@ -96,7 +95,9 @@ class _MessagesSectionState extends State<MessagesSection> {
         // If no teachers found via classIds, show all teachers as fallback
         if (relevantTeachers.isEmpty) {
           print('DEBUG: No teachers found for classId: $studentClassId');
-          print('DEBUG: All teachers classIds: ${allTeachers.map((t) => '${t['name']} (${t['classIds']})').toList()}');
+          print(
+            'DEBUG: All teachers classIds: ${allTeachers.map((t) => '${t['name']} (${t['classIds']})').toList()}',
+          );
           relevantTeachers = allTeachers;
         }
 
@@ -121,7 +122,17 @@ class _MessagesSectionState extends State<MessagesSection> {
 
   bool _isRTL() {
     final locale = context.locale;
-    return ['ar', 'ckb', 'ku', 'bhn', 'arc', 'bad', 'bdi', 'sdh', 'kmr'].contains(locale.languageCode);
+    return [
+      'ar',
+      'ckb',
+      'ku',
+      'bhn',
+      'arc',
+      'bad',
+      'bdi',
+      'sdh',
+      'kmr',
+    ].contains(locale.languageCode);
   }
 
   bool _checkAvailability(Map<String, dynamic>? availability) {
@@ -154,7 +165,7 @@ class _MessagesSectionState extends State<MessagesSection> {
       final parts = time24.split(':');
       final hour = int.parse(parts[0]);
       final minute = parts[1];
-      
+
       if (hour == 0) {
         return '12:$minute AM';
       } else if (hour < 12) {
@@ -168,7 +179,6 @@ class _MessagesSectionState extends State<MessagesSection> {
       return time24; // Return original if parsing fails
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -226,7 +236,8 @@ class _MessagesSectionState extends State<MessagesSection> {
   }
 
   Widget _buildTeacherCard(Map<String, dynamic> teacher) {
-    final availability = teacher['messagingAvailability'] as Map<String, dynamic>?;
+    final availability =
+        teacher['messagingAvailability'] as Map<String, dynamic>?;
     final isAvailable = _checkAvailability(availability);
 
     return Container(
@@ -288,10 +299,7 @@ class _MessagesSectionState extends State<MessagesSection> {
                           decoration: BoxDecoration(
                             color: Colors.green,
                             shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.white,
-                              width: 2,
-                            ),
+                            border: Border.all(color: Colors.white, width: 2),
                           ),
                         ),
                       ),
@@ -315,7 +323,8 @@ class _MessagesSectionState extends State<MessagesSection> {
                       Row(
                         children: [
                           Text(
-                            teacher['subject']?.toString() ?? 'messages.subject_teacher'.tr(),
+                            teacher['subject']?.toString() ??
+                                'messages.subject_teacher'.tr(),
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.grey[600],
@@ -335,14 +344,18 @@ class _MessagesSectionState extends State<MessagesSection> {
                         ],
                       ),
                       // Display availability times
-                      if (availability != null && availability['from'] != null && availability['to'] != null)
+                      if (availability != null &&
+                          availability['from'] != null &&
+                          availability['to'] != null)
                         Padding(
                           padding: const EdgeInsets.only(top: 4),
                           child: Text(
                             '${isAvailable ? 'parent.available'.tr() : 'parent.unavailable'.tr()} (${_formatTime12Hour(availability['from'])} - ${_formatTime12Hour(availability['to'])})',
                             style: TextStyle(
                               fontSize: 12,
-                              color: isAvailable ? Colors.green : Colors.grey[500],
+                              color: isAvailable
+                                  ? Colors.green
+                                  : Colors.grey[500],
                             ),
                           ),
                         ),
@@ -395,10 +408,7 @@ class _MessagesSectionState extends State<MessagesSection> {
             const SizedBox(height: 16),
             Text(
               'parent.no_teachers'.tr(),
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.grey[600],
-              ),
+              style: TextStyle(fontSize: 18, color: Colors.grey[600]),
             ),
           ],
         ),
@@ -495,7 +505,25 @@ class _ChatScreenState extends State<ChatScreen> {
     final messageContent = _messageController.text.trim();
     if (messageContent.isEmpty || _isSending) return;
 
-    setState(() => _isSending = true);
+    final tempId = 'temp_${DateTime.now().millisecondsSinceEpoch}';
+
+    final optimisticMessage = Message(
+      id: tempId,
+      senderId: widget.currentUser['id'],
+      receiverId: widget.otherUser['id'],
+      schoolId: widget.currentUser['schoolId'] ?? 'default_school',
+      timestamp: DateTime.now(),
+      isRead: false,
+      type: MessageType.TEXT,
+      content: messageContent,
+      createdAt: DateTime.now(),
+    );
+
+    setState(() {
+      _messages.add(optimisticMessage);
+    });
+    _messageController.clear();
+    _scrollToBottom();
 
     try {
       final messageData = {
@@ -510,33 +538,49 @@ class _ChatScreenState extends State<ChatScreen> {
       final result = await _messageService.sendMessage(messageData);
 
       if (result != null) {
-        _messageController.clear();
         if (mounted) {
-          setState(() => _isSending = false);
-          _loadMessages();
+          setState(() {
+            final index = _messages.indexWhere((m) => m.id == tempId);
+            if (index != -1) {
+              _messages[index] = result;
+            }
+          });
         }
       } else {
         if (mounted) {
-          setState(() => _isSending = false);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('messages.send_error'.tr()),
-              backgroundColor: Colors.red,
-            ),
-          );
+          _showMessageError(tempId, messageContent);
         }
       }
     } catch (e) {
       if (mounted) {
-        setState(() => _isSending = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('messages.send_error'.tr()),
-            backgroundColor: Colors.red,
-          ),
-        );
+        _showMessageError(tempId, messageContent);
       }
     }
+  }
+
+  void _showMessageError(String tempId, String content) {
+    setState(() {
+      final index = _messages.indexWhere((m) => m.id == tempId);
+      if (index != -1) {
+        _messages.removeAt(index);
+      }
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('messages.send_error'.tr()),
+        backgroundColor: Colors.red,
+        action: SnackBarAction(
+          label: 'Retry',
+          textColor: Colors.white,
+          onPressed: () {
+            _messageController.text = content;
+            _sendMessage();
+          },
+        ),
+        duration: const Duration(seconds: 4),
+      ),
+    );
   }
 
   @override
@@ -548,7 +592,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final availability = widget.otherUser['messagingAvailability'] as Map<String, dynamic>?;
+    final availability =
+        widget.otherUser['messagingAvailability'] as Map<String, dynamic>?;
     final isAvailable = _checkAvailability(availability);
 
     return Scaffold(
@@ -559,14 +604,18 @@ class _ChatScreenState extends State<ChatScreen> {
             CircleAvatar(
               radius: 20,
               backgroundColor: Colors.white.withValues(alpha: 0.2),
-              backgroundImage: (widget.otherUser['avatar'] != null &&
+              backgroundImage:
+                  (widget.otherUser['avatar'] != null &&
                       widget.otherUser['avatar'].toString().isNotEmpty)
                   ? NetworkImage(widget.otherUser['avatar'])
                   : null,
-              child: (widget.otherUser['avatar'] == null ||
+              child:
+                  (widget.otherUser['avatar'] == null ||
                       widget.otherUser['avatar'].toString().isEmpty)
                   ? Text(
-                      (widget.otherUser['name'] ?? 'U')[0].toString().toUpperCase(),
+                      (widget.otherUser['name'] ?? 'U')[0]
+                          .toString()
+                          .toUpperCase(),
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
@@ -583,7 +632,8 @@ class _ChatScreenState extends State<ChatScreen> {
                   Row(
                     children: [
                       Text(
-                        widget.otherUser['name']?.toString() ?? 'common.unknown'.tr(),
+                        widget.otherUser['name']?.toString() ??
+                            'common.unknown'.tr(),
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -603,7 +653,8 @@ class _ChatScreenState extends State<ChatScreen> {
                     ],
                   ),
                   Text(
-                    widget.otherUser['subject']?.toString() ?? 'messages.teacher_role_fallback'.tr(),
+                    widget.otherUser['subject']?.toString() ??
+                        'messages.teacher_role_fallback'.tr(),
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.white.withValues(alpha: 0.9),
@@ -618,7 +669,9 @@ class _ChatScreenState extends State<ChatScreen> {
         foregroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(widget.isRTL ? Icons.arrow_forward_ios : Icons.arrow_back_ios),
+          icon: Icon(
+            widget.isRTL ? Icons.arrow_forward_ios : Icons.arrow_back_ios,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -631,8 +684,8 @@ class _ChatScreenState extends State<ChatScreen> {
                     child: CircularProgressIndicator(color: Color(0xFF0D47A1)),
                   )
                 : _messages.isEmpty
-                    ? _buildEmptyChatState()
-                    : _buildMessagesList(),
+                ? _buildEmptyChatState()
+                : _buildMessagesList(),
           ),
           // Message Input
           _buildMessageInput(),
@@ -646,18 +699,11 @@ class _ChatScreenState extends State<ChatScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.chat_bubble_outline,
-            size: 64,
-            color: Colors.grey[400],
-          ),
+          Icon(Icons.chat_bubble_outline, size: 64, color: Colors.grey[400]),
           const SizedBox(height: 16),
           Text(
             'messages.start_conversation_button'.tr(),
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey[600],
-            ),
+            style: TextStyle(fontSize: 16, color: Colors.grey[600]),
           ),
         ],
       ),
@@ -671,7 +717,8 @@ class _ChatScreenState extends State<ChatScreen> {
       itemCount: _messages.length,
       itemBuilder: (context, index) {
         final message = _messages[index];
-        final isFromMe = message.senderId.toString() == widget.currentUser['id']?.toString();
+        final isFromMe =
+            message.senderId.toString() == widget.currentUser['id']?.toString();
 
         return _buildMessageBubble(message, isFromMe);
       },
@@ -682,7 +729,8 @@ class _ChatScreenState extends State<ChatScreen> {
     final messageTime = message.timestamp;
 
     return Directionality(
-      textDirection: TextDirection.ltr, // Force LTR for consistent chat bubble alignment
+      textDirection:
+          TextDirection.ltr, // Force LTR for consistent chat bubble alignment
       child: Padding(
         padding: const EdgeInsets.only(bottom: 8),
         child: Row(
@@ -696,54 +744,55 @@ class _ChatScreenState extends State<ChatScreen> {
                 constraints: BoxConstraints(
                   maxWidth: MediaQuery.of(context).size.width * 0.7,
                 ),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              decoration: BoxDecoration(
-                color: isFromMe
-                    ? const Color(0xFF0D47A1)
-                    : Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: const Radius.circular(20),
-                  topRight: const Radius.circular(20),
-                  bottomLeft: isFromMe
-                      ? const Radius.circular(20)
-                      : const Radius.circular(4),
-                  bottomRight: isFromMe
-                      ? const Radius.circular(4)
-                      : const Radius.circular(20),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 5,
-                    offset: const Offset(0, 1),
+                decoration: BoxDecoration(
+                  color: isFromMe ? const Color(0xFF0D47A1) : Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: const Radius.circular(20),
+                    topRight: const Radius.circular(20),
+                    bottomLeft: isFromMe
+                        ? const Radius.circular(20)
+                        : const Radius.circular(4),
+                    bottomRight: isFromMe
+                        ? const Radius.circular(4)
+                        : const Radius.circular(20),
                   ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    message.content ?? '',
-                    style: TextStyle(
-                      color: isFromMe ? Colors.white : Colors.black87,
-                      fontSize: 16,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 5,
+                      offset: const Offset(0, 1),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    _formatTime(messageTime),
-                    style: TextStyle(
-                      color: isFromMe
-                          ? Colors.white.withValues(alpha: 0.7)
-                          : Colors.grey[500],
-                      fontSize: 11,
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      message.content ?? '',
+                      style: TextStyle(
+                        color: isFromMe ? Colors.white : Colors.black87,
+                        fontSize: 16,
+                      ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 4),
+                    Text(
+                      _formatTime(messageTime),
+                      style: TextStyle(
+                        color: isFromMe
+                            ? Colors.white.withValues(alpha: 0.7)
+                            : Colors.grey[500],
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          if (!isFromMe) const SizedBox(width: 40),
+            if (!isFromMe) const SizedBox(width: 40),
           ],
         ),
       ),
@@ -810,10 +859,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         color: Colors.white,
                       ),
                     )
-                  : const Icon(
-                      Icons.send,
-                      color: Colors.white,
-                    ),
+                  : const Icon(Icons.send, color: Colors.white),
             ),
           ),
         ],

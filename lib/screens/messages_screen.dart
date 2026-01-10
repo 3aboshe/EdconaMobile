@@ -45,21 +45,14 @@ class _MessagesScreenState extends State<MessagesScreen>
       vsync: this,
     );
 
-    _fabAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _fabController,
-      curve: Curves.elasticOut,
-    ));
+    _fabAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _fabController, curve: Curves.elasticOut),
+    );
 
-    _listAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.1),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _listController,
-      curve: Curves.easeOutCubic,
-    ));
+    _listAnimation =
+        Tween<Offset>(begin: const Offset(0, 0.1), end: Offset.zero).animate(
+          CurvedAnimation(parent: _listController, curve: Curves.easeOutCubic),
+        );
 
     _fabController.forward();
     _listController.forward();
@@ -89,7 +82,9 @@ class _MessagesScreenState extends State<MessagesScreen>
     if (_currentUser == null) return;
 
     try {
-      final conversations = await _messageService.getConversations(_currentUser!['id']);
+      final conversations = await _messageService.getConversations(
+        _currentUser!['id'],
+      );
       setState(() {
         _conversations = conversations;
         _isLoading = false;
@@ -104,7 +99,17 @@ class _MessagesScreenState extends State<MessagesScreen>
 
   bool _isRTL() {
     final locale = context.locale;
-    return ['ar', 'ckb', 'ku', 'bhn', 'arc', 'bad', 'bdi', 'sdh', 'kmr'].contains(locale.languageCode);
+    return [
+      'ar',
+      'ckb',
+      'ku',
+      'bhn',
+      'arc',
+      'bad',
+      'bdi',
+      'sdh',
+      'kmr',
+    ].contains(locale.languageCode);
   }
 
   @override
@@ -123,10 +128,7 @@ class _MessagesScreenState extends State<MessagesScreen>
       appBar: AppBar(
         title: Text(
           'parent.messages'.tr(),
-          style: const TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 18,
-          ),
+          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
         ),
         backgroundColor: const Color(0xFF0D47A1),
         foregroundColor: Colors.white,
@@ -145,15 +147,13 @@ class _MessagesScreenState extends State<MessagesScreen>
       ),
       body: _isLoading
           ? const Center(
-              child: CircularProgressIndicator(
-                color: Color(0xFF0D47A1),
-              ),
+              child: CircularProgressIndicator(color: Color(0xFF0D47A1)),
             )
           : _errorMessage != null
-              ? _buildErrorWidget()
-              : _conversations.isEmpty
-                  ? _buildEmptyState()
-                  : _buildConversationsList(isRTL),
+          ? _buildErrorWidget()
+          : _conversations.isEmpty
+          ? _buildEmptyState()
+          : _buildConversationsList(isRTL),
       floatingActionButton: ScaleTransition(
         scale: _fabAnimation,
         child: FloatingActionButton(
@@ -174,19 +174,12 @@ class _MessagesScreenState extends State<MessagesScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.error_outline,
-              size: 64,
-              color: Colors.red.shade400,
-            ),
+            Icon(Icons.error_outline, size: 64, color: Colors.red.shade400),
             const SizedBox(height: 16),
             Text(
               _errorMessage!,
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.red.shade600,
-              ),
+              style: TextStyle(fontSize: 16, color: Colors.red.shade600),
             ),
             const SizedBox(height: 24),
             ElevatedButton(
@@ -194,7 +187,10 @@ class _MessagesScreenState extends State<MessagesScreen>
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF0D47A1),
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
               ),
               child: Text('common.try_again'.tr()),
             ),
@@ -240,10 +236,7 @@ class _MessagesScreenState extends State<MessagesScreen>
             Text(
               'parent.start_conversation'.tr(),
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[600],
-              ),
+              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
             ),
             const SizedBox(height: 32),
             ElevatedButton.icon(
@@ -253,7 +246,10 @@ class _MessagesScreenState extends State<MessagesScreen>
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF0D47A1),
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(25),
                 ),
@@ -296,7 +292,8 @@ class _MessagesScreenState extends State<MessagesScreen>
   Widget _buildConversationCard(Map<String, dynamic> conversation, bool isRTL) {
     final otherUser = conversation['otherUser'] as Map<String, dynamic>?;
     final lastMessage = conversation['lastMessage'] as Map<String, dynamic>?;
-    final unreadCount = int.tryParse(conversation['unreadCount']?.toString() ?? '0') ?? 0;
+    final unreadCount =
+        int.tryParse(conversation['unreadCount']?.toString() ?? '0') ?? 0;
 
     return Container(
       decoration: BoxDecoration(
@@ -335,13 +332,17 @@ class _MessagesScreenState extends State<MessagesScreen>
                 // User Avatar
                 CircleAvatar(
                   radius: 28,
-                  backgroundColor: const Color(0xFF0D47A1).withValues(alpha: 0.1),
+                  backgroundColor: const Color(
+                    0xFF0D47A1,
+                  ).withValues(alpha: 0.1),
                   backgroundImage: otherUser?['avatar'] != null
                       ? NetworkImage(otherUser!['avatar'])
                       : null,
                   child: otherUser?['avatar'] == null
                       ? Text(
-                          (otherUser?['name'] ?? 'U')[0].toString().toUpperCase(),
+                          (otherUser?['name'] ?? 'U')[0]
+                              .toString()
+                              .toUpperCase(),
                           style: const TextStyle(
                             color: Color(0xFF0D47A1),
                             fontSize: 24,
@@ -361,7 +362,8 @@ class _MessagesScreenState extends State<MessagesScreen>
                         children: [
                           Expanded(
                             child: Text(
-                              otherUser?['name']?.toString() ?? 'common.unknown'.tr(),
+                              otherUser?['name']?.toString() ??
+                                  'common.unknown'.tr(),
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
@@ -393,11 +395,9 @@ class _MessagesScreenState extends State<MessagesScreen>
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        otherUser?['subject'] ?? 'messages.teacher_role_fallback'.tr(),
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[600],
-                        ),
+                        otherUser?['subject'] ??
+                            'messages.teacher_role_fallback'.tr(),
+                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                       ),
                       if (lastMessage != null) ...[
                         const SizedBox(height: 8),
@@ -406,7 +406,9 @@ class _MessagesScreenState extends State<MessagesScreen>
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey[700],
-                            fontWeight: unreadCount > 0 ? FontWeight.w600 : FontWeight.normal,
+                            fontWeight: unreadCount > 0
+                                ? FontWeight.w600
+                                : FontWeight.normal,
                           ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
@@ -417,7 +419,9 @@ class _MessagesScreenState extends State<MessagesScreen>
                 ),
                 const SizedBox(width: 8),
                 Icon(
-                  isRTL ? Icons.keyboard_arrow_left : Icons.keyboard_arrow_right,
+                  isRTL
+                      ? Icons.keyboard_arrow_left
+                      : Icons.keyboard_arrow_right,
                   color: Colors.grey[400],
                 ),
               ],
@@ -509,6 +513,26 @@ class _ChatScreenState extends State<ChatScreen> {
     final messageContent = _messageController.text.trim();
     if (messageContent.isEmpty) return;
 
+    final tempId = 'temp_${DateTime.now().millisecondsSinceEpoch}';
+
+    final optimisticMessage = Message(
+      id: tempId,
+      senderId: widget.currentUser['id'],
+      receiverId: widget.otherUser['id'],
+      schoolId: widget.currentUser['schoolId'] ?? 'default_school',
+      timestamp: DateTime.now(),
+      isRead: false,
+      type: MessageType.TEXT,
+      content: messageContent,
+      createdAt: DateTime.now(),
+    );
+
+    setState(() {
+      _messages.add(optimisticMessage);
+    });
+    _messageController.clear();
+    _scrollToBottom();
+
     try {
       final messageData = {
         'senderId': widget.currentUser['id'],
@@ -521,30 +545,49 @@ class _ChatScreenState extends State<ChatScreen> {
       final result = await _messageService.sendMessage(messageData);
 
       if (result != null) {
-        _messageController.clear();
         if (mounted) {
-          _loadMessages();
+          setState(() {
+            final index = _messages.indexWhere((m) => m.id == tempId);
+            if (index != -1) {
+              _messages[index] = result;
+            }
+          });
         }
       } else {
         if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-           SnackBar(
-            content: Text('messages.send_error'.tr()),
-            backgroundColor: Colors.red,
-          ),
-        );
+          _showMessageError(tempId, messageContent);
         }
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('messages.send_error'.tr()),
-            backgroundColor: Colors.red,
-          ),
-        );
+        _showMessageError(tempId, messageContent);
       }
     }
+  }
+
+  void _showMessageError(String tempId, String content) {
+    setState(() {
+      final index = _messages.indexWhere((m) => m.id == tempId);
+      if (index != -1) {
+        _messages.removeAt(index);
+      }
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('messages.send_error'.tr()),
+        backgroundColor: Colors.red,
+        action: SnackBarAction(
+          label: 'Retry',
+          textColor: Colors.white,
+          onPressed: () {
+            _messageController.text = content;
+            _sendMessage();
+          },
+        ),
+        duration: const Duration(seconds: 4),
+      ),
+    );
   }
 
   @override
@@ -569,7 +612,9 @@ class _ChatScreenState extends State<ChatScreen> {
                   : null,
               child: widget.otherUser['avatar'] == null
                   ? Text(
-                      (widget.otherUser['name'] ?? 'U')[0].toString().toUpperCase(),
+                      (widget.otherUser['name'] ?? 'U')[0]
+                          .toString()
+                          .toUpperCase(),
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
@@ -584,14 +629,16 @@ class _ChatScreenState extends State<ChatScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.otherUser['name']?.toString() ?? 'common.unknown'.tr(),
+                    widget.otherUser['name']?.toString() ??
+                        'common.unknown'.tr(),
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   Text(
-                    widget.otherUser['subject'] ?? 'messages.teacher_role_fallback'.tr(),
+                    widget.otherUser['subject'] ??
+                        'messages.teacher_role_fallback'.tr(),
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.white.withValues(alpha: 0.9),
@@ -606,7 +653,9 @@ class _ChatScreenState extends State<ChatScreen> {
         foregroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(widget.isRTL ? Icons.arrow_forward_ios : Icons.arrow_back_ios),
+          icon: Icon(
+            widget.isRTL ? Icons.arrow_forward_ios : Icons.arrow_back_ios,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -619,8 +668,8 @@ class _ChatScreenState extends State<ChatScreen> {
                     child: CircularProgressIndicator(color: Color(0xFF0D47A1)),
                   )
                 : _messages.isEmpty
-                    ? _buildEmptyChatState()
-                    : _buildMessagesList(),
+                ? _buildEmptyChatState()
+                : _buildMessagesList(),
           ),
           // Message Input
           _buildMessageInput(),
@@ -634,18 +683,11 @@ class _ChatScreenState extends State<ChatScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.chat_bubble_outline,
-            size: 64,
-            color: Colors.grey[400],
-          ),
+          Icon(Icons.chat_bubble_outline, size: 64, color: Colors.grey[400]),
           const SizedBox(height: 16),
           Text(
             'messages.start_conversation_button'.tr(),
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey[600],
-            ),
+            style: TextStyle(fontSize: 16, color: Colors.grey[600]),
           ),
         ],
       ),
@@ -684,9 +726,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               decoration: BoxDecoration(
-                color: isFromMe
-                    ? const Color(0xFF0D47A1)
-                    : Colors.white,
+                color: isFromMe ? const Color(0xFF0D47A1) : Colors.white,
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(20),
                   topRight: const Radius.circular(20),
@@ -786,10 +826,7 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
             child: IconButton(
               onPressed: _sendMessage,
-              icon: const Icon(
-                Icons.send,
-                color: Colors.white,
-              ),
+              icon: const Icon(Icons.send, color: Colors.white),
             ),
           ),
         ],
@@ -834,7 +871,9 @@ class _NewMessageDialogState extends State<NewMessageDialog> {
     });
 
     try {
-      final teachers = await _messageService.getTeachersForParent(widget.currentUser['id']);
+      final teachers = await _messageService.getTeachersForParent(
+        widget.currentUser['id'],
+      );
       setState(() {
         _teachers = teachers;
         _isLoading = false;
@@ -850,9 +889,21 @@ class _NewMessageDialogState extends State<NewMessageDialog> {
     final messageContent = _messageController.text.trim();
     if (messageContent.isEmpty || _selectedTeacher == null) return;
 
-    setState(() {
-      _isLoading = true;
-    });
+    Navigator.of(context).pop();
+
+    final tempId = 'temp_${DateTime.now().millisecondsSinceEpoch}';
+
+    final optimisticMessage = Message(
+      id: tempId,
+      senderId: widget.currentUser['id'],
+      receiverId: _selectedTeacher!['id'],
+      schoolId: widget.currentUser['schoolId'] ?? 'default_school',
+      timestamp: DateTime.now(),
+      isRead: false,
+      type: MessageType.TEXT,
+      content: messageContent,
+      createdAt: DateTime.now(),
+    );
 
     try {
       final messageData = {
@@ -867,9 +918,7 @@ class _NewMessageDialogState extends State<NewMessageDialog> {
 
       if (result != null) {
         if (mounted) {
-          Navigator.of(context).pop();
           widget.onMessageSent();
-
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('messages.message_sent'.tr()),
@@ -879,28 +928,51 @@ class _NewMessageDialogState extends State<NewMessageDialog> {
         }
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('messages.send_error'.tr()),
-              backgroundColor: Colors.red,
-            ),
-          );
+          _showNewMessageError(messageContent, _selectedTeacher!['id']);
         }
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('messages.send_error'.tr()),
-            backgroundColor: Colors.red,
-          ),
-        );
+        _showNewMessageError(messageContent, _selectedTeacher!['id']);
       }
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
     }
+  }
+
+  void _showNewMessageError(String content, String receiverId) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text('messages.send_error'.tr()),
+        content: Text('messages.try_again'.tr()),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text('common.cancel'.tr()),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              _messageController.text = content;
+              _selectedTeacher = widget.currentUser['role'] == 'PARENT'
+                  ? _teachers.firstWhere(
+                      (t) => t['id'] == receiverId,
+                      orElse: () => _selectedTeacher!,
+                    )
+                  : _teachers.firstWhere(
+                      (t) => t['id'] == receiverId,
+                      orElse: () => _selectedTeacher!,
+                    );
+              _sendMessage();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF0D47A1),
+            ),
+            child: Text('common.retry'.tr()),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -912,9 +984,7 @@ class _NewMessageDialogState extends State<NewMessageDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Container(
         padding: const EdgeInsets.all(24),
         constraints: BoxConstraints(
@@ -949,7 +1019,9 @@ class _NewMessageDialogState extends State<NewMessageDialog> {
                 ? const Center(
                     child: Padding(
                       padding: EdgeInsets.all(16),
-                      child: CircularProgressIndicator(color: Color(0xFF0D47A1)),
+                      child: CircularProgressIndicator(
+                        color: Color(0xFF0D47A1),
+                      ),
                     ),
                   )
                 : Container(
@@ -975,7 +1047,8 @@ class _NewMessageDialogState extends State<NewMessageDialog> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  teacher['name']?.toString() ?? 'common.unknown'.tr(),
+                                  teacher['name']?.toString() ??
+                                      'common.unknown'.tr(),
                                   style: const TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
@@ -1039,7 +1112,9 @@ class _NewMessageDialogState extends State<NewMessageDialog> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 TextButton(
-                  onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
+                  onPressed: _isLoading
+                      ? null
+                      : () => Navigator.of(context).pop(),
                   child: Text(
                     'common.cancel'.tr(),
                     style: const TextStyle(color: Colors.grey),
@@ -1047,11 +1122,16 @@ class _NewMessageDialogState extends State<NewMessageDialog> {
                 ),
                 const SizedBox(width: 16),
                 ElevatedButton(
-                  onPressed: (_isLoading || _selectedTeacher == null) ? null : _sendMessage,
+                  onPressed: (_isLoading || _selectedTeacher == null)
+                      ? null
+                      : _sendMessage,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF0D47A1),
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(25),
                     ),
@@ -1062,7 +1142,9 @@ class _NewMessageDialogState extends State<NewMessageDialog> {
                           height: 16,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
                           ),
                         )
                       : Text('parent.send'.tr()),

@@ -4,20 +4,12 @@ import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import '../../../services/parent_service.dart';
 import '../../../utils/date_formatter.dart';
 
-
-
 class AnnouncementsSection extends StatefulWidget {
-
-
-// TextDirection constants to work around analyzer issue
-
+  // TextDirection constants to work around analyzer issue
 
   final Map<String, dynamic> student;
 
-  const AnnouncementsSection({
-    super.key,
-    required this.student,
-  });
+  const AnnouncementsSection({super.key, required this.student});
 
   @override
   State<AnnouncementsSection> createState() => _AnnouncementsSectionState();
@@ -54,7 +46,17 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
 
   bool _isRTL() {
     final locale = context.locale;
-    return ['ar', 'ckb', 'ku', 'bhn', 'arc', 'bad', 'bdi', 'sdh', 'kmr'].contains(locale.languageCode);
+    return [
+      'ar',
+      'ckb',
+      'ku',
+      'bhn',
+      'arc',
+      'bad',
+      'bdi',
+      'sdh',
+      'kmr',
+    ].contains(locale.languageCode);
   }
 
   @override
@@ -77,18 +79,11 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                CupertinoIcons.bell,
-                size: 64,
-                color: Colors.grey[400],
-              ),
+              Icon(CupertinoIcons.bell, size: 64, color: Colors.grey[400]),
               const SizedBox(height: 16),
               Text(
                 'parent.no_announcements'.tr(),
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 18, color: Colors.grey[600]),
               ),
             ],
           ),
@@ -116,14 +111,17 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
     final priority = announcement['type']?.toLowerCase() ?? 'normal';
     final priorityColor = _getPriorityColor(priority);
     final priorityIcon = _getPriorityIcon(priority);
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: priority == 'urgent' 
-            ? Border.all(color: const Color(0xFFFF3B30).withValues(alpha: 0.3), width: 2)
+        border: priority == 'urgent'
+            ? Border.all(
+                color: const Color(0xFFFF3B30).withValues(alpha: 0.3),
+                width: 2,
+              )
             : null,
         boxShadow: [
           BoxShadow(
@@ -173,7 +171,9 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
                                 vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color: const Color(0xFFFF3B30).withValues(alpha: 0.1),
+                                color: const Color(
+                                  0xFFFF3B30,
+                                ).withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: const Text(
@@ -210,7 +210,32 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
+            if (announcement['teacherName'] != null)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    announcement['teacherName'] ?? '',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF0D47A1),
+                    ),
+                  ),
+                  if (announcement['teacherSubject'] != null &&
+                      announcement['teacherSubject'].isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Text(
+                        announcement['teacherSubject'] ?? '',
+                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                      ),
+                    ),
+                  const SizedBox(height: 8),
+                ],
+              ),
+            const SizedBox(height: 4),
             Text(
               announcement['message'] ?? '',
               style: TextStyle(
