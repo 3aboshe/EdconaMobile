@@ -6,7 +6,9 @@ class ParentService {
   Future<List<Map<String, dynamic>>> getChildren(String parentId) async {
     try {
       // Use the dedicated parent children endpoint
-      final response = await ApiService.dio.get('/api/auth/parent/$parentId/children');
+      final response = await ApiService.dio.get(
+        '/api/auth/parent/$parentId/children',
+      );
 
       if (response.statusCode == 200) {
         return List<Map<String, dynamic>>.from(response.data);
@@ -15,16 +17,22 @@ class ParentService {
     } catch (e) {
       // Fallback to old method if new endpoint fails
       try {
-        final parentResponse = await ApiService.dio.get('/api/auth/user/$parentId');
+        final parentResponse = await ApiService.dio.get(
+          '/api/auth/user/$parentId',
+        );
 
         if (parentResponse.statusCode == 200) {
           final parentData = parentResponse.data;
-          final childrenIds = List<String>.from(parentData['childrenIds'] ?? []);
+          final childrenIds = List<String>.from(
+            parentData['childrenIds'] ?? [],
+          );
 
           final children = <Map<String, dynamic>>[];
           for (String childId in childrenIds) {
             try {
-              final childResponse = await ApiService.dio.get('/api/auth/user/$childId');
+              final childResponse = await ApiService.dio.get(
+                '/api/auth/user/$childId',
+              );
               if (childResponse.statusCode == 200) {
                 children.add(childResponse.data);
               }
@@ -46,16 +54,22 @@ class ParentService {
 
       if (response.statusCode == 200) {
         final grades = List<Map<String, dynamic>>.from(response.data);
-        return grades.map((grade) => {
-          'id': grade['id'],
-          'subject': grade['subject'],
-          'assignment': grade['assignment'],
-          'score': grade['marksObtained'],
-          'totalScore': grade['maxMarks'],
-          'date': grade['date'],
-          'type': grade['type'],
-          'grade': _calculateGrade(grade['marksObtained'] / grade['maxMarks'] * 100),
-        }).toList();
+        return grades
+            .map(
+              (grade) => {
+                'id': grade['id'],
+                'subject': grade['subject'],
+                'assignment': grade['assignment'],
+                'score': grade['marksObtained'],
+                'totalScore': grade['maxMarks'],
+                'date': grade['date'],
+                'type': grade['type'],
+                'grade': _calculateGrade(
+                  grade['marksObtained'] / grade['maxMarks'] * 100,
+                ),
+              },
+            )
+            .toList();
       }
     } catch (e) {
       throw Exception('Failed to load grades: ${e.toString()}');
@@ -66,7 +80,9 @@ class ParentService {
   // Get child's attendance - Use real API data
   Future<List<Map<String, dynamic>>> getChildAttendance(String childId) async {
     try {
-      final response = await ApiService.dio.get('/api/attendance/student/$childId');
+      final response = await ApiService.dio.get(
+        '/api/attendance/student/$childId',
+      );
 
       if (response.statusCode == 200) {
         return List<Map<String, dynamic>>.from(response.data);
@@ -80,7 +96,9 @@ class ParentService {
   // Get child's homework - Use real API data
   Future<List<Map<String, dynamic>>> getChildHomework(String childId) async {
     try {
-      final response = await ApiService.dio.get('/api/homework/student/$childId');
+      final response = await ApiService.dio.get(
+        '/api/homework/student/$childId',
+      );
 
       if (response.statusCode == 200) {
         final homework = List<Map<String, dynamic>>.from(response.data);
@@ -111,7 +129,6 @@ class ParentService {
         }).toList();
       }
     } catch (e) {
-
       // Return empty list instead of throwing
       return [];
     }
@@ -125,14 +142,19 @@ class ParentService {
 
       if (response.statusCode == 200) {
         final announcements = List<Map<String, dynamic>>.from(response.data);
-        return announcements.map((announcement) => {
-          'id': announcement['id'],
-          'title': announcement['title'],
-          'message': announcement['content'],
-          'date': announcement['date'],
-          'type': announcement['priority'],
-          'teacherId': announcement['teacherId'],
-          'classIds': announcement['classIds'],
+        return announcements.map((announcement) {
+          final teacher = announcement['teacher'] as Map<String, dynamic>?;
+          return {
+            'id': announcement['id'],
+            'title': announcement['title'],
+            'message': announcement['content'],
+            'date': announcement['date'],
+            'type': announcement['priority'],
+            'teacherId': announcement['teacherId'],
+            'classIds': announcement['classIds'],
+            'teacherName': teacher?['name'],
+            'teacherSubject': teacher?['subject'],
+          };
         }).toList();
       }
     } catch (e) {
@@ -142,7 +164,9 @@ class ParentService {
   }
 
   // Get teachers for parent's children - Use real API data
-  Future<List<Map<String, dynamic>>> getTeachersForParent(String parentId) async {
+  Future<List<Map<String, dynamic>>> getTeachersForParent(
+    String parentId,
+  ) async {
     try {
       // First get the parent's children
       final children = await getChildren(parentId);
@@ -150,7 +174,8 @@ class ParentService {
       // Get all classIds from children
       final classIds = <String>{};
       for (var child in children) {
-        final childClassId = child['classId']; // Students have classId (singular)
+        final childClassId =
+            child['classId']; // Students have classId (singular)
         if (childClassId != null) {
           classIds.add(childClassId);
         }
