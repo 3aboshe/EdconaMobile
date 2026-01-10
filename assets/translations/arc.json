@@ -389,7 +389,8 @@
     "due": "ܝܘܡܐ ܕܙܒܢܐ",
     "assigned": "ܝܘܡܐ ܕܝܗܒܐ",
     "submitted": "ܝܘܡܐ ܕܫܕܪܐ",
-    "overdue": "ܡܥܒܪ ܙܒܢܐ"
+    "overdue": "ܡܥܒܪ ܙܒܢܐ",
+    "teacher_label": "ܡܕܪܣܢܐ"
   },
   "admin": {
     "panel_title": "ܠܘܝܬܐ ܕܐܕܡܝܢ",

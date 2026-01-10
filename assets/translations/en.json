@@ -426,7 +426,8 @@
     "hours_ago": "{count} hours ago",
     "days_ago": "{count} days ago",
     "day_ago": "{count} day ago",
-    "teacher": "Teacher"
+    "teacher": "Teacher",
+    "teacher_label": "Teacher"
   },
   "admin": {
     "panel_title": "Admin Panel",

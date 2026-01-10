@@ -428,7 +428,8 @@
     "assigned": "تاريخ التعيين",
     "submitted": "تاريخ التسليم",
     "overdue": "متأخر",
-    "teacher": "المعلم"
+    "teacher": "المعلم",
+    "teacher_label": "المعلم"
   },
   "admin": {
     "panel_title": "لوحة الإدارة",
