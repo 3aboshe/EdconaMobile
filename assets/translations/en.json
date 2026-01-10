@@ -408,7 +408,7 @@
     "view_all": "View All",
     "unknown": "Unknown",
     "unknown_class": "Unknown Class",
-    "untitled": "Untitled",
+    "untiled": "Untitled",
     "no_content": "No content",
     "today": "Today",
     "yesterday": "Yesterday",
@@ -425,7 +425,8 @@
     "select": "Select",
     "hours_ago": "{count} hours ago",
     "days_ago": "{count} days ago",
-    "day_ago": "{count} day ago"
+    "day_ago": "{count} day ago",
+    "teacher": "Teacher"
   },
   "admin": {
     "panel_title": "Admin Panel",

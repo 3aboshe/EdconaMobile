@@ -494,29 +494,94 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
           ),
           const SizedBox(height: 12),
           if (announcement['teacherName'] != null)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  announcement['teacherName'] ?? '',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF0D47A1),
-                  ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: const Color(0xFF0D47A1).withValues(alpha: 0.05),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: const Color(0xFF0D47A1).withValues(alpha: 0.1),
+                  width: 1,
                 ),
-                if (announcement['teacherSubject'] != null &&
-                    announcement['teacherSubject'].isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 2),
-                    child: Text(
-                      announcement['teacherSubject'] ?? '',
-                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF0D47A1), Color(0xFF1976D2)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Center(
+                      child: Text(
+                        (announcement['teacherName'] ?? '')[0]
+                            .toString()
+                            .toUpperCase(),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ),
-                const SizedBox(height: 8),
-              ],
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'teacher.label'.tr(),
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: Colors.grey[600],
+                            fontWeight: FontWeight.w500,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          announcement['teacherName'] ?? '',
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF0D47A1),
+                          ),
+                        ),
+                        if (announcement['teacherSubject'] != null &&
+                            announcement['teacherSubject']
+                                .toString()
+                                .isNotEmpty)
+                          Row(
+                            children: [
+                              Icon(
+                                CupertinoIcons.book_fill,
+                                size: 11,
+                                color: Colors.grey[600],
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                announcement['teacherSubject'] ?? '',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.grey[700],
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
+          const SizedBox(height: 12),
           Text(
             '${'common.date'.tr()}: ${_formatDate(announcement['date'])}',
             style: TextStyle(fontSize: 12, color: Colors.grey[600]),
