@@ -458,6 +458,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final MessageService _messageService = MessageService();
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  final FocusNode _messageFocusNode = FocusNode();
 
   List<Message> _messages = [];
   bool _isLoading = true;
@@ -466,6 +467,9 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
+    _messageFocusNode.addListener(() {
+      setState(() {});
+    });
     _loadMessages();
   }
 
@@ -523,6 +527,7 @@ class _ChatScreenState extends State<ChatScreen> {
       _messages.add(optimisticMessage);
     });
     _messageController.clear();
+    _messageFocusNode.requestFocus();
     _scrollToBottom();
 
     try {
@@ -585,6 +590,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   void dispose() {
+    _messageFocusNode.dispose();
     _messageController.dispose();
     _scrollController.dispose();
     super.dispose();
@@ -828,6 +834,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
               child: TextField(
                 controller: _messageController,
+                focusNode: _messageFocusNode,
                 decoration: InputDecoration(
                   hintText: 'parent.type_message'.tr(),
                   border: InputBorder.none,
