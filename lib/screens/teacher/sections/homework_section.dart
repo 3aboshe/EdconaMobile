@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:file_picker/file_picker.dart';
+import 'dart:io';
 import '../../../services/teacher_service.dart';
 import 'dart:ui' as ui;
 import '../../../utils/date_formatter.dart';
@@ -455,8 +458,31 @@ class _HomeworkSectionState extends State<HomeworkSection> {
     final TextEditingController descriptionController = TextEditingController();
     String? selectedClassId;
     DateTime dueDate = DateTime.now().add(const Duration(days: 7));
+    List<File> selectedFiles = [];
 
     final isRTL = _isRTL();
+
+    Future<void> pickImage(StateSetter setDialogState) async {
+      final ImagePicker picker = ImagePicker();
+      final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+      if (image != null) {
+        setDialogState(() {
+          selectedFiles.add(File(image.path));
+        });
+      }
+    }
+
+    Future<void> pickFile(StateSetter setDialogState) async {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'txt', 'jpg', 'jpeg', 'png', 'gif'],
+      );
+      if (result != null && result.files.single.path != null) {
+        setDialogState(() {
+          selectedFiles.add(File(result.files.single.path!));
+        });
+      }
+    }
 
     await showDialog(
       context: context,
@@ -568,6 +594,117 @@ class _HomeworkSectionState extends State<HomeworkSection> {
                         ),
                       ),
                     ),
+                    const SizedBox(height: 16),
+                    // File Upload Section
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF007AFF).withValues(alpha: 0.05),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: const Color(0xFF007AFF).withValues(alpha: 0.2)),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(CupertinoIcons.paperclip, size: 18, color: Colors.grey[700]),
+                              const SizedBox(width: 8),
+                              Text(
+                                'teacher.homework_page.attachments'.tr(),
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.grey[700],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: ElevatedButton.icon(
+                                  onPressed: () => pickImage(setDialogState),
+                                  icon: const Icon(CupertinoIcons.photo, size: 18),
+                                  label: Text('teacher.homework_page.attach_image'.tr(), style: const TextStyle(fontSize: 12)),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFF34C759),
+                                    foregroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                    padding: const EdgeInsets.symmetric(vertical: 12),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: ElevatedButton.icon(
+                                  onPressed: () => pickFile(setDialogState),
+                                  icon: const Icon(CupertinoIcons.doc, size: 18),
+                                  label: Text('teacher.homework_page.attach_file'.tr(), style: const TextStyle(fontSize: 12)),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFF007AFF),
+                                    foregroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                    padding: const EdgeInsets.symmetric(vertical: 12),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          if (selectedFiles.isNotEmpty) ...[
+                            const SizedBox(height: 12),
+                            ...selectedFiles.asMap().entries.map((entry) {
+                              final index = entry.key;
+                              final file = entry.value;
+                              final fileName = file.path.split('/').last;
+                              final isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].any((ext) => fileName.toLowerCase().endsWith(ext));
+                              return Container(
+                                margin: const EdgeInsets.only(bottom: 8),
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(color: Colors.grey[200]!),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      isImage ? CupertinoIcons.photo : CupertinoIcons.doc_fill,
+                                      color: isImage ? const Color(0xFF34C759) : const Color(0xFF007AFF),
+                                      size: 20,
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: Text(
+                                        fileName,
+                                        style: const TextStyle(fontSize: 13),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        setDialogState(() {
+                                          selectedFiles.removeAt(index);
+                                        });
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.all(4),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFFF3B30).withValues(alpha: 0.1),
+                                          borderRadius: BorderRadius.circular(6),
+                                        ),
+                                        child: const Icon(CupertinoIcons.xmark, size: 14, color: Color(0xFFFF3B30)),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }),
+                          ],
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -608,7 +745,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
                           'assignedDate': DateFormat('yyyy-MM-dd').format(DateTime.now()),
                           'teacherId': widget.teacher['id']?.toString() ?? '',
                           'classIds': [selectedClassId!],
-                        });
+                        }, files: selectedFiles.isNotEmpty ? selectedFiles : null);
 
                         if (!mounted) return;
                         Navigator.pop(context);

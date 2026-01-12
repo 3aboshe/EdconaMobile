@@ -68,6 +68,10 @@ dependencies:
   # For opening URLs and attachments
   url_launcher: ^6.2.5
 
+  # For picking files and images
+  image_picker: ^1.0.7
+  file_picker: ^8.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

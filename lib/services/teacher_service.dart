@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+import 'dart:io';
 import 'api_service.dart';
 
 class TeacherService {
@@ -98,13 +100,46 @@ class TeacherService {
   }
 
   // Homework Management
-  Future<Map<String, dynamic>> createHomework(Map<String, dynamic> homeworkData) async {
+  Future<Map<String, dynamic>> createHomework(Map<String, dynamic> homeworkData, {List<File>? files}) async {
     try {
-      final response = await ApiService.dio.post('/api/homework', data: homeworkData);
-      if (response.statusCode == 201) {
-        return {'success': true, 'homework': response.data};
+      // If files are provided, use FormData for multipart upload
+      if (files != null && files.isNotEmpty) {
+        FormData formData = FormData.fromMap({
+          'title': homeworkData['title'],
+          'subject': homeworkData['subject'],
+          'description': homeworkData['description'] ?? '',
+          'dueDate': homeworkData['dueDate'],
+          'assignedDate': homeworkData['assignedDate'],
+          'teacherId': homeworkData['teacherId'],
+          'classIds': homeworkData['classIds']?.join(',') ?? '',
+        });
+
+        // Add files to form data
+        for (var file in files) {
+          String fileName = file.path.split('/').last;
+          formData.files.add(MapEntry(
+            'files',
+            await MultipartFile.fromFile(file.path, filename: fileName),
+          ));
+        }
+
+        final response = await ApiService.dio.post(
+          '/api/homework',
+          data: formData,
+          options: Options(contentType: 'multipart/form-data'),
+        );
+        if (response.statusCode == 201) {
+          return {'success': true, 'homework': response.data};
+        }
+        return {'success': false, 'message': 'Failed to create homework'};
+      } else {
+        // No files, use regular JSON request
+        final response = await ApiService.dio.post('/api/homework', data: homeworkData);
+        if (response.statusCode == 201) {
+          return {'success': true, 'homework': response.data};
+        }
+        return {'success': false, 'message': 'Failed to create homework'};
       }
-      return {'success': false, 'message': 'Failed to create homework'};
     } catch (e) {
       return {'success': false, 'message': 'Error: $e'};
     }
