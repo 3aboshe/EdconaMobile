@@ -307,7 +307,7 @@ class _AttendanceSectionState extends State<AttendanceSection> {
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: Column(
+                  child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
@@ -319,12 +319,26 @@ class _AttendanceSectionState extends State<AttendanceSection> {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    'parent.attendance'.tr(),
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[600],
-                    ),
+                  Row(
+                    children: [
+                      Text(
+                        'parent.attendance'.tr(),
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      if (att['teacher'] != null && att['teacher']['subject'] != null) ...[
+                        Text(
+                          ' - ${att['teacher']['subject']}',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey[700],
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                 ],
               ),
