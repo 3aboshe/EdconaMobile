@@ -15,6 +15,7 @@ class AttendanceSection extends StatefulWidget {
 class _AttendanceSectionState extends State<AttendanceSection> {
   final TeacherService _teacherService = TeacherService();
   bool _isLoading = true;
+  bool _isSaving = false;
   DateTime _selectedDate = DateTime.now();
   List<Map<String, dynamic>> _classes = [];
   String? _selectedClassId;
@@ -38,7 +39,7 @@ class _AttendanceSectionState extends State<AttendanceSection> {
         _classes = classes;
         if (classes.isNotEmpty) {
           _selectedClassId = classes[0]['id'];
-          _loadStudents();
+          _loadStudentsAndAttendance();
         } else {
           _isLoading = false;
         }
@@ -48,6 +49,53 @@ class _AttendanceSectionState extends State<AttendanceSection> {
       setState(() {
         _isLoading = false;
         _classes = [];
+      });
+    }
+  }
+
+  Future<void> _loadStudentsAndAttendance() async {
+    if (_selectedClassId == null) return;
+
+    try {
+      final students = await _teacherService.getStudentsByClass(_selectedClassId!);
+      final dateStr = DateFormat('yyyy-MM-dd').format(_selectedDate);
+      final existingAttendance = await _teacherService.getAttendanceByDate(dateStr);
+      
+      if (!mounted) return;
+      
+      // Reset attendance status and load from existing records
+      final Map<String, String> attendanceMap = {};
+      for (var student in students) {
+        final studentId = student['id']?.toString() ?? '';
+        // Default to absent (1)
+        attendanceMap[studentId] = '1';
+        
+        // Find existing attendance for this student on this date
+        for (var record in existingAttendance) {
+          if (record['studentId'] == studentId && record['classId'] == _selectedClassId) {
+            final status = record['status']?.toString().toUpperCase() ?? 'ABSENT';
+            if (status == 'PRESENT') {
+              attendanceMap[studentId] = '0';
+            } else if (status == 'LATE') {
+              attendanceMap[studentId] = '2';
+            } else {
+              attendanceMap[studentId] = '1';
+            }
+            break;
+          }
+        }
+      }
+      
+      setState(() {
+        _students = students;
+        _attendanceStatus = attendanceMap;
+        _isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _students = [];
+        _isLoading = false;
       });
     }
   }
@@ -125,9 +173,18 @@ class _AttendanceSectionState extends State<AttendanceSection> {
             ),
       floatingActionButton: _students.isNotEmpty
           ? FloatingActionButton(
-              onPressed: _saveAttendance,
-              backgroundColor: const Color(0xFF34C759),
-              child: const Icon(Icons.save, color: Colors.white),
+              onPressed: _isSaving ? null : _saveAttendance,
+              backgroundColor: _isSaving ? Colors.grey : const Color(0xFF34C759),
+              child: _isSaving 
+                  ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : const Icon(Icons.save, color: Colors.white),
             )
           : null,
     );
@@ -183,7 +240,9 @@ class _AttendanceSectionState extends State<AttendanceSection> {
               if (picked != null) {
                 setState(() {
                   _selectedDate = picked;
+                  _isLoading = true;
                 });
+                _loadStudentsAndAttendance();
               }
             },
             icon: const Icon(Icons.calendar_today, size: 20),
@@ -266,7 +325,7 @@ class _AttendanceSectionState extends State<AttendanceSection> {
                           _selectedClassId = value;
                           _isLoading = true;
                         });
-                        _loadStudents();
+                        _loadStudentsAndAttendance();
                       }
                     },
                   ),
@@ -509,6 +568,10 @@ class _AttendanceSectionState extends State<AttendanceSection> {
   }
 
   Future<void> _saveAttendance() async {
+    if (_isSaving) return;
+    
+    setState(() => _isSaving = true);
+    
     final currentContext = context;
     try {
       final records = _students.map((student) {
@@ -525,6 +588,7 @@ class _AttendanceSectionState extends State<AttendanceSection> {
 
       await _teacherService.saveAttendance(records);
       if (mounted) {
+        setState(() => _isSaving = false);
         ScaffoldMessenger.of(currentContext).showSnackBar(
           SnackBar(
             content: Text('teacher.attendance_page.save_success'.tr()),
@@ -534,6 +598,7 @@ class _AttendanceSectionState extends State<AttendanceSection> {
       }
     } catch (e) {
       if (mounted) {
+        setState(() => _isSaving = false);
         ScaffoldMessenger.of(currentContext).showSnackBar(
           SnackBar(
             content: Text('teacher.attendance_page.save_error'.tr()),

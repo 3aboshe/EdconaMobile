@@ -101,7 +101,12 @@
     "grade_colon": "پۆل:",
     "role_colon": "ڕۆڵ:",
     "due_colon": "کاتی تەسلیم:",
-    "subject_colon": "بابەت:"
+    "subject_colon": "بابەت:",
+    "homework_details": "وردەکاری ئەرکی ماڵەوە",
+    "view_attachment": "بینینی هاوپێچ",
+    "download_attachment": "داونلۆد",
+    "no_attachments": "هیچ هاوپێچێک نییە",
+    "assigned_by": "دیاریکراوە لەلایەنی"
   },
   "teacher": {
     "welcome": "به‌خێربێیت بۆ دەروازەی مامۆستا",
@@ -175,6 +180,10 @@
       "homework_created": "ئەرکی ماڵەوە بە سەرکەوتوویی دروستکرا",
       "homework_title_hint": "ناوی ئەرکی ماڵەوە بنووسە",
       "description_hint": "وەسفی ئەرکی ماڵەوە بنووسە",
+      "attach_file": "هاوپێچکردنی فایل",
+      "attach_image": "هاوپێچکردنی وێنە",
+      "attachments": "هاوپێچەکان",
+      "remove_attachment": "سڀینەوە",
       "unmark": "هەڵوەشاندنەوە",
       "marked_submitted_pending_save": "وەک تەسلیمکراو دیاری کرا (چاوەڕوانی پاشەکەوتکردن)",
       "marked_not_submitted_pending_save": "وەک نەتەسلیمکراو دیاری کرا (چاوەڕوانی پاشەکەوتکردن)",

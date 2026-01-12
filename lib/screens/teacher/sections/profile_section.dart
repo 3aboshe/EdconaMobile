@@ -134,12 +134,25 @@ class _ProfileSectionState extends State<ProfileSection> {
       textDirection: isRTL ? ui.TextDirection.rtl : ui.TextDirection.ltr,
       child: Scaffold(
         backgroundColor: const Color(0xFF0D47A1),
+        appBar: AppBar(
+          backgroundColor: const Color(0xFF0D47A1),
+          elevation: 0,
+          leading: IconButton(
+            icon: Icon(isRTL ? Icons.arrow_forward_ios : Icons.arrow_back_ios, color: Colors.white),
+            onPressed: () => Navigator.pop(context),
+          ),
+          title: Text(
+            'teacher.profile'.tr(),
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+            ),
+          ),
+        ),
         body: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
-            SliverToBoxAdapter(
-              child: _buildHeader(),
-            ),
             SliverToBoxAdapter(
               child: _buildProfileCard(availability, isAvailable),
             ),
@@ -154,40 +167,6 @@ class _ProfileSectionState extends State<ProfileSection> {
             ),
             const SliverToBoxAdapter(
               child: SizedBox(height: 40),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHeader() {
-    return SafeArea(
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(20, 20, 20, 30),
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                'teacher.profile'.tr(),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: const Icon(
-                CupertinoIcons.person_circle,
-                color: Colors.white,
-                size: 32,
-              ),
             ),
           ],
         ),

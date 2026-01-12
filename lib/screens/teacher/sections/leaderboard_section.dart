@@ -89,6 +89,22 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
       textDirection: isRTL ? ui.TextDirection.rtl : ui.TextDirection.ltr,
       child: Scaffold(
         backgroundColor: const Color(0xFF0D47A1),
+        appBar: AppBar(
+          backgroundColor: const Color(0xFF0D47A1),
+          elevation: 0,
+          leading: IconButton(
+            icon: Icon(isRTL ? Icons.arrow_forward_ios : Icons.arrow_back_ios, color: Colors.white),
+            onPressed: () => Navigator.pop(context),
+          ),
+          title: Text(
+            'teacher.leaderboard'.tr(),
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+            ),
+          ),
+        ),
         body: _isLoading
             ? const Center(child: CircularProgressIndicator(color: Colors.white))
             : RefreshIndicator(
@@ -114,30 +130,16 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
 
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 60, 20, 30),
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
       child: Row(
         children: [
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'teacher.leaderboard'.tr(),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'teacher.select_class'.tr(),
-                  style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.8),
-                    fontSize: 14,
-                  ),
-                ),
-              ],
+            child: Text(
+              'teacher.select_class'.tr(),
+              style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.8),
+                fontSize: 14,
+              ),
             ),
           ),
           Container(

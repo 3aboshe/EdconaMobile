@@ -113,7 +113,12 @@
     "unavailable": "Unavailable",
     "role_colon": "Role:",
     "due_colon": "Due:",
-    "subject_colon": "Subject:"
+    "subject_colon": "Subject:",
+    "homework_details": "Homework Details",
+    "view_attachment": "View Attachment",
+    "download_attachment": "Download",
+    "no_attachments": "No attachments",
+    "assigned_by": "Assigned by"
   },
   "teacher": {
     "welcome": "Welcome to Teacher Portal",
@@ -218,7 +223,11 @@
       "save_submissions_error": "Error saving submissions: {error}",
       "homework_created": "Homework created successfully",
       "homework_title_hint": "Enter homework title",
-      "description_hint": "Enter homework description"
+      "description_hint": "Enter homework description",
+      "attach_file": "Attach File",
+      "attach_image": "Attach Image",
+      "attachments": "Attachments",
+      "remove_attachment": "Remove"
     },
     "please_select_exam": "Please select an exam first",
     "edit_grade": "Edit Grade",

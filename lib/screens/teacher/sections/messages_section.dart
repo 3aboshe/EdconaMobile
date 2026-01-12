@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import '../../../services/message_service.dart';
 import '../../../services/api_service.dart';
 import '../../../services/auth_service.dart';
+import '../../../services/teacher_service.dart';
 import 'dart:ui' as ui;
 import 'package:edconamobile/models/message.dart';
 
@@ -18,9 +19,14 @@ class MessagesSection extends StatefulWidget {
 
 class _MessagesSectionState extends State<MessagesSection> {
   final AuthService _authService = AuthService();
+  final TeacherService _teacherService = TeacherService();
+  final MessageService _messageService = MessageService();
   bool _isLoading = true;
   List<Map<String, dynamic>> _parents = [];
+  List<Map<String, dynamic>> _classes = [];
   Map<String, dynamic>? _currentUser;
+  String? _selectedClassId;
+  Map<String, int> _unreadCounts = {}; // Track unread messages per parent
 
   @override
   void initState() {
@@ -36,9 +42,14 @@ class _MessagesSectionState extends State<MessagesSection> {
   Future<void> _loadData() async {
     try {
       final user = await _authService.getCurrentUser();
+      final classes = await _teacherService.getTeacherClasses(widget.teacher['id']);
       if (!mounted) return;
       setState(() {
         _currentUser = user;
+        _classes = classes;
+        if (classes.isNotEmpty && _selectedClassId == null) {
+          _selectedClassId = classes[0]['id'];
+        }
       });
 
       final response = await ApiService.dio.get('/api/parent-child/relationships');
@@ -86,6 +97,9 @@ class _MessagesSectionState extends State<MessagesSection> {
             _parents = parentsWithChildren;
             _isLoading = false;
           });
+          
+          // Load unread counts after parents are loaded
+          _loadUnreadCounts(user);
         }
       }
     } catch (e) {
@@ -96,6 +110,37 @@ class _MessagesSectionState extends State<MessagesSection> {
         });
       }
     }
+  }
+  
+  Future<void> _loadUnreadCounts(Map<String, dynamic>? user) async {
+    if (user == null) return;
+    try {
+      final conversations = await _messageService.getConversations(user['id']);
+      final Map<String, int> counts = {};
+      for (var conv in conversations) {
+        final otherUserId = conv['otherUser']?['id'];
+        final unreadCount = conv['unreadCount'] ?? 0;
+        if (otherUserId != null && unreadCount > 0) {
+          counts[otherUserId] = unreadCount;
+        }
+      }
+      if (mounted) {
+        setState(() {
+          _unreadCounts = counts;
+        });
+      }
+    } catch (e) {
+      // Silently fail - unread counts are nice to have
+    }
+  }
+
+  List<Map<String, dynamic>> get _filteredParents {
+    if (_selectedClassId == null) return _parents;
+    return _parents.where((parent) {
+      final children = parent['children'] as List<dynamic>?;
+      if (children == null || children.isEmpty) return false;
+      return children.any((child) => child['classId'] == _selectedClassId);
+    }).toList();
   }
 
   @override
@@ -109,7 +154,10 @@ class _MessagesSectionState extends State<MessagesSection> {
         appBar: AppBar(
           backgroundColor: const Color(0xFF0D47A1),
           elevation: 0,
-          automaticallyImplyLeading: false,
+          leading: IconButton(
+            icon: Icon(isRTL ? Icons.arrow_forward_ios : Icons.arrow_back_ios, color: Colors.white),
+            onPressed: () => Navigator.pop(context),
+          ),
           title: Text(
             'teacher.messages'.tr(),
             style: const TextStyle(
@@ -123,16 +171,83 @@ class _MessagesSectionState extends State<MessagesSection> {
             ? const Center(child: CircularProgressIndicator(color: Colors.white))
             : RefreshIndicator(
                 onRefresh: _loadData,
-                child: _parents.isEmpty
-                    ? _buildEmptyState()
-                    : ListView.builder(
-                        padding: const EdgeInsets.all(20),
-                        itemCount: _parents.length,
-                        itemBuilder: (context, index) {
-                          return _buildParentCard(_parents[index]);
-                        },
-                      ),
+                child: Column(
+                  children: [
+                    _buildClassSelector(),
+                    Expanded(
+                      child: _filteredParents.isEmpty
+                          ? _buildEmptyState()
+                          : ListView.builder(
+                              padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                              itemCount: _filteredParents.length,
+                              itemBuilder: (context, index) {
+                                return _buildParentCard(_filteredParents[index]);
+                              },
+                            ),
+                    ),
+                  ],
+                ),
               ),
+      ),
+    );
+  }
+
+  Widget _buildClassSelector() {
+    return Container(
+      margin: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'teacher.select_class'.tr(),
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF0D47A1),
+            ),
+          ),
+          const SizedBox(height: 12),
+          _classes.isEmpty
+              ? Text(
+                  'teacher.grades_page.no_classes_assigned'.tr(),
+                  style: TextStyle(color: Colors.grey[600]),
+                )
+              : DropdownButtonFormField<String>(
+                  value: _selectedClassId,
+                  decoration: InputDecoration(
+                    labelText: 'teacher.class'.tr(),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  ),
+                  items: _classes.map((classData) {
+                    return DropdownMenuItem<String>(
+                      value: classData['id'],
+                      child: Text(classData['name']?.toString() ?? 'common.unknown'.tr()),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() {
+                        _selectedClassId = value;
+                      });
+                    }
+                  },
+                ),
+        ],
       ),
     );
   }
@@ -172,6 +287,10 @@ class _MessagesSectionState extends State<MessagesSection> {
   }
 
   Widget _buildParentCard(Map<String, dynamic> parent) {
+    final parentId = parent['id'];
+    final unreadCount = _unreadCounts[parentId] ?? 0;
+    final hasUnread = unreadCount > 0;
+    
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -194,27 +313,58 @@ class _MessagesSectionState extends State<MessagesSection> {
             padding: const EdgeInsets.all(20),
             child: Row(
               children: [
-                Container(
-                  width: 56,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF007AFF), Color(0xFF5AC8FA)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Center(
-                    child: Text(
-                      parent['name']?[0]?.toUpperCase() ?? 'P',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
+                Stack(
+                  children: [
+                    Container(
+                      width: 56,
+                      height: 56,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF007AFF), Color(0xFF5AC8FA)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Center(
+                        child: Text(
+                          parent['name']?[0]?.toUpperCase() ?? 'P',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                    if (hasUnread)
+                      Positioned(
+                        right: 0,
+                        top: 0,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: Colors.white, width: 2),
+                          ),
+                          constraints: const BoxConstraints(
+                            minWidth: 20,
+                            minHeight: 20,
+                          ),
+                          child: Center(
+                            child: Text(
+                              unreadCount > 99 ? '99+' : unreadCount.toString(),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -223,10 +373,10 @@ class _MessagesSectionState extends State<MessagesSection> {
                     children: [
                       Text(
                         parent['name'] ?? 'Parent',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 17,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF0D47A1),
+                          fontWeight: hasUnread ? FontWeight.w700 : FontWeight.w600,
+                          color: const Color(0xFF0D47A1),
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -245,12 +395,14 @@ class _MessagesSectionState extends State<MessagesSection> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF0D47A1).withValues(alpha: 0.1),
+                    color: hasUnread 
+                        ? Colors.red.withValues(alpha: 0.1)
+                        : const Color(0xFF0D47A1).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     CupertinoIcons.chat_bubble_text,
-                    color: Color(0xFF0D47A1),
+                    color: hasUnread ? Colors.red : const Color(0xFF0D47A1),
                     size: 20,
                   ),
                 ),
@@ -275,7 +427,10 @@ class _MessagesSectionState extends State<MessagesSection> {
           isRTL: _isRTL(),
         ),
       ),
-    );
+    ).then((_) {
+      // Refresh unread counts when returning from chat
+      _loadUnreadCounts(_currentUser);
+    });
   }
 }
 
@@ -322,6 +477,13 @@ class _ChatScreenState extends State<ChatScreen> {
         userId: widget.currentUser['id'],
         otherUserId: widget.otherUser['id'],
       );
+
+      // Mark unread messages as read
+      for (final message in messages) {
+        if (message.receiverId == widget.currentUser['id'] && !message.isRead) {
+          await _messageService.markAsRead(message.id);
+        }
+      }
 
       setState(() {
         _messages = messages;

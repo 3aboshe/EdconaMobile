@@ -19,6 +19,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
   bool _isLoading = true;
   List<Map<String, dynamic>> _homework = [];
   List<Map<String, dynamic>> _classes = [];
+  String? _selectedClassId;
 
   @override
   void initState() {
@@ -41,6 +42,9 @@ class _HomeworkSectionState extends State<HomeworkSection> {
       setState(() {
         _homework = homework;
         _classes = classes;
+        if (classes.isNotEmpty && _selectedClassId == null) {
+          _selectedClassId = classes[0]['id'];
+        }
         _isLoading = false;
       });
     } catch (e) {
@@ -50,6 +54,15 @@ class _HomeworkSectionState extends State<HomeworkSection> {
         _isLoading = false;
       });
     }
+  }
+
+  List<Map<String, dynamic>> get _filteredHomework {
+    if (_selectedClassId == null) return _homework;
+    return _homework.where((hw) {
+      final classIds = hw['classIds'] as List<dynamic>?;
+      if (classIds == null || classIds.isEmpty) return true;
+      return classIds.contains(_selectedClassId);
+    }).toList();
   }
 
   @override
@@ -86,16 +99,83 @@ class _HomeworkSectionState extends State<HomeworkSection> {
             ? const Center(child: CircularProgressIndicator(color: Colors.white))
             : RefreshIndicator(
                 onRefresh: _loadData,
-                child: _homework.isEmpty
-                    ? _buildEmptyState()
-                    : ListView.builder(
-                        padding: const EdgeInsets.all(20),
-                        itemCount: _homework.length,
-                        itemBuilder: (context, index) {
-                          return _buildHomeworkCard(_homework[index]);
-                        },
-                      ),
+                child: Column(
+                  children: [
+                    _buildClassSelector(),
+                    Expanded(
+                      child: _filteredHomework.isEmpty
+                          ? _buildEmptyState()
+                          : ListView.builder(
+                              padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                              itemCount: _filteredHomework.length,
+                              itemBuilder: (context, index) {
+                                return _buildHomeworkCard(_filteredHomework[index]);
+                              },
+                            ),
+                    ),
+                  ],
+                ),
               ),
+      ),
+    );
+  }
+
+  Widget _buildClassSelector() {
+    return Container(
+      margin: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'teacher.select_class'.tr(),
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF0D47A1),
+            ),
+          ),
+          const SizedBox(height: 12),
+          _classes.isEmpty
+              ? Text(
+                  'teacher.grades_page.no_classes_assigned'.tr(),
+                  style: TextStyle(color: Colors.grey[600]),
+                )
+              : DropdownButtonFormField<String>(
+                  value: _selectedClassId,
+                  decoration: InputDecoration(
+                    labelText: 'teacher.class'.tr(),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  ),
+                  items: _classes.map((classData) {
+                    return DropdownMenuItem<String>(
+                      value: classData['id'],
+                      child: Text(classData['name']?.toString() ?? 'common.unknown'.tr()),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() {
+                        _selectedClassId = value;
+                      });
+                    }
+                  },
+                ),
+        ],
       ),
     );
   }
@@ -1071,135 +1151,202 @@ class _SubmissionsScreenState extends State<SubmissionsScreen> {
     final String studentId = student['id'].toString();
     final bool hasPendingChange = _pendingSubmissions.contains(studentId) ||
                                   _pendingSubmissions.contains('unmarked:$studentId');
+    final String studentName = student['name']?.toString() ?? 'common.unknown'.tr();
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // Header with avatar and status indicator
           Container(
-            width: 50,
-            height: 50,
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: effectiveSubmitted
-                    ? [const Color(0xFF34C759), const Color(0xFF30B0C7)]
-                    : [const Color(0xFF007AFF), const Color(0xFF0051D5)],
+                    ? [const Color(0xFF34C759).withValues(alpha: 0.15), const Color(0xFF30B0C7).withValues(alpha: 0.1)]
+                    : [const Color(0xFF007AFF).withValues(alpha: 0.15), const Color(0xFF0051D5).withValues(alpha: 0.1)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
             ),
-            child: Center(
-              child: Icon(
-                effectiveSubmitted ? CupertinoIcons.check_mark_circled : CupertinoIcons.person,
-                color: Colors.white,
-                size: 24,
-              ),
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
               children: [
-                Row(
-                  children: [
-                    Text(
-                      student['name']?.toString() ?? 'common.unknown'.tr(),
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF0D47A1),
-                      ),
+                // Avatar
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: effectiveSubmitted
+                          ? [const Color(0xFF34C759), const Color(0xFF30B0C7)]
+                          : [const Color(0xFF007AFF), const Color(0xFF0051D5)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                    if (hasPendingChange) ...[
-                      const SizedBox(width: 8),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Center(
+                    child: Icon(
+                      effectiveSubmitted ? CupertinoIcons.check_mark_circled : CupertinoIcons.person_fill,
+                      color: Colors.white,
+                      size: 22,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 14),
+                // Status badges
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFFF9500).withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(4),
+                          color: effectiveSubmitted
+                              ? const Color(0xFF34C759)
+                              : const Color(0xFFFF9500),
+                          borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
-                          'common.pending'.tr(),
+                          effectiveSubmitted
+                              ? 'teacher.homework_page.submitted'.tr()
+                              : 'teacher.homework_page.not_submitted'.tr(),
                           style: const TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFFFF9500),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
                           ),
                         ),
                       ),
+                      if (hasPendingChange) ...[
+                        const SizedBox(height: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFF9500).withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: const Color(0xFFFF9500), width: 1),
+                          ),
+                          child: Text(
+                            '⏳ ${'common.pending'.tr()}',
+                            style: const TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFFFF9500),
+                            ),
+                          ),
+                        ),
+                      ],
                     ],
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: effectiveSubmitted
-                        ? const Color(0xFF34C759).withValues(alpha: 0.1)
-                        : const Color(0xFFFF9500).withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    effectiveSubmitted
-                        ? 'teacher.homework_page.submitted'.tr()
-                        : 'teacher.homework_page.not_submitted'.tr(),
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: effectiveSubmitted ? const Color(0xFF34C759) : const Color(0xFFFF9500),
-                    ),
                   ),
                 ),
               ],
             ),
           ),
-          Column(
-            children: [
-              ElevatedButton(
-                onPressed: () => _toggleSubmissionStatus(student),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: effectiveSubmitted ? const Color(0xFFFF3B30) : const Color(0xFF34C759),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                ),
-                child: Text(
-                  effectiveSubmitted
-                      ? 'teacher.homework_page.unmark'.tr()
-                      : 'teacher.mark_submitted'.tr(),
-                  style: const TextStyle(
+          // Full student name (no truncation)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'teacher.student_name'.tr(),
+                  style: TextStyle(
                     fontSize: 12,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey[600],
                   ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              ElevatedButton(
-                onPressed: () => _gradeStudent(student),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF007AFF),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                ),
-                child: Text(
-                  'parent.grade'.tr(),
+                const SizedBox(height: 4),
+                Text(
+                  studentName,
                   style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF0D47A1),
+                    height: 1.3,
+                  ),
+                  // Allow text to wrap for long names
+                  softWrap: true,
+                ),
+              ],
+            ),
+          ),
+          // Action buttons
+          Container(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            child: Row(
+              children: [
+                // Mark/Unmark button (expanded to be more tappable)
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () => _toggleSubmissionStatus(student),
+                    icon: Icon(
+                      effectiveSubmitted ? CupertinoIcons.xmark_circle : CupertinoIcons.checkmark_circle,
+                      size: 18,
+                    ),
+                    label: Text(
+                      effectiveSubmitted
+                          ? 'teacher.homework_page.unmark'.tr()
+                          : 'teacher.mark_submitted'.tr(),
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: effectiveSubmitted ? const Color(0xFFFF3B30) : const Color(0xFF34C759),
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      elevation: 0,
+                    ),
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(width: 12),
+                // Grade button
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () => _gradeStudent(student),
+                    icon: const Icon(
+                      CupertinoIcons.star_fill,
+                      size: 18,
+                    ),
+                    label: Text(
+                      'parent.grade'.tr(),
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF007AFF),
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      elevation: 0,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),

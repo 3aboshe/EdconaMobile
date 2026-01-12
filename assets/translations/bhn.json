@@ -101,7 +101,12 @@
     "grade_colon": "پۆل:",
     "role_colon": "ڕۆڵ:",
     "due_colon": "کاتی تەسلیم:",
-    "subject_colon": "بابەت:"
+    "subject_colon": "بابەت:",
+    "homework_details": "وردەکاری ئە‌ركی ماڵەوە",
+    "view_attachment": "بینینی هاوپێچ",
+    "download_attachment": "دابەزێن",
+    "no_attachments": "هیچ هاوپێچێك نییە",
+    "assigned_by": "دیاریکراوە لە لایەنی"
   },
   "teacher": {
     "welcome": "به‌خێربێیت بۆ په‌نجه‌ره‌ی مامۆستا",
@@ -281,7 +286,11 @@
       "not_submitted": "ڕاگه‌یێنراوە",
       "homework_created": "ئه‌رك به‌ سه‌ركه‌وتوویی دروستکرا",
       "homework_title_hint": "ناوی ئه‌رك بنووسه‌",
-      "description_hint": "وه‌سفی ئه‌رك بنووسه‌",
+      "description_hint": "وە‌سفی ئە‌رك بنووسە‌",
+      "attach_file": "هاوپێچکردنی فایل",
+      "attach_image": "هاوپێچکردنی وێنە",
+      "attachments": "هاوپێچەكان",
+      "remove_attachment": "سڕینەوە",
       "unmark": "هەڵوەشاندنەوە",
       "marked_submitted_pending_save": "وەک تەسلیمکراو دیاری کرا (چاوەڕوانی پاشەکەوتکردن)",
       "marked_not_submitted_pending_save": "وەک نەتەسلیمکراو دیاری کرا (چاوەڕوانی پاشەکەوتکردن)",

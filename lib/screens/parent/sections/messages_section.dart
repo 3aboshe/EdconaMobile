@@ -19,9 +19,11 @@ class MessagesSection extends StatefulWidget {
 
 class _MessagesSectionState extends State<MessagesSection> {
   final AuthService _authService = AuthService();
+  final MessageService _messageService = MessageService();
   bool _isLoading = true;
   List<Map<String, dynamic>> _teachers = [];
   Map<String, dynamic>? _currentUser;
+  Map<String, int> _unreadCounts = {}; // Track unread messages per teacher
 
   @override
   void initState() {
@@ -106,6 +108,9 @@ class _MessagesSectionState extends State<MessagesSection> {
             _teachers = relevantTeachers;
             _isLoading = false;
           });
+          
+          // Load unread counts after teachers are loaded
+          _loadUnreadCounts(user);
         }
       }
     } catch (e) {
@@ -117,6 +122,28 @@ class _MessagesSectionState extends State<MessagesSection> {
           _isLoading = false;
         });
       }
+    }
+  }
+  
+  Future<void> _loadUnreadCounts(Map<String, dynamic>? user) async {
+    if (user == null) return;
+    try {
+      final conversations = await _messageService.getConversations(user['id']);
+      final Map<String, int> counts = {};
+      for (var conv in conversations) {
+        final otherUserId = conv['otherUser']?['id'];
+        final unreadCount = conv['unreadCount'] ?? 0;
+        if (otherUserId != null && unreadCount > 0) {
+          counts[otherUserId] = unreadCount;
+        }
+      }
+      if (mounted) {
+        setState(() {
+          _unreadCounts = counts;
+        });
+      }
+    } catch (e) {
+      // Silently fail - unread counts are nice to have
     }
   }
 
@@ -239,6 +266,9 @@ class _MessagesSectionState extends State<MessagesSection> {
     final availability =
         teacher['messagingAvailability'] as Map<String, dynamic>?;
     final isAvailable = _checkAvailability(availability);
+    final teacherId = teacher['id'];
+    final unreadCount = _unreadCounts[teacherId] ?? 0;
+    final hasUnread = unreadCount > 0;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -264,7 +294,7 @@ class _MessagesSectionState extends State<MessagesSection> {
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-                // Avatar with green dot indicator
+                // Avatar with green dot indicator and unread badge
                 Stack(
                   children: [
                     Container(
@@ -289,7 +319,34 @@ class _MessagesSectionState extends State<MessagesSection> {
                         ),
                       ),
                     ),
-                    if (isAvailable)
+                    if (hasUnread)
+                      Positioned(
+                        right: 0,
+                        top: 0,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: Colors.white, width: 2),
+                          ),
+                          constraints: const BoxConstraints(
+                            minWidth: 20,
+                            minHeight: 20,
+                          ),
+                          child: Center(
+                            child: Text(
+                              unreadCount > 99 ? '99+' : unreadCount.toString(),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                    else if (isAvailable)
                       Positioned(
                         right: 0,
                         bottom: 0,
@@ -313,10 +370,10 @@ class _MessagesSectionState extends State<MessagesSection> {
                     children: [
                       Text(
                         teacher['name']?.toString() ?? 'common.unknown'.tr(),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 17,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF0D47A1),
+                          fontWeight: hasUnread ? FontWeight.w700 : FontWeight.w600,
+                          color: const Color(0xFF0D47A1),
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -366,12 +423,14 @@ class _MessagesSectionState extends State<MessagesSection> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF0D47A1).withValues(alpha: 0.1),
+                    color: hasUnread 
+                        ? Colors.red.withValues(alpha: 0.1)
+                        : const Color(0xFF0D47A1).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     CupertinoIcons.chat_bubble_text,
-                    color: Color(0xFF0D47A1),
+                    color: hasUnread ? Colors.red : const Color(0xFF0D47A1),
                     size: 20,
                   ),
                 ),
@@ -431,7 +490,10 @@ class _MessagesSectionState extends State<MessagesSection> {
           isRTL: isRTL,
         ),
       ),
-    );
+    ).then((_) {
+      // Refresh unread counts when returning from chat
+      _loadUnreadCounts(_currentUser);
+    });
   }
 }
 
@@ -479,6 +541,13 @@ class _ChatScreenState extends State<ChatScreen> {
         userId: widget.currentUser['id'],
         otherUserId: widget.otherUser['id'],
       );
+
+      // Mark unread messages as read
+      for (final message in messages) {
+        if (message.receiverId == widget.currentUser['id'] && !message.isRead) {
+          await _messageService.markAsRead(message.id);
+        }
+      }
 
       setState(() {
         _messages = messages;

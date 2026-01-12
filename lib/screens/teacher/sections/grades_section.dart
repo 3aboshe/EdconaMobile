@@ -140,7 +140,10 @@ class _GradesSectionState extends State<GradesSection> {
         appBar: AppBar(
           backgroundColor: const Color(0xFF0D47A1),
           elevation: 0,
-          automaticallyImplyLeading: false,
+          leading: IconButton(
+            icon: Icon(isRTL ? Icons.arrow_forward_ios : Icons.arrow_back_ios, color: Colors.white),
+            onPressed: () => Navigator.pop(context),
+          ),
           title: Text(
             'teacher.grades'.tr(),
             style: const TextStyle(

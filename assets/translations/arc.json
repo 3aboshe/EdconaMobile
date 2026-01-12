@@ -100,8 +100,13 @@
     "students_count": "ܐܝܬ ܠܟ {} ܐܣܟܪܝ̈ܐ",
     "grade_colon": "ܕܪܓܐ:",
     "role_colon": "ܬܦܩܝܕܐ:",
-    "due_colon": "ܙܒܢܐ ܕܓܡܘܪܐ:",
-    "subject_colon": "ܡܕܥܐ:"
+    "due_colon": "ܠܙܢܐ ܕܓܡܘܪܐ:",
+    "subject_colon": "ܡܕܥܐ:",
+    "homework_details": "ܝܕܥܬܐ ܕܥܒܕܐ ܕܒܝܬܐ",
+    "view_attachment": "ܚܙܝ ܦܝܫܐ",
+    "download_attachment": "ܢܥ܏ܠܐ",
+    "no_attachments": "ܠܐ ܐܝܬ ܦܝܫ܏ܐ",
+    "assigned_by": "ܕܝܐܪܝ ܡܢ"
   },
   "teacher": {
     "welcome": "ܫܠܡܐ ܠܟ ܒܬܪܥܐ ܕܡܠܦܢܐ",
@@ -175,6 +180,10 @@
       "homework_created": "ܥܒܕܐ ܐܬܒܪܝ ܒܫܘܬܦܝܐ",
       "homework_title_hint": "ܐܬܒ ܫܡܐ ܕܥܒܕܐ",
       "description_hint": "ܐܬܒ ܦܘܫܩܐ ܕܥܒܕܐ",
+      "attach_file": "ܬ܏ܘܦ ܦܝܫܐ",
+      "attach_image": "ܬ܏ܘܦ ܨܠܡܐ",
+      "attachments": "ܦܝܫ܏ܐ",
+      "remove_attachment": "ܫܢܝ",
       "unmark": "ܬܪܝܥ ܨܝܢܐ",
       "marked_submitted_pending_save": "ܡܛܟܣܐ ܒܥܘܡܕܢܐ (ܚܟܡܐ ܕܫܪܪܐ)",
       "marked_not_submitted_pending_save": "ܡܛܟܣܐ ܕܠܐ ܒܥܘܡܕܢܐ (ܚܟܡܐ ܕܫܪܪܐ)",

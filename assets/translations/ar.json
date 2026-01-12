@@ -128,7 +128,12 @@
     "unavailable": "غير متاح",
     "role_colon": "الدور:",
     "due_colon": "تاريخ التسليم:",
-    "subject_colon": "المادة:"
+    "subject_colon": "المادة:",
+    "homework_details": "تفاصيل الواجب",
+    "view_attachment": "عرض المرفق",
+    "download_attachment": "تحميل",
+    "no_attachments": "لا توجد مرفقات",
+    "assigned_by": "مُعيَّن من قِبل"
   },
   "teacher": {
     "welcome": "أهلاً بك في بوابة المعلم",
@@ -346,7 +351,11 @@
       "save_submissions_error": "خطأ في حفظ التسليمات: {error}",
       "homework_created": "تم إنشاء الواجب بنجاح",
       "homework_title_hint": "أدخل عنوان الواجب",
-      "description_hint": "أدخل وصف الواجب"
+      "description_hint": "أدخل وصف الواجب",
+      "attach_file": "إرفاق ملف",
+      "attach_image": "إرفاق صورة",
+      "attachments": "المرفقات",
+      "remove_attachment": "إزالة"
     },
     "please_select_exam": "الرجاء اختيار اختبار أولاً",
     "please_enter_score": "الرجاء إدخال النقاط",

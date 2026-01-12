@@ -39,6 +39,15 @@ class _AttendanceSectionState extends State<AttendanceSection> {
     try {
       final attendance = await _parentService.getChildAttendance(widget.student['id']);
       if (mounted) {
+        // Sort by closest date to today first
+        final today = DateTime.now();
+        attendance.sort((a, b) {
+          final dateA = DateTime.tryParse(a['date'] ?? '') ?? DateTime(1970);
+          final dateB = DateTime.tryParse(b['date'] ?? '') ?? DateTime(1970);
+          final diffA = (dateA.difference(today).inDays).abs();
+          final diffB = (dateB.difference(today).inDays).abs();
+          return diffA.compareTo(diffB);
+        });
         setState(() {
           _attendance = attendance;
           _isLoading = false;

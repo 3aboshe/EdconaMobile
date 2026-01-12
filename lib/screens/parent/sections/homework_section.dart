@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import '../../../services/parent_service.dart';
 import '../../../utils/date_formatter.dart';
+import '../homework_detail_screen.dart';
 
 
 
@@ -252,27 +253,39 @@ class _HomeworkSectionState extends State<HomeworkSection> {
     final statusColor = _getStatusColor(status);
     final statusIcon = _getStatusIcon(status);
     
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: status == 'overdue' 
-              ? const Color(0xFFFF3B30).withValues(alpha: 0.3)
-              : Colors.transparent,
-          width: 2,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomeworkDetailScreen(
+              homework: hw,
+              student: widget.student,
+            ),
           ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: status == 'overdue' 
+                ? const Color(0xFFFF3B30).withValues(alpha: 0.3)
+                : Colors.transparent,
+            width: 2,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -378,6 +391,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
               ],
             ),
           ],
+        ),
         ),
       ),
     );

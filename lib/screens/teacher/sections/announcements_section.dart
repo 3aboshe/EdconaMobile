@@ -18,14 +18,16 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
   final TeacherService _teacherService = TeacherService();
   bool _isLoading = true;
   List<Map<String, dynamic>> _announcements = [];
+  List<Map<String, dynamic>> _classes = [];
+  String? _selectedClassId;
 
   @override
   void initState() {
     super.initState();
-    _loadAnnouncements();
+    _loadData();
   }
 
-  Future<void> _loadAnnouncements() async {
+  Future<void> _loadData() async {
     if (!mounted) return;
     setState(() => _isLoading = true);
 
@@ -33,24 +35,40 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
       final announcements = await _teacherService.getTeacherAnnouncements(
         widget.teacher['id'],
       );
+      final classes = await _teacherService.getTeacherClasses(widget.teacher['id']);
       if (!mounted) return;
       setState(() {
         _announcements = announcements;
+        _classes = classes;
+        if (classes.isNotEmpty && _selectedClassId == null) {
+          _selectedClassId = classes[0]['id'];
+        }
         _isLoading = false;
       });
     } catch (e) {
       if (!mounted) return;
       setState(() {
         _announcements = [];
+        _classes = [];
         _isLoading = false;
       });
     }
+  }
+
+  List<Map<String, dynamic>> get _filteredAnnouncements {
+    if (_selectedClassId == null) return _announcements;
+    return _announcements.where((ann) {
+      final classIds = ann['classIds'] as List<dynamic>?;
+      if (classIds == null || classIds.isEmpty) return true;
+      return classIds.contains(_selectedClassId);
+    }).toList();
   }
 
   Future<void> _showCreateAnnouncementDialog() async {
     final TextEditingController titleController = TextEditingController();
     final TextEditingController contentController = TextEditingController();
     String priority = 'normal';
+    String? selectedClassId = _selectedClassId;
 
     final currentContext = context;
     await showDialog(
@@ -90,6 +108,29 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
                         border: const OutlineInputBorder(),
                       ),
                       maxLines: 4,
+                    ),
+                    const SizedBox(height: 16),
+                    Material(
+                      child: DropdownButtonFormField<String>(
+                        value: selectedClassId,
+                        decoration: InputDecoration(
+                          labelText: 'teacher.class'.tr(),
+                          border: const OutlineInputBorder(),
+                        ),
+                        items: _classes.map((classData) {
+                          return DropdownMenuItem<String>(
+                            value: classData['id'],
+                            child: Text(classData['name']?.toString() ?? 'common.unknown'.tr()),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          if (value != null) {
+                            setDialogState(() {
+                              selectedClassId = value;
+                            });
+                          }
+                        },
+                      ),
                     ),
                     const SizedBox(height: 16),
                     Material(
@@ -137,6 +178,16 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
                           if (titleController.text.isEmpty ||
                               contentController.text.isEmpty)
                             return;
+                          
+                          if (selectedClassId == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('teacher.select_class'.tr()),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                            return;
+                          }
 
                           setDialogState(() => isCreating = true);
 
@@ -151,7 +202,7 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
                             'teacherId': widget.teacher['id'],
                             'schoolId': widget.teacher['schoolId'],
                             'priority': priority,
-                            'classIds': <String>[],
+                            'classIds': selectedClassId != null ? [selectedClassId] : <String>[],
                             'teacherName': widget.teacher['name'],
                             'teacherSubject': widget.teacher['subject'],
                             'createdAt': DateTime.now().toIso8601String(),
@@ -173,7 +224,7 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
                                   ).format(DateTime.now()),
                                   'teacherId': widget.teacher['id'],
                                   'priority': priority,
-                                  'classIds': [],
+                                  'classIds': selectedClassId != null ? [selectedClassId] : [],
                                 });
 
                             if (!mounted) return;
@@ -383,21 +434,88 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
               child: CircularProgressIndicator(color: Color(0xFF0D47A1)),
             )
           : RefreshIndicator(
-              onRefresh: _loadAnnouncements,
-              child: _announcements.isEmpty
-                  ? _buildEmptyState()
-                  : ListView.builder(
-                      padding: const EdgeInsets.all(20),
-                      itemCount: _announcements.length,
-                      itemBuilder: (context, index) {
-                        return _buildAnnouncementCard(_announcements[index]);
-                      },
-                    ),
+              onRefresh: _loadData,
+              child: Column(
+                children: [
+                  _buildClassSelector(),
+                  Expanded(
+                    child: _filteredAnnouncements.isEmpty
+                        ? _buildEmptyState()
+                        : ListView.builder(
+                            padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                            itemCount: _filteredAnnouncements.length,
+                            itemBuilder: (context, index) {
+                              return _buildAnnouncementCard(_filteredAnnouncements[index]);
+                            },
+                          ),
+                  ),
+                ],
+              ),
             ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showCreateAnnouncementDialog,
         backgroundColor: const Color(0xFF0D47A1),
         child: const Icon(Icons.add, color: Colors.white),
+      ),
+    );
+  }
+
+  Widget _buildClassSelector() {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'teacher.select_class'.tr(),
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF0D47A1),
+            ),
+          ),
+          const SizedBox(height: 12),
+          _classes.isEmpty
+              ? Text(
+                  'teacher.grades_page.no_classes_assigned'.tr(),
+                  style: TextStyle(color: Colors.grey[600]),
+                )
+              : DropdownButtonFormField<String>(
+                  value: _selectedClassId,
+                  decoration: InputDecoration(
+                    labelText: 'teacher.class'.tr(),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  ),
+                  items: _classes.map((classData) {
+                    return DropdownMenuItem<String>(
+                      value: classData['id'],
+                      child: Text(classData['name']?.toString() ?? 'common.unknown'.tr()),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() {
+                        _selectedClassId = value;
+                      });
+                    }
+                  },
+                ),
+        ],
       ),
     );
   }
