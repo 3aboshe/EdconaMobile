@@ -115,16 +115,28 @@ class ParentService {
             status = 'overdue';
           }
 
+          // Extract teacher information from API response
+          final teacher = hw['teacher'] as Map<String, dynamic>?;
+
+          // Parse attachments from API response
+          final attachments = hw['attachments'] as List<dynamic>? ?? [];
+
           return {
             'id': hw['id'],
             'title': hw['title'] ?? hw['assignment'] ?? 'Homework',
             'subject': hw['subject'] ?? 'General',
             'description': hw['description'] ?? '',
             'dueDate': hw['dueDate'] ?? '',
+            'createdAt': hw['createdAt'] ?? hw['assignedDate'] ?? '',
+            'assignedDate': hw['assignedDate'] ?? hw['createdAt'] ?? '',
             'status': status,
             'isSubmitted': isSubmitted,
             'score': hw['score'],
             'maxScore': hw['maxScore'],
+            'teacher': teacher,
+            'teacherName': teacher?['name'],
+            'teacherId': hw['teacherId'],
+            'attachments': attachments,
           };
         }).toList();
       }

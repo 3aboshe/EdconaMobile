@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
-import 'package:url_launcher/url_launcher.dart';
 import '../../utils/date_formatter.dart';
+import '../common/attachment_viewer.dart';
 
 class HomeworkDetailScreen extends StatelessWidget {
   final Map<String, dynamic> homework;
@@ -58,9 +58,9 @@ class HomeworkDetailScreen extends StatelessWidget {
     }
   }
 
-  Future<void> _openAttachment(BuildContext context, Map<String, dynamic> attachment) async {
-    final url = attachment['url']?.toString() ?? '';
-    if (url.isEmpty) {
+  void _openAttachment(BuildContext context, Map<String, dynamic> attachment) {
+    final relativeUrl = attachment['url']?.toString() ?? '';
+    if (relativeUrl.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('common.error'.tr()),
@@ -70,11 +70,14 @@ class HomeworkDetailScreen extends StatelessWidget {
       return;
     }
 
-    // For now, just show the filename since we'd need the base URL from the API
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('parent.view_attachment'.tr() + ': ${attachment['filename']}'),
-        backgroundColor: const Color(0xFF007AFF),
+    // Navigate to in-app attachment viewer
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AttachmentViewer(
+          attachment: attachment,
+          title: homework['title']?.toString() ?? '',
+        ),
       ),
     );
   }
