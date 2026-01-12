@@ -479,111 +479,187 @@ class _GradesSectionState extends State<GradesSection> {
 
   Widget _buildStudentCard(Map<String, dynamic> student) {
     final studentGrade = _getStudentGrade(student['id'].toString());
+    final hasGrade = studentGrade != null;
+    final studentName = student['name']?.toString() ?? 'common.unknown'.tr();
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // Header with avatar and grade status
           Container(
-            width: 50,
-            height: 50,
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFF007AFF), Color(0xFF0051D5)],
+              gradient: LinearGradient(
+                colors: hasGrade
+                    ? [const Color(0xFF34C759).withValues(alpha: 0.15), const Color(0xFF30B0C7).withValues(alpha: 0.1)]
+                    : [const Color(0xFF007AFF).withValues(alpha: 0.15), const Color(0xFF0051D5).withValues(alpha: 0.1)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
             ),
-            child: Center(
-              child: Text(
-                (student['name']?[0] ?? 'S').toString().toUpperCase(),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+            child: Row(
+              children: [
+                // Avatar
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: hasGrade
+                          ? [const Color(0xFF34C759), const Color(0xFF30B0C7)]
+                          : [const Color(0xFF007AFF), const Color(0xFF0051D5)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Center(
+                    child: hasGrade
+                        ? const Icon(CupertinoIcons.checkmark_circle_fill, color: Colors.white, size: 22)
+                        : Text(
+                            (student['name']?[0] ?? 'S').toString().toUpperCase(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                  ),
                 ),
-              ),
+                const SizedBox(width: 14),
+                // Grade status/score
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (hasGrade) ...[
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF34C759),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            '${studentGrade!['marksObtained']} / ${studentGrade['maxMarks']}',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'teacher.grades_page.grade'.tr(),
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ] else ...[
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFF9500),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            'common.pending'.tr(),
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
-          const SizedBox(width: 16),
-          Expanded(
+          // Full student name (no truncation)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  student['name']?.toString() ?? 'common.unknown'.tr(),
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF0D47A1),
+                  'teacher.student_name'.tr(),
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey[600],
                   ),
                 ),
                 const SizedBox(height: 4),
-                if (studentGrade != null) ...[
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF34C759).withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      '${'teacher.grades_page.grade'.tr()}: ${studentGrade['marksObtained']}/${studentGrade['maxMarks']}',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF34C759),
-                      ),
-                    ),
+                Text(
+                  studentName,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF0D47A1),
+                    height: 1.3,
                   ),
-                ] else ...[
-                  Text(
-                    'teacher.grades_page.student_name'.tr(),
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                ],
+                  softWrap: true,
+                ),
               ],
             ),
           ),
-          ElevatedButton(
-            onPressed: () {
-              if (_selectedExam == null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('teacher.please_select_exam'.tr()),
-                    backgroundColor: Colors.red,
+          // Action button
+          Container(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  if (_selectedExam == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('teacher.please_select_exam'.tr()),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                    return;
+                  }
+                  _showGradeDialog(student, existingGrade: studentGrade);
+                },
+                icon: Icon(
+                  hasGrade ? CupertinoIcons.pencil : CupertinoIcons.star_fill,
+                  size: 18,
+                ),
+                label: Text(
+                  hasGrade ? 'teacher.edit_grade'.tr() : 'teacher.grades_page.assign_grades'.tr(),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
                   ),
-                );
-                return;
-              }
-              _showGradeDialog(student, existingGrade: studentGrade);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: studentGrade != null ? const Color(0xFF007AFF) : const Color(0xFF34C759),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            child: Text(
-              studentGrade != null ? 'teacher.edit_grade'.tr() : 'teacher.grades_page.assign_grades'.tr(),
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: hasGrade ? const Color(0xFF007AFF) : const Color(0xFF34C759),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  elevation: 0,
+                ),
               ),
             ),
           ),
