@@ -84,9 +84,13 @@ class TeacherService {
     }
   }
 
-  Future<List<Map<String, dynamic>>> getAttendanceByDate(String date) async {
+  Future<List<Map<String, dynamic>>> getAttendanceByDate(String date, {String? classId}) async {
     try {
-      final response = await ApiService.dio.get('/api/attendance/date/$date');
+      String url = '/api/attendance/date/$date';
+      if (classId != null) {
+        url += '?classId=$classId';
+      }
+      final response = await ApiService.dio.get(url);
       if (response.statusCode == 200) {
         return (response.data as List<dynamic>)
             .map((a) => a as Map<String, dynamic>)

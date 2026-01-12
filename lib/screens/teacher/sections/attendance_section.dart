@@ -59,7 +59,7 @@ class _AttendanceSectionState extends State<AttendanceSection> {
     try {
       final students = await _teacherService.getStudentsByClass(_selectedClassId!);
       final dateStr = DateFormat('yyyy-MM-dd').format(_selectedDate);
-      final existingAttendance = await _teacherService.getAttendanceByDate(dateStr);
+      final existingAttendance = await _teacherService.getAttendanceByDate(dateStr, classId: _selectedClassId);
       
       if (!mounted) return;
       
