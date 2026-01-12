@@ -25,7 +25,7 @@
     "error_required": "يرجى إدخال الرمز الخاص بك",
     "error_password_required": "يرجى إدخال كلمة المرور",
     "error_invalid": "رمز غير صحيح",
-    "welcome_user_role": "مرحباً {name}! أنت مسجل الدخول بصفتك {role}"
+    "welcome_user_role": "مرحباً {name}!"
   },
   "password_reset": {
     "title": "إنشاء كلمة مرور جديدة",
@@ -206,6 +206,7 @@
     "grade_deleted": "تم حذف الدرجة بنجاح",
     "title": "العنوان",
     "description": "الوصف",
+    "attachments": "المرفقات",
     "content": "المحتوى",
     "due_date": "تاريخ التسليم",
     "assigned_date": "تاريخ التكليف",

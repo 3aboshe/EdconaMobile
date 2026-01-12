@@ -87,8 +87,8 @@ class HomeworkDetailScreen extends StatelessWidget {
     final statusIcon = _getStatusIcon(status);
     final attachments = homework['attachments'] as List<dynamic>? ?? [];
     final description = homework['description']?.toString() ?? '';
-    final teacherName = homework['teacherName']?.toString() ?? 
-                       (homework['teacher'] != null ? homework['teacher']['name']?.toString() : null) ?? 
+    final teacherName = (homework['teacher'] != null ? homework['teacher']['name']?.toString() : null) ?? 
+                       homework['teacherName']?.toString() ?? 
                        'common.unknown'.tr();
 
     return Directionality(
@@ -230,7 +230,7 @@ class HomeworkDetailScreen extends StatelessWidget {
                       _buildDateRow(
                         icon: CupertinoIcons.clock,
                         label: 'common.assigned'.tr(),
-                        value: _formatDate(homework['assignedDate'], context),
+                        value: _formatDate(homework['assignedDate'] ?? homework['createdAt'], context),
                         color: const Color(0xFF34C759),
                       ),
                       if (homework['submittedDate'] != null) ...[

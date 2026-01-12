@@ -25,7 +25,7 @@
     "error_required": "Please enter your code",
     "error_password_required": "Please enter your password",
     "error_invalid": "Invalid code",
-    "welcome_user_role": "Welcome, {name}! You are logged in as {role}"
+    "welcome_user_role": "Welcome, {name}!"
   },
   "parent": {
     "welcome": "Welcome to Parent Portal",
@@ -269,6 +269,7 @@
     "delete_grade": "Delete Grade",
     "delete_homework": "Delete Homework",
     "description": "Description",
+    "attachments": "Attachments",
     "deselect_all": "Deselect All",
     "due_date": "Due Date",
     "edit_announcement": "Edit Announcement",
