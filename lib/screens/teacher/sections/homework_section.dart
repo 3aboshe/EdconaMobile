@@ -7,6 +7,7 @@ import 'dart:io';
 import '../../../services/teacher_service.dart';
 import 'dart:ui' as ui;
 import '../../../utils/date_formatter.dart';
+import 'create_homework_screen.dart';
 
 class HomeworkSection extends StatefulWidget {
   final Map<String, dynamic> teacher;
@@ -93,7 +94,20 @@ class _HomeworkSectionState extends State<HomeworkSection> {
           ),
           actions: [
             IconButton(
-              onPressed: () => _showCreateHomeworkDialog(),
+              onPressed: () async {
+                final result = await Navigator.push<bool>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CreateHomeworkScreen(
+                      teacher: widget.teacher,
+                      classes: _classes,
+                    ),
+                  ),
+                );
+                if (result == true) {
+                  _loadData();
+                }
+              },
               icon: const Icon(Icons.add, color: Colors.white, size: 28),
             ),
           ],
