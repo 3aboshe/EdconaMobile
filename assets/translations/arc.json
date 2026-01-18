@@ -16,6 +16,7 @@
     "error_required": "ܐܬܒ ܩܘܕܟ",
     "error_password_required": "ܐܬܒ ܡܠܬܐ ܕܥܒܪܐ",
     "error_invalid": "ܩܘܕܐ ܚܛܐ",
+    "please_wait": "ܣܟܐ ܩܠܝܠ، ܡܬܚܒܪ...",
     "welcome_user_role": "ܫܠܡܐ {name}! ܐܢܬ ܥܠܝܬ ܒܓܘ {role}"
   },
   "parent": {

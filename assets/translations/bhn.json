@@ -16,6 +16,7 @@
     "error_required": "تکایە کۆد بنووسە",
     "error_password_required": "تکایە وشەی نهێنی بنووسە",
     "error_invalid": "کۆدی ھەڵە",
+    "please_wait": "تکایە چاوەڕوان بە، پەیوەندی دەکرێت...",
     "welcome_user_role": "بەخێربێیت {name}! تۆ چووتەژوورەوە وەک {role}"
   },
   "parent": {

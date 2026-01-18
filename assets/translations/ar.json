@@ -25,6 +25,7 @@
     "error_required": "يرجى إدخال الرمز الخاص بك",
     "error_password_required": "يرجى إدخال كلمة المرور",
     "error_invalid": "رمز غير صحيح",
+    "please_wait": "يرجى الانتظار، جارٍ الاتصال...",
     "welcome_user_role": "مرحباً {name}!"
   },
   "password_reset": {

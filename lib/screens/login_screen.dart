@@ -128,7 +128,13 @@ class _LoginScreenState extends State<LoginScreen>
       _errorMessage = '';
     });
 
-    final result = await _authService.login(code, password);
+    final result = await _authService.login(code, password, onStatus: (status) {
+      if (mounted) {
+        setState(() {
+          _errorMessage = 'login.please_wait'.tr();
+        });
+      }
+    });
 
     setState(() {
       _isLoading = false;

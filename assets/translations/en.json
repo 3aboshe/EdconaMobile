@@ -25,6 +25,7 @@
     "error_required": "Please enter your code",
     "error_password_required": "Please enter your password",
     "error_invalid": "Invalid code",
+    "please_wait": "Please wait, connecting...",
     "welcome_user_role": "Welcome, {name}!"
   },
   "parent": {
