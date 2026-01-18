@@ -862,9 +862,9 @@ class _SchoolsSectionState extends State<SchoolsSection> {
     );
 
     try {
-      // Fetch the admins for this school
-      final schoolId = school['id']?.toString() ?? '';
-      final admins = await _adminService.getSchoolAdmins(schoolId);
+      // Fetch the admins for this school using school code
+      final schoolCode = school['code']?.toString() ?? '';
+      final admins = await _adminService.getSchoolAdmins(schoolCode);
       
       if (mounted) Navigator.pop(context); // Close loading
       

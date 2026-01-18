@@ -558,12 +558,12 @@ class AdminService {
   }
 
   // Get school admins (for SUPER_ADMIN viewing school admin details)
-  Future<List<Map<String, dynamic>>> getSchoolAdmins(String schoolId) async {
+  Future<List<Map<String, dynamic>>> getSchoolAdmins(String schoolCode) async {
     try {
-      // Set school context temporarily and fetch admins
+      // Set school context with school code and fetch admins
       final response = await ApiService.dio.get('/api/auth/users', 
         queryParameters: {'role': 'SCHOOL_ADMIN'},
-        options: Options(headers: {'x-edcon-school-id': schoolId}),
+        options: Options(headers: {'x-edcon-school-code': schoolCode}),
       );
       if (response.statusCode == 200) {
         if (response.data is Map && response.data['data'] != null) {
@@ -579,10 +579,10 @@ class AdminService {
   }
 
   // Get all users for a school (for SUPER_ADMIN)
-  Future<List<Map<String, dynamic>>> getSchoolUsers(String schoolId) async {
+  Future<List<Map<String, dynamic>>> getSchoolUsers(String schoolCode) async {
     try {
       final response = await ApiService.dio.get('/api/auth/users',
-        options: Options(headers: {'x-edcon-school-id': schoolId}),
+        options: Options(headers: {'x-edcon-school-code': schoolCode}),
       );
       if (response.statusCode == 200) {
         if (response.data is Map && response.data['data'] != null) {
