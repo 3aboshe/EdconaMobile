@@ -10,9 +10,22 @@ import 'api_service.dart';
 
 /// Service for end-to-end encryption using RSA+AES hybrid encryption
 class EncryptionService {
-  static final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
+  // Lazy initialization to prevent crash if Keystore not ready
+  static FlutterSecureStorage? _secureStorageInstance;
+  
+  static FlutterSecureStorage get _secureStorage {
+    _secureStorageInstance ??= const FlutterSecureStorage(
+      aOptions: AndroidOptions(
+        encryptedSharedPreferences: true,
+        resetOnError: true, // Reset storage if corrupted rather than crash
+      ),
+    );
+    return _secureStorageInstance!;
+  }
+  
   static const int _aesKeySize = 32; // 256 bits
   static const int _rsaKeySize = 4096;
+
 
   /// Check if user has encryption keys
   static Future<bool> hasKeys(String userId) async {

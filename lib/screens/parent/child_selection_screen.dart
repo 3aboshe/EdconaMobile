@@ -87,9 +87,15 @@ class _ChildSelectionScreenState extends State<ChildSelectionScreen> {
           ],
         ),
         actions: [
-          IconButton(
-            icon: const Icon(CupertinoIcons.square_arrow_right, color: Colors.white),
-            onPressed: _logout,
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: IconButton(
+              icon: const Icon(CupertinoIcons.square_arrow_right, color: Colors.white, size: 24),
+              onPressed: _logout,
+              tooltip: 'common.logout'.tr(),
+              iconSize: 24,
+              constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+            ),
           ),
         ],
       ),

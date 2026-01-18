@@ -1,0 +1,30 @@
+App Name: Edcona
+
+Short Description:
+The complete school companion. Track grades, homework, attendance & chat securely.
+
+Full Description:
+Welcome to Edcona, the ultimate educational companion designed to bridge the gap between parents, teachers, and schools. Whether you want to stay on top of your child's academic progress or manage your classroom efficiently, Edcona provides a seamless, secure, and intuitive experience.
+
+For Parents:
+
+* Stay Updated: Get a real-time overview of your child's academic journey with our clean, modern dashboard.
+* Track Homework: Never miss a deadline. View assigned homework, descriptions, and attachments directly from teachers.
+* Monitor Grades: Visualize academic performance with detailed grade breakdowns and progress charts.
+* Check Attendance: Keep track of daily attendance, including present, absent, and late status.
+* Direct Communication: Chat directly and securely with teachers to discuss your child's progress.
+
+For Teachers:
+
+* Classroom Management: Easily manage grades, attendance, and announcements from your mobile device.
+* Homework Assignment: Create and distribute homework assignments with attachments in seconds.
+* Instant Updates: Keep parents informed and engaged with instant notifications.
+
+Key Features:
+
+* Secure & Private: Your data is protected with end-to-end encryption and secure login protocols.
+* Multi-Language Support: Fully localized for English, Arabic, Kurdish, and more.
+* Real-Time Notifications: Stay in the loop with instant alerts for new grades, messages, and announcements.
+* User-Friendly Design: A beautiful, deep blue minimalist interface that makes navigation effortless.
+
+Empower your education journey with Edcona. Download now and stay connected!

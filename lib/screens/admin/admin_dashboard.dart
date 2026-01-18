@@ -209,14 +209,18 @@ class _AdminDashboardState extends State<AdminDashboard> {
               ),
               actions: [
                 IconButton(
-                  icon: const Icon(Icons.logout),
+                  icon: const Icon(Icons.logout, size: 24),
                   onPressed: () => _showLogoutDialog(context),
-                  iconSize: 22,
+                  iconSize: 24,
+                  tooltip: 'admin.logout'.tr(),
+                  constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.more_vert),
+                  icon: const Icon(Icons.more_vert, size: 24),
                   onPressed: () => _showMobileMenu(context),
-                  iconSize: 22,
+                  iconSize: 24,
+                  tooltip: 'admin.more_options'.tr(),
+                  constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
                 ),
               ],
             )
@@ -560,7 +564,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
       child: SafeArea(
         top: false,
         child: Container(
-          height: 64,
+          height: 72,
           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -569,44 +573,51 @@ class _AdminDashboardState extends State<AdminDashboard> {
               final isSelected = _selectedIndex == index;
 
               return Flexible(
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _selectedIndex = index;
-                    });
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 4),
-                    padding: const EdgeInsets.symmetric(vertical: 6),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? const Color(0xFF1E3A8A).withValues(alpha: 0.1)
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          item['icon'] as IconData,
-                          size: 20,
-                          color: isSelected ? const Color(0xFF1E3A8A) : Colors.grey[600],
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          (item['title'] as String).tr(),
-                          textAlign: TextAlign.center,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                            color: isSelected
-                                ? const Color(0xFF1E3A8A)
-                                : Colors.grey[600],
+                child: Semantics(
+                  label: (item['title'] as String).tr(),
+                  selected: isSelected,
+                  button: true,
+                  child: InkWell(
+                    onTap: () {
+                      setState(() {
+                        _selectedIndex = index;
+                      });
+                    },
+                    borderRadius: BorderRadius.circular(12),
+                    child: Container(
+                      constraints: const BoxConstraints(minHeight: 48, minWidth: 48),
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? const Color(0xFF1E3A8A).withValues(alpha: 0.1)
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            item['icon'] as IconData,
+                            size: 24,
+                            color: isSelected ? const Color(0xFF1E3A8A) : Colors.grey[600],
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 4),
+                          Text(
+                            (item['title'] as String).tr(),
+                            textAlign: TextAlign.center,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                              color: isSelected
+                                  ? const Color(0xFF1E3A8A)
+                                  : Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

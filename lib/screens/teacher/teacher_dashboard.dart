@@ -125,47 +125,61 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
               ],
       ),
       actions: [
-        GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ProfileSection(teacher: widget.teacher),
-              ),
-            );
-          },
-          child: Padding(
-            padding: const EdgeInsetsDirectional.only(end: 16),
-            child: CircleAvatar(
-              radius: 20,
-              backgroundColor: Colors.white.withValues(alpha: 0.2),
-              child: widget.teacher['avatar'] != null && widget.teacher['avatar'].toString().isNotEmpty
-                  ? ClipOval(
-                      child: Image.memory(
-                        Uri.parse(widget.teacher['avatar']).data!.contentAsBytes(),
-                        width: 40,
-                        height: 40,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Text(
-                            (widget.teacher['name']?.toString() ?? 'T')[0].toUpperCase(),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
+        Semantics(
+          label: 'teacher.profile'.tr(),
+          button: true,
+          child: InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProfileSection(teacher: widget.teacher),
+                ),
+              );
+            },
+            borderRadius: BorderRadius.circular(20),
+            child: Tooltip(
+              message: 'teacher.profile'.tr(),
+              child: Padding(
+                padding: const EdgeInsetsDirectional.only(end: 16),
+                child: SizedBox(
+                  width: 48,
+                  height: 48,
+                  child: Center(
+                    child: CircleAvatar(
+                      radius: 20,
+                      backgroundColor: Colors.white.withValues(alpha: 0.2),
+                      child: widget.teacher['avatar'] != null && widget.teacher['avatar'].toString().isNotEmpty
+                          ? ClipOval(
+                              child: Image.memory(
+                                Uri.parse(widget.teacher['avatar']).data!.contentAsBytes(),
+                                width: 40,
+                                height: 40,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Text(
+                                    (widget.teacher['name']?.toString() ?? 'T')[0].toUpperCase(),
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  );
+                                },
+                              ),
+                            )
+                          : Text(
+                              (widget.teacher['name']?.toString() ?? 'T')[0].toUpperCase(),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
-                          );
-                        },
-                      ),
-                    )
-                  : Text(
-                      (widget.teacher['name']?.toString() ?? 'T')[0].toUpperCase(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                      ),
                     ),
+                  ),
+                ),
+              ),
             ),
           ),
         ),
@@ -349,70 +363,80 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
   }
 
   Widget _buildSectionCard(Map<String, dynamic> section) {
-    return GestureDetector(
-      onTap: () => _navigateToSection(section['key'] as String),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: section['gradient'] as List<Color>,
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+    return Semantics(
+      label: section['title'] as String,
+      hint: section['subtitle'] as String,
+      button: true,
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
+          onTap: () => _navigateToSection(section['key'] as String),
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: (section['color'] as Color).withValues(alpha: 0.3),
-              blurRadius: 12,
-              offset: const Offset(0, 6),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(12),
+          child: Ink(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: section['gradient'] as List<Color>,
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
-              child: Icon(
-                section['icon'] as IconData,
-                color: Colors.white,
-                size: 28,
-              ),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: (section['color'] as Color).withValues(alpha: 0.3),
+                  blurRadius: 12,
+                  offset: const Offset(0, 6),
+                ),
+              ],
             ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    section['title'] as String,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    section['subtitle'] as String,
-                    style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.9),
-                      fontSize: 13,
-                      fontWeight: FontWeight.w400,
-                    ),
+                  child: Icon(
+                    section['icon'] as IconData,
+                    color: Colors.white,
+                    size: 28,
                   ),
-                ],
-              ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        section['title'] as String,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        section['subtitle'] as String,
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.9),
+                          fontSize: 13,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(
+                  CupertinoIcons.chevron_right,
+                  color: Colors.white,
+                  size: 20,
+                ),
+              ],
             ),
-            Icon(
-              CupertinoIcons.chevron_right,
-              color: Colors.white,
-              size: 20,
-            ),
-          ],
+          ),
         ),
       ),
     );

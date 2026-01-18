@@ -90,16 +90,23 @@ class _SchoolsSectionState extends State<SchoolsSection> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    tr('super_admin.create_school'),
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
+                  Expanded(
+                    child: Text(
+                      tr('super_admin.create_school'),
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => Navigator.pop(context),
+                  SizedBox(
+                    width: 48,
+                    height: 48,
+                    child: IconButton(
+                      icon: const Icon(Icons.close, size: 24),
+                      onPressed: () => Navigator.pop(context),
+                      tooltip: tr('common.close'),
+                    ),
                   ),
                 ],
               ),
@@ -239,16 +246,19 @@ class _SchoolsSectionState extends State<SchoolsSection> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(tr('login.access_code'), style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                        IconButton(
-                          icon: const Icon(Icons.copy, size: 18),
-                          onPressed: () {
-                            Clipboard.setData(ClipboardData(text: credentials['accessCode'] ?? ''));
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(tr('admin.copied_to_clipboard')), duration: const Duration(seconds: 1)),
-                            );
-                          },
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
+                        SizedBox(
+                          width: 48,
+                          height: 48,
+                          child: IconButton(
+                            icon: const Icon(Icons.copy, size: 20),
+                            onPressed: () {
+                              Clipboard.setData(ClipboardData(text: credentials['accessCode'] ?? ''));
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(tr('admin.copied_to_clipboard')), duration: const Duration(seconds: 1)),
+                              );
+                            },
+                            tooltip: tr('admin.copy_access_code'),
+                          ),
                         ),
                       ],
                     ),
@@ -261,16 +271,19 @@ class _SchoolsSectionState extends State<SchoolsSection> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(tr('super_admin.temp_password'), style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                        IconButton(
-                          icon: const Icon(Icons.copy, size: 18),
-                          onPressed: () {
-                            Clipboard.setData(ClipboardData(text: credentials['temporaryPassword'] ?? ''));
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(tr('admin.copied_to_clipboard')), duration: const Duration(seconds: 1)),
-                            );
-                          },
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
+                        SizedBox(
+                          width: 48,
+                          height: 48,
+                          child: IconButton(
+                            icon: const Icon(Icons.copy, size: 20),
+                            onPressed: () {
+                              Clipboard.setData(ClipboardData(text: credentials['temporaryPassword'] ?? ''));
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(tr('admin.copied_to_clipboard')), duration: const Duration(seconds: 1)),
+                              );
+                            },
+                            tooltip: tr('admin.copy_password'),
+                          ),
                         ),
                       ],
                     ),
@@ -318,16 +331,23 @@ class _SchoolsSectionState extends State<SchoolsSection> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    tr('super_admin.send_global_notification'),
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
+                  Expanded(
+                    child: Text(
+                      tr('super_admin.send_global_notification'),
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => Navigator.pop(context),
+                  SizedBox(
+                    width: 48,
+                    height: 48,
+                    child: IconButton(
+                      icon: const Icon(Icons.close, size: 24),
+                      onPressed: () => Navigator.pop(context),
+                      tooltip: tr('common.close'),
+                    ),
                   ),
                 ],
               ),

@@ -47,9 +47,15 @@ class _SuperAdminDashboardState extends State<SuperAdminDashboard> {
           ],
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.logout, color: Colors.redAccent),
-            onPressed: _showLogoutDialog,
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: IconButton(
+              icon: const Icon(Icons.logout, color: Colors.redAccent, size: 24),
+              onPressed: _showLogoutDialog,
+              tooltip: tr('super_admin.logout'),
+              iconSize: 24,
+              constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+            ),
           ),
         ],
         bottom: PreferredSize(

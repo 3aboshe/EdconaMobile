@@ -12,34 +12,46 @@ import 'utils/locale_delegates.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize EasyLocalization
-  await EasyLocalization.ensureInitialized();
-
-  // Initialize services
-  AuthService.initialize();
-
-  // Handle uncaught errors
+  // Handle uncaught errors FIRST - before any async operations
   FlutterError.onError = (FlutterErrorDetails details) {
     FlutterError.presentError(details);
-    print('❌ FLUTTER ERROR: ${details.exception}');
-    print('${details.stack}');
+    // In release mode, silently log rather than crash
+    debugPrint('❌ FLUTTER ERROR: ${details.exception}');
   };
 
+  // Wrap initialization in try-catch for defensive startup
+  bool localizationReady = false;
+  try {
+    await EasyLocalization.ensureInitialized();
+    localizationReady = true;
+  } catch (e) {
+    debugPrint('⚠️ Localization init failed: $e - continuing with defaults');
+  }
+
+  try {
+    AuthService.initialize();
+  } catch (e) {
+    debugPrint('⚠️ AuthService init failed: $e - continuing anyway');
+  }
+
   runApp(
-    EasyLocalization(
-      supportedLocales: const [
-        Locale('en'), // English
-        Locale('ar'), // Arabic
-        Locale('ckb'), // Kurdish (Sorani)
-        Locale('bhn'), // Kurdish (Bahdini)
-        Locale('arc'), // Assyrian
-      ],
-      path: 'assets/translations',
-      fallbackLocale: const Locale('en'),
-      child: const EdConaApp(),
-    ),
+    localizationReady
+        ? EasyLocalization(
+            supportedLocales: const [
+              Locale('en'), // English
+              Locale('ar'), // Arabic
+              Locale('ckb'), // Kurdish (Sorani)
+              Locale('bhn'), // Kurdish (Bahdini)
+              Locale('arc'), // Assyrian
+            ],
+            path: 'assets/translations',
+            fallbackLocale: const Locale('en'),
+            child: const EdConaApp(),
+          )
+        : const EdConaApp(), // Fallback without localization wrapper
   );
 }
+
 
 class EdConaApp extends StatelessWidget {
   const EdConaApp({super.key});
