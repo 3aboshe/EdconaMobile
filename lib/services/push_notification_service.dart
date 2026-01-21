@@ -50,7 +50,6 @@ class PushNotificationService {
         AndroidNotificationDetails(
       'edcona_notifications',
       'EdCona Notifications',
-      description: 'Notifications for EdCona app',
       importance: Importance.max,
       priority: Priority.high,
     );
