@@ -8,6 +8,9 @@ import 'screens/super_admin/super_admin_dashboard.dart';
 import 'services/language_service.dart';
 import 'services/auth_service.dart';
 import 'utils/locale_delegates.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'services/push_notification_service.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,6 +35,13 @@ void main() async {
     AuthService.initialize();
   } catch (e) {
     debugPrint('⚠️ AuthService init failed: $e - continuing anyway');
+  }
+
+  try {
+    await Firebase.initializeApp();
+    await PushNotificationService.initialize();
+  } catch (e) {
+    debugPrint('⚠️ Firebase init failed: $e');
   }
 
   runApp(
@@ -159,6 +169,7 @@ class _AppInitializerState extends State<AppInitializer> {
 
         // Check if user is already logged in and navigate accordingly
         if (isLoggedIn) {
+          PushNotificationService.updateToken(language: selectedLanguageCode); // Update FCM token after login
           final user = await authService.getCurrentUser();
           if (user != null) {
             if (user['role'] == 'SUPER_ADMIN') {

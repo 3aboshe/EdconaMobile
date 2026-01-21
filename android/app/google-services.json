@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "196349256542",
+    "project_id": "edcona-89bea",
+    "storage_bucket": "edcona-89bea.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:196349256542:android:a067293aeeb1fcf496a5cf",
+        "android_client_info": {
+          "package_name": "com.edcona.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDxmVhivPkkV3pjzGOxanBwsheIeENHhe4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
