@@ -39,10 +39,12 @@ class _AttendanceSectionState extends State<AttendanceSection> {
     if (mounted) {
       final classes = widget.dataProvider.classes;
       if (classes.isNotEmpty) {
+        final firstClassId = classes[0]['id'];
         setState(() {
-          _selectedClassId = classes[0]['id'];
+          _selectedClassId = firstClassId;
         });
-        await widget.dataProvider.loadClassData(classes[0]['id']);
+        await widget.dataProvider.loadClassData(firstClassId);
+        await _loadStudentsAndAttendance();
       }
     }
   }
@@ -52,10 +54,12 @@ class _AttendanceSectionState extends State<AttendanceSection> {
     if (mounted) {
       final classes = widget.dataProvider.classes;
       if (classes.isNotEmpty) {
+        final firstClassId = classes[0]['id'];
         setState(() {
-          _selectedClassId = classes[0]['id'];
+          _selectedClassId = firstClassId;
         });
-        await widget.dataProvider.loadClassData(classes[0]['id']);
+        await widget.dataProvider.loadClassData(firstClassId);
+        await _loadStudentsAndAttendance();
       }
     }
   }

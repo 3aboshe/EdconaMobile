@@ -42,10 +42,12 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
     if (mounted) {
       final classes = widget.dataProvider.classes;
       if (classes.isNotEmpty) {
+        final firstClassId = classes[0]['id'];
         setState(() {
-          _selectedClassId = classes[0]['id'];
+          _selectedClassId = firstClassId;
         });
-        await widget.dataProvider.loadClassData(classes[0]['id']);
+        await widget.dataProvider.loadClassData(firstClassId);
+        await _loadLeaderboard();
       }
     }
   }
@@ -55,10 +57,12 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
     if (mounted) {
       final classes = widget.dataProvider.classes;
       if (classes.isNotEmpty) {
+        final firstClassId = classes[0]['id'];
         setState(() {
-          _selectedClassId = classes[0]['id'];
+          _selectedClassId = firstClassId;
         });
-        await widget.dataProvider.loadClassData(classes[0]['id']);
+        await widget.dataProvider.loadClassData(firstClassId);
+        await _loadLeaderboard();
       }
     }
   }
@@ -70,9 +74,54 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
     try {
       await widget.dataProvider.loadClassData(_selectedClassId!);
       final students = widget.dataProvider.getStudents(_selectedClassId!);
+
+      // Fetch grades for all students and calculate total scores
+      final List<Map<String, dynamic>> studentsWithScores = [];
+      for (var student in students) {
+        final studentId = student['id']?.toString();
+        if (studentId != null) {
+          try {
+            final grades = await _teacherService.getGradesByStudent(studentId);
+            double totalScore = 0;
+            int gradeCount = 0;
+
+            if (grades != null && grades is List) {
+              for (var grade in grades) {
+                final score = grade['score'];
+                if (score != null && score is num) {
+                  totalScore += score.toDouble();
+                  gradeCount++;
+                }
+              }
+            }
+
+            // Calculate average score
+            final averageScore = gradeCount > 0 ? totalScore / gradeCount : 0.0;
+
+            studentsWithScores.add({
+              ...student,
+              'totalScore': averageScore,
+            });
+          } catch (e) {
+            // If grades fetch fails, add student with 0 score
+            studentsWithScores.add({
+              ...student,
+              'totalScore': 0.0,
+            });
+          }
+        }
+      }
+
+      // Sort by total score descending
+      studentsWithScores.sort((a, b) {
+        final scoreA = a['totalScore'] ?? 0.0;
+        final scoreB = b['totalScore'] ?? 0.0;
+        return scoreB.compareTo(scoreA);
+      });
+
       if (mounted) {
         setState(() {
-          _students = students;
+          _students = studentsWithScores;
           _isLoading = false;
         });
       }
@@ -327,16 +376,27 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
       ),
       child: Column(
         children: [
-          if (_students.length >= 2) _buildPodiumPosition(1, _students[1], Colors.grey[400]!) else const SizedBox.shrink(),
-          const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              if (_students.isNotEmpty)
-                _buildPodiumPosition(0, _students[0], const Color(0xFFFFD60A)),
+              // 2nd place (left, lower)
+              if (_students.length >= 2)
+                Expanded(
+                  child: _buildPodiumPosition(1, _students[1], Colors.grey[400]!, 72),
+                ),
               const SizedBox(width: 16),
+              // 1st place (center, higher)
+              if (_students.isNotEmpty)
+                Expanded(
+                  child: _buildPodiumPosition(0, _students[0], const Color(0xFFFFD60A), 88),
+                ),
+              const SizedBox(width: 16),
+              // 3rd place (right, lower)
               if (_students.length >= 3)
-                _buildPodiumPosition(2, _students[2], const Color(0xFFFFA86B)),
+                Expanded(
+                  child: _buildPodiumPosition(2, _students[2], const Color(0xFFFFA86B), 72),
+                ),
             ],
           ),
         ],
@@ -344,12 +404,12 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
     );
   }
 
-  Widget _buildPodiumPosition(int position, Map<String, dynamic> student, Color color) {
+  Widget _buildPodiumPosition(int position, Map<String, dynamic> student, Color color, [double size = 72]) {
     return Column(
       children: [
         Container(
-          width: 72,
-          height: 72,
+          width: size,
+          height: size,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [color, color.withValues(alpha: 0.7)],
@@ -368,9 +428,9 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
           child: Center(
             child: Text(
               (student['name']?[0] ?? 'S').toString().toUpperCase(),
-              style: const TextStyle(
+              style: TextStyle(
                 color: Colors.white,
-                fontSize: 24,
+                fontSize: size == 88 ? 28 : 24,
                 fontWeight: FontWeight.bold,
               ),
             ),

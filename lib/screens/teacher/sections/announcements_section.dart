@@ -534,18 +534,33 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
     );
   }
 
-  Widget _buildAnnouncementCard(Map<String, dynamic> announcement) {
-    Color priorityColor;
-    switch (announcement['priority']) {
+  String _getLocalizedPriority(String? priority) {
+    final normalizedPriority = priority?.toLowerCase() ?? 'normal';
+    switch (normalizedPriority) {
       case 'urgent':
-        priorityColor = const Color(0xFFFF3B30);
-        break;
       case 'high':
-        priorityColor = const Color(0xFFFF9500);
-        break;
+      case 'medium':
+      case 'low':
+        return 'common.$normalizedPriority'.tr();
       default:
-        priorityColor = const Color(0xFF34C759);
+        return 'common.normal'.tr();
     }
+  }
+
+  Color _getPriorityColor(String? priority) {
+    final normalizedPriority = priority?.toLowerCase() ?? 'normal';
+    switch (normalizedPriority) {
+      case 'urgent':
+        return const Color(0xFFFF3B30);
+      case 'high':
+        return const Color(0xFFFF9500);
+      default:
+        return const Color(0xFF34C759);
+    }
+  }
+
+  Widget _buildAnnouncementCard(Map<String, dynamic> announcement) {
+    final priorityColor = _getPriorityColor(announcement['priority']?.toString());
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -586,9 +601,7 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  'common.${announcement['priority'] ?? 'normal'}'
-                      .tr()
-                      .toUpperCase(),
+                  _getLocalizedPriority(announcement['priority']?.toString()).toUpperCase(),
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w600,

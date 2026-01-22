@@ -157,9 +157,9 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
                                 ).withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              child: const Text(
-                                'URGENT',
-                                style: TextStyle(
+                              child: Text(
+                                'common.urgent'.tr().toUpperCase(),
+                                style: const TextStyle(
                                   color: Color(0xFFFF3B30),
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
