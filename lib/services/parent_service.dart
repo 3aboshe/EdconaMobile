@@ -94,7 +94,13 @@ class ParentService {
       );
 
       if (response.statusCode == 200) {
-        return List<Map<String, dynamic>>.from(response.data);
+        // Handle both array and paginated object response
+        final dynamic data = response.data;
+        if (data is List) {
+          return List<Map<String, dynamic>>.from(data);
+        } else if (data is Map && data['data'] != null) {
+          return List<Map<String, dynamic>>.from(data['data']);
+        }
       }
     } catch (e) {
       throw Exception('Failed to load attendance: ${e.toString()}');
@@ -110,7 +116,17 @@ class ParentService {
       );
 
       if (response.statusCode == 200) {
-        final homework = List<Map<String, dynamic>>.from(response.data);
+        // Handle both array and paginated object response
+        final dynamic data = response.data;
+        final List<dynamic> homeworkList;
+        if (data is List) {
+          homeworkList = data;
+        } else if (data is Map && data['data'] != null) {
+          homeworkList = data['data'] as List<dynamic>;
+        } else {
+          return [];
+        }
+        final homework = List<Map<String, dynamic>>.from(homeworkList);
         return homework.map((hw) {
           // Calculate status based on due date and submission
           final dueDate = DateTime.tryParse(hw['dueDate'] ?? '');

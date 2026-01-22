@@ -153,9 +153,15 @@ class TeacherService {
     try {
       final response = await ApiService.dio.get('/api/homework/teacher/$teacherId');
       if (response.statusCode == 200) {
-        return (response.data as List<dynamic>)
-            .map((h) => h as Map<String, dynamic>)
-            .toList();
+        // Handle both array and paginated object response
+        final dynamic data = response.data;
+        if (data is List) {
+          return data.map((h) => h as Map<String, dynamic>).toList();
+        } else if (data is Map && data['data'] != null) {
+          return (data['data'] as List<dynamic>)
+              .map((h) => h as Map<String, dynamic>)
+              .toList();
+        }
       }
       return [];
     } catch (e) {
@@ -296,9 +302,15 @@ class TeacherService {
     try {
       final response = await ApiService.dio.get('/api/grades/student/$studentId');
       if (response.statusCode == 200) {
-        return (response.data as List<dynamic>)
-            .map((g) => g as Map<String, dynamic>)
-            .toList();
+        // Handle both array and paginated object response
+        final dynamic data = response.data;
+        if (data is List) {
+          return data.map((g) => g as Map<String, dynamic>).toList();
+        } else if (data is Map && data['data'] != null) {
+          return (data['data'] as List<dynamic>)
+              .map((g) => g as Map<String, dynamic>)
+              .toList();
+        }
       }
       return [];
     } catch (e) {
