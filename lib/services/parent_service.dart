@@ -63,19 +63,27 @@ class ParentService {
         } else {
           return [];
         }
+        // Return grades with original field names (marksObtained, maxMarks)
+        // and also include aliases for backwards compatibility
         return grades
             .map(
-              (grade) => {
-                'id': grade['id'],
-                'subject': grade['subject'],
-                'assignment': grade['assignment'],
-                'score': grade['marksObtained'],
-                'totalScore': grade['maxMarks'],
-                'date': grade['date'],
-                'type': grade['type'],
-                'grade': _calculateGrade(
-                  grade['marksObtained'] / grade['maxMarks'] * 100,
-                ),
+              (grade) {
+                final marksObtained = (grade['marksObtained'] ?? 0).toDouble();
+                final maxMarks = (grade['maxMarks'] ?? 1).toDouble();
+                final percentage = maxMarks > 0 ? (marksObtained / maxMarks * 100) : 0.0;
+                return {
+                  'id': grade['id'],
+                  'subject': grade['subject'],
+                  'assignment': grade['assignment'],
+                  'marksObtained': marksObtained,
+                  'maxMarks': maxMarks,
+                  'score': marksObtained, // alias
+                  'totalScore': maxMarks, // alias
+                  'date': grade['date'],
+                  'type': grade['type'],
+                  'grade': _calculateGrade(percentage),
+                  'examId': grade['examId'],
+                };
               },
             )
             .toList();
