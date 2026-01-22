@@ -340,6 +340,7 @@
     "edit_profile": "ܫܘܚܠܦܘܬܐ ܕܦܪܘܦܝܠ"
   },
   "common": {
+    "app_name": "ܐܕܟܘܢܐ",
     "ok": "ܛܒ",
     "cancel": "ܣܟܘܬ",
     "error": "ܚܛܐ",
@@ -374,9 +375,9 @@
     "priority": "ܩܕܡܝܘܬܐ",
     "normal": "ܥܕܝܐ",
     "high": "ܪܡܐ",
+    "medium": "ܡܨܥܝܐ",
     "urgent": "ܚܫܝܚܐ",
     "view_all": "ܚܙܝ ܟܠ",
-    "app_name": "ܐܕܟܘܢܐ",
     "error_details": "ܚܦܪܐ: {error}",
     "message": "ܐܓܪܬܐ",
     "all_subjects": "ܟܠܗܝܢ ܡܕܥ̈ܐ",

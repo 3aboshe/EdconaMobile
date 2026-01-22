@@ -64,7 +64,9 @@ class _ParentDashboardState extends State<ParentDashboard> {
   }
 
   Future<void> _initializeData() async {
-    // Load child data in background (non-blocking)
+    // Load dashboard data first (includes announcements shared across children)
+    await _dataProvider.loadDashboardData();
+    // Then load child-specific data (grades, attendance, homework)
     _dataProvider.loadChildData(widget.selectedChild['id']);
   }
 

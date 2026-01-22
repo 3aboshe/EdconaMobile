@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import '../../../services/parent_data_provider.dart';
 import '../../../utils/date_formatter.dart';
@@ -19,10 +18,9 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
   @override
   void initState() {
     super.initState();
-    // Defer data loading to after build completes to avoid setState during build
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      widget.dataProvider.loadChildData(widget.student['id']);
-    });
+    // Announcements are loaded by ParentDashboard.loadDashboardData()
+    // Child-specific data (grades, attendance, homework) is also loaded by ParentDashboard
+    // No need to load anything here
   }
 
   bool _isRTL() {

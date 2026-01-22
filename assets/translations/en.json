@@ -419,6 +419,7 @@
     "priority": "Priority",
     "normal": "Normal",
     "high": "High",
+    "medium": "Medium",
     "urgent": "Urgent",
     "view_all": "View All",
     "unknown": "Unknown",

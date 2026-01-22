@@ -1,37 +1,26 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'parent_service.dart';
 import 'api_service.dart';
 
 /// ParentDataProvider - Centralized data cache for parent panel
-///
-/// Eliminates redundant API calls by:
-/// 1. Caching all parent data in memory
-/// 2. Sharing data between dashboard, grades, homework, attendance, etc.
-/// 3. Only refetching when data changes (force refresh)
-/// 4. Using parallel loading with Future.wait for better performance
 class ParentDataProvider extends ChangeNotifier {
   final ParentService _parentService = ParentService();
 
-  // Cached data - children list
+  // Cached data
   List<Map<String, dynamic>> _children = [];
   List<Map<String, dynamic>> _announcements = [];
-
-  // Per-child cached data (maps childId -> data)
   final Map<String, List<Map<String, dynamic>>> _gradesByChild = {};
   final Map<String, List<Map<String, dynamic>>> _attendanceByChild = {};
   final Map<String, List<Map<String, dynamic>>> _homeworkByChild = {};
-
-  // Dashboard summary stats
   Map<String, dynamic> _summary = {};
 
   // Loading states
   bool _isLoading = false;
   bool _isInitialized = false;
   String? _error;
-
-  // Completer for waiting on initial load
   Completer<void>? _loadCompleter;
 
   // Getters
@@ -42,15 +31,12 @@ class ParentDataProvider extends ChangeNotifier {
   bool get isInitialized => _isInitialized;
   String? get error => _error;
 
-  /// Load all dashboard data using the combined endpoint
-  /// This is the primary method that should be called on parent panel init
+  /// Load all dashboard data
   Future<void> loadDashboardData({bool forceRefresh = false}) async {
-    // If already loading, wait for the current load to complete
     if (_isLoading && _loadCompleter != null) {
       return _loadCompleter!.future;
     }
 
-    // If already initialized and not forcing refresh, return cached data
     if (_isInitialized && !forceRefresh) {
       return;
     }
@@ -62,70 +48,138 @@ class ParentDataProvider extends ChangeNotifier {
 
     try {
       final parentId = await _getCurrentParentId();
+      print('DEBUG: Parent ID = $parentId');
+      
       if (parentId == null) {
         throw Exception('Parent ID not found');
       }
 
-      // Try combined endpoint first
       final response = await ApiService.dio.get('/api/parent/dashboard/$parentId');
+      print('DEBUG: Dashboard response status = ${response.statusCode}');
+      print('DEBUG: Dashboard response = ${response.data}');
 
       if (response.statusCode == 200 && response.data['success'] == true) {
-        final dashboardData = response.data['data'];
-
-        _children = List<Map<String, dynamic>>.from(dashboardData['children'] ?? []);
-        _announcements = List<Map<String, dynamic>>.from(dashboardData['announcements'] ?? []);
-        _summary = Map<String, dynamic>.from(dashboardData['summary'] ?? {});
-
+        final data = response.data['data'];
+        
+        // Load children
+        _children = _safeList(data['children']);
+        print('DEBUG: Loaded ${_children.length} children');
+        
+        // Load and transform announcements
+        final rawAnnouncements = _safeList(data['announcements']);
+        print('DEBUG: Raw announcements count = ${rawAnnouncements.length}');
+        
+        _announcements = rawAnnouncements.map((a) => _transformAnnouncement(a)).toList();
+        print('DEBUG: Transformed announcements count = ${_announcements.length}');
+        
+        if (_announcements.isNotEmpty) {
+          print('DEBUG: First announcement = ${_announcements.first}');
+        }
+        
+        // Load summary
+        _summary = Map<String, dynamic>.from(data['summary'] ?? {});
+        
         _isInitialized = true;
         _error = null;
       } else {
-        // Fallback to individual parallel calls
+        print('DEBUG: Response not successful, using fallback');
         await _loadDataFallback();
       }
     } catch (e) {
-      // Fallback to individual parallel calls on error
+      print('DEBUG: Error loading dashboard: $e');
       try {
         await _loadDataFallback();
       } catch (fallbackError) {
+        print('DEBUG: Fallback also failed: $fallbackError');
         _error = fallbackError.toString();
       }
     } finally {
       _isLoading = false;
       notifyListeners();
-
       if (_loadCompleter != null && !_loadCompleter!.isCompleted) {
         _loadCompleter!.complete();
       }
     }
   }
 
-  /// Fallback method using parallel individual API calls
-  /// Used when the combined endpoint is not available or fails
+  /// Transform announcement from API format to UI format
+  Map<String, dynamic> _transformAnnouncement(Map<String, dynamic> announcement) {
+    final teacher = announcement['teacher'];
+    Map<String, dynamic>? teacherMap;
+    if (teacher is Map) {
+      teacherMap = Map<String, dynamic>.from(teacher);
+    }
+    
+    return {
+      'id': announcement['id'],
+      'title': announcement['title'] ?? 'Announcement',
+      'message': announcement['content'] ?? announcement['message'] ?? '',
+      'content': announcement['content'] ?? announcement['message'] ?? '',
+      'date': announcement['date'] ?? announcement['createdAt'],
+      'createdAt': announcement['createdAt'],
+      'type': _mapPriority(announcement['priority']),
+      'priority': announcement['priority'],
+      'teacherId': announcement['teacherId'],
+      'classIds': announcement['classIds'],
+      'teacherName': teacherMap?['name'],
+      'teacherSubject': teacherMap?['subject'],
+      'teacher': teacherMap,
+    };
+  }
+
+  /// Map API priority values to UI type values
+  String _mapPriority(dynamic priority) {
+    if (priority == null) return 'normal';
+    final p = priority.toString().toUpperCase();
+    switch (p) {
+      case 'HIGH':
+        return 'urgent';
+      case 'MEDIUM':
+        return 'normal';
+      case 'LOW':
+        return 'low';
+      default:
+        return priority.toString().toLowerCase();
+    }
+  }
+
+  /// Safely convert to List<Map<String, dynamic>>
+  List<Map<String, dynamic>> _safeList(dynamic data) {
+    if (data == null) return [];
+    if (data is List) {
+      return data.map((item) {
+        if (item is Map) {
+          return Map<String, dynamic>.from(item);
+        }
+        return <String, dynamic>{};
+      }).toList();
+    }
+    return [];
+  }
+
+  /// Fallback method using individual API calls
   Future<void> _loadDataFallback() async {
+    print('DEBUG: Using fallback method');
     final parentId = await _getCurrentParentId();
     if (parentId == null) {
       throw Exception('Parent ID not found');
     }
 
-    // Use Future.wait for parallel execution
     final results = await Future.wait([
       _parentService.getChildren(parentId),
       _parentService.getAnnouncements(parentId),
     ]);
 
-    _children = results[0] as List<Map<String, dynamic>>;
-    _announcements = results[1] as List<Map<String, dynamic>>;
-    _summary = {
-      'totalChildren': _children.length,
-    };
-
+    _children = results[0];
+    _announcements = results[1];
+    _summary = {'totalChildren': _children.length};
+    
+    print('DEBUG: Fallback loaded ${_announcements.length} announcements');
     _isInitialized = true;
   }
 
-  /// Load child-specific data (grades, attendance, homework) with caching
-  /// Uses the combined child endpoint for optimal performance
+  /// Load child-specific data
   Future<void> loadChildData(String childId, {bool forceRefresh = false}) async {
-    // Check if already loaded
     if (_gradesByChild.containsKey(childId) && !forceRefresh) {
       return;
     }
@@ -136,28 +190,26 @@ class ParentDataProvider extends ChangeNotifier {
         throw Exception('Parent ID not found');
       }
 
-      // Try combined endpoint first
       final response = await ApiService.dio.get('/api/parent/dashboard/$parentId/child/$childId');
 
       if (response.statusCode == 200 && response.data['success'] == true) {
         final childData = response.data['data'];
 
-        _gradesByChild[childId] = List<Map<String, dynamic>>.from(childData['grades'] ?? []);
-        _attendanceByChild[childId] = List<Map<String, dynamic>>.from(childData['attendance'] ?? []);
-        _homeworkByChild[childId] = List<Map<String, dynamic>>.from(childData['homework'] ?? []);
+        _gradesByChild[childId] = _safeList(childData['grades']);
+        _attendanceByChild[childId] = _safeList(childData['attendance']);
+        _homeworkByChild[childId] = _safeList(childData['homework']);
 
         notifyListeners();
       } else {
-        // Fallback to parallel individual calls
         await _loadChildDataFallback(childId);
       }
     } catch (e) {
-      // Fallback to individual calls on error
+      print('Error loading child data: $e');
       await _loadChildDataFallback(childId);
     }
   }
 
-  /// Fallback method for loading child data using individual endpoints
+  /// Fallback for loading child data
   Future<void> _loadChildDataFallback(String childId) async {
     final results = await Future.wait([
       _parentService.getChildGrades(childId),
@@ -165,24 +217,24 @@ class ParentDataProvider extends ChangeNotifier {
       _parentService.getChildHomework(childId),
     ]);
 
-    _gradesByChild[childId] = results[0] as List<Map<String, dynamic>>;
-    _attendanceByChild[childId] = results[1] as List<Map<String, dynamic>>;
-    _homeworkByChild[childId] = results[2] as List<Map<String, dynamic>>;
+    _gradesByChild[childId] = results[0];
+    _attendanceByChild[childId] = results[1];
+    _homeworkByChild[childId] = results[2];
 
     notifyListeners();
   }
 
-  /// Get grades for a specific child (from cache or load if needed)
+  /// Get grades for a specific child
   List<Map<String, dynamic>> getGrades(String childId) {
     return _gradesByChild[childId] ?? [];
   }
 
-  /// Get attendance for a specific child (from cache or load if needed)
+  /// Get attendance for a specific child
   List<Map<String, dynamic>> getAttendance(String childId) {
     return _attendanceByChild[childId] ?? [];
   }
 
-  /// Get homework for a specific child (from cache or load if needed)
+  /// Get homework for a specific child
   List<Map<String, dynamic>> getHomework(String childId) {
     return _homeworkByChild[childId] ?? [];
   }
@@ -192,25 +244,22 @@ class ParentDataProvider extends ChangeNotifier {
     return _gradesByChild.containsKey(childId);
   }
 
-  /// Wait for data to be loaded (useful for dialogs that need data)
+  /// Wait for data to be loaded
   Future<void> ensureLoaded() async {
     if (_isInitialized) return;
-
     if (_loadCompleter != null) {
       return _loadCompleter!.future;
     }
-
     return loadDashboardData();
   }
 
   /// Wait for child data to be loaded
   Future<void> ensureChildDataLoaded(String childId) async {
     if (isChildDataLoaded(childId)) return;
-
     return loadChildData(childId);
   }
 
-  /// Force refresh all data from server
+  /// Force refresh all data
   Future<void> refresh() async {
     _isInitialized = false;
     _gradesByChild.clear();
@@ -242,14 +291,22 @@ class ParentDataProvider extends ChangeNotifier {
   Future<String?> _getCurrentParentId() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final userId = prefs.getString('user_id');
-      final role = prefs.getString('user_role');
-
-      if (role == 'PARENT' && userId != null) {
-        return userId;
+      final userJson = prefs.getString('user');
+      
+      if (userJson != null) {
+        final user = json.decode(userJson) as Map<String, dynamic>;
+        final role = user['role'] as String?;
+        final userId = user['id'] as String?;
+        
+        print('DEBUG: User role = $role, userId = $userId');
+        
+        if (role == 'PARENT' && userId != null) {
+          return userId;
+        }
       }
       return null;
     } catch (e) {
+      print('Error getting parent ID: $e');
       return null;
     }
   }
