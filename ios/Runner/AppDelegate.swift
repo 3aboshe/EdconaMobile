@@ -37,8 +37,17 @@ import FirebaseMessaging
   // Forward APNs token to Firebase
   override func application(_ application: UIApplication,
                             didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+    let tokenString = deviceToken.map { String(format: "%02.2hhx", $0) }.joined()
+    print("✅ APNs Token received: \(tokenString)")
     Messaging.messaging().apnsToken = deviceToken
     super.application(application, didRegisterForRemoteNotificationsWithDeviceToken: deviceToken)
+  }
+
+  // Track APNs registration failures
+  override func application(_ application: UIApplication,
+                            didFailToRegisterForRemoteNotificationsWithError error: Error) {
+    print("❌ Failed to register for APNs: \(error.localizedDescription)")
+    print("❌ Error details: \(error)")
   }
 }
 

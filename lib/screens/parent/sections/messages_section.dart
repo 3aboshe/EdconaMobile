@@ -4,14 +4,14 @@ import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import '../../../services/message_service.dart';
 import '../../../services/api_service.dart';
 import '../../../services/auth_service.dart';
+import '../../../services/parent_data_provider.dart';
 import 'package:edconamobile/models/message.dart';
 
 class MessagesSection extends StatefulWidget {
-  // TextDirection constants to work around analyzer issue
-
   final Map<String, dynamic> student;
+  final ParentDataProvider dataProvider;
 
-  const MessagesSection({super.key, required this.student});
+  const MessagesSection({super.key, required this.student, required this.dataProvider});
 
   @override
   State<MessagesSection> createState() => _MessagesSectionState();
@@ -28,6 +28,7 @@ class _MessagesSectionState extends State<MessagesSection> {
   @override
   void initState() {
     super.initState();
+    widget.dataProvider.loadChildData(widget.student['id']);
     _loadData();
   }
 

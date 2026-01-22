@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../../services/teacher_service.dart';
+import '../../../services/teacher_data_provider.dart';
 import '../../../services/api_service.dart';
 import '../../../utils/date_formatter.dart';
 import 'dart:ui' as ui;
 
 class GradesSection extends StatefulWidget {
   final Map<String, dynamic> teacher;
+  final TeacherDataProvider dataProvider;
 
-  const GradesSection({super.key, required this.teacher});
+  const GradesSection({super.key, required this.teacher, required this.dataProvider});
 
   @override
   State<GradesSection> createState() => _GradesSectionState();
@@ -28,7 +30,7 @@ class _GradesSectionState extends State<GradesSection> {
   @override
   void initState() {
     super.initState();
-    _loadClasses();
+    _initializeData();
   }
 
   bool _isRTL() {
@@ -36,50 +38,27 @@ class _GradesSectionState extends State<GradesSection> {
     return ['ar', 'ckb', 'ku', 'bhn', 'arc', 'bad', 'bdi', 'sdh', 'kmr'].contains(locale.languageCode);
   }
 
-  Future<void> _loadClasses() async {
-    setState(() => _isLoading = true);
-
-    try {
-      final classes = await _teacherService.getTeacherClasses(widget.teacher['id']);
-      if (mounted) {
+  Future<void> _initializeData() async {
+    await widget.dataProvider.loadDashboardData();
+    if (mounted) {
+      final classes = widget.dataProvider.classes;
+      if (classes.isNotEmpty) {
         setState(() {
-          _classes = classes;
-          if (classes.isNotEmpty) {
-            _selectedClassId = classes[0]['id'];
-            _loadStudents();
-            _loadExams();
-          } else {
-            _isLoading = false;
-          }
+          _selectedClassId = classes[0]['id'];
         });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _classes = [];
-          _isLoading = false;
-        });
+        await widget.dataProvider.loadClassData(classes[0]['id']);
       }
     }
   }
 
+  Future<void> _loadClasses() async {
+    // Data is loaded from provider, no need to reload
+    await widget.dataProvider.loadDashboardData();
+  }
+
   Future<void> _loadExams() async {
-    try {
-      final exams = await _teacherService.getExamsByTeacher(widget.teacher['id']);
-      if (mounted) {
-        setState(() {
-          _exams = exams;
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _exams = [];
-          _isLoading = false;
-        });
-      }
-    }
+    // Exams are loaded from provider
+    await widget.dataProvider.loadDashboardData();
   }
 
   Future<void> _loadExamGrades(String examId) async {
@@ -125,8 +104,8 @@ class _GradesSectionState extends State<GradesSection> {
   }
 
   List<Map<String, dynamic>> get _filteredExams {
-    if (_selectedClassId == null) return [];
-    return _exams.where((exam) => exam['classId'] == _selectedClassId).toList();
+    if (_selectedClassId == null) return widget.dataProvider.exams;
+    return widget.dataProvider.exams.where((exam) => exam['classId'] == _selectedClassId).toList();
   }
 
   @override
@@ -159,29 +138,42 @@ class _GradesSectionState extends State<GradesSection> {
             ),
           ],
         ),
-        body: _isLoading
-            ? const Center(child: CircularProgressIndicator(color: Colors.white))
-            : RefreshIndicator(
-                onRefresh: () async => await _loadExams(),
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildClassSelector(),
-                      const SizedBox(height: 20),
-                      if (_selectedClassId != null) _buildExamSelector(),
-                      const SizedBox(height: 20),
-                      if (_selectedExam != null) _buildStudentsList(),
-                    ],
-                  ),
+        body: AnimatedBuilder(
+          animation: widget.dataProvider,
+          builder: (context, child) {
+            final classes = widget.dataProvider.classes;
+            final exams = widget.dataProvider.exams;
+            final isLoading = widget.dataProvider.isLoading;
+
+            if (isLoading && classes.isEmpty) {
+              return const Center(child: CircularProgressIndicator(color: Colors.white));
+            }
+
+            return RefreshIndicator(
+              onRefresh: () => widget.dataProvider.loadDashboardData(forceRefresh: true),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildClassSelector(),
+                    const SizedBox(height: 20),
+                    if (_selectedClassId != null) _buildExamSelector(),
+                    const SizedBox(height: 20),
+                    if (_selectedExam != null) _buildStudentsList(),
+                  ],
                 ),
               ),
+            );
+          },
+        ),
       ),
     );
   }
 
   Widget _buildClassSelector() {
+    final classes = widget.dataProvider.classes;
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -207,7 +199,7 @@ class _GradesSectionState extends State<GradesSection> {
             ),
           ),
           const SizedBox(height: 16),
-          _classes.isEmpty
+          classes.isEmpty
               ? Center(
                   child: Column(
                     children: [
@@ -236,7 +228,7 @@ class _GradesSectionState extends State<GradesSection> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  items: _classes.map((classData) {
+                  items: classes.map((classData) {
                     return DropdownMenuItem<String>(
                       value: classData['id'],
                         child: Text(classData['name']?.toString() ?? 'common.unknown_class'.tr()),
@@ -248,7 +240,7 @@ class _GradesSectionState extends State<GradesSection> {
                         _selectedClassId = value;
                         _selectedExam = null;
                       });
-                      _loadStudents();
+                      widget.dataProvider.loadClassData(value);
                     }
                   },
                 ),
@@ -421,7 +413,11 @@ class _GradesSectionState extends State<GradesSection> {
   }
 
   Widget _buildStudentsList() {
-    if (_students.isEmpty) {
+    final students = _selectedClassId != null
+        ? widget.dataProvider.getStudents(_selectedClassId!)
+        : [];
+
+    if (students.isEmpty) {
       return Container(
         padding: const EdgeInsets.all(40),
         decoration: BoxDecoration(
@@ -462,7 +458,7 @@ class _GradesSectionState extends State<GradesSection> {
           ),
         ),
         const SizedBox(height: 16),
-        ..._students.map((student) => _buildStudentCard(student)).toList(),
+        ...students.map((student) => _buildStudentCard(student)).toList(),
       ],
     );
   }
@@ -785,7 +781,7 @@ class _GradesSectionState extends State<GradesSection> {
 
                   if (result['success']) {
                     Navigator.pop(context);
-                    await _loadExams();
+                    await widget.dataProvider.loadDashboardData(forceRefresh: true);
 
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
@@ -1099,6 +1095,9 @@ class _GradesSectionState extends State<GradesSection> {
   }
 
   Future<void> _deleteExam(Map<String, dynamic> exam) async {
+    // Optimistic update
+    widget.dataProvider.removeExam(exam['id']);
+
     try {
       final result = await _teacherService.deleteExam(exam['id']);
 
@@ -1111,8 +1110,9 @@ class _GradesSectionState extends State<GradesSection> {
             backgroundColor: Colors.green,
           ),
         );
-        _loadExams();
       } else {
+        // Revert optimistic update on failure
+        widget.dataProvider.loadDashboardData(forceRefresh: true);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('teacher.delete_failed'.tr()),
@@ -1122,6 +1122,8 @@ class _GradesSectionState extends State<GradesSection> {
       }
     } catch (e) {
       if (mounted) {
+        // Revert optimistic update on error
+        widget.dataProvider.loadDashboardData(forceRefresh: true);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('common.delete_error'.tr(namedArgs: {'error': e.toString()})),

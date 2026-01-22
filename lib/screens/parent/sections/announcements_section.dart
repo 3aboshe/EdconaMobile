@@ -1,47 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
-import '../../../services/parent_service.dart';
+import '../../../services/parent_data_provider.dart';
 import '../../../utils/date_formatter.dart';
 
 class AnnouncementsSection extends StatefulWidget {
-  // TextDirection constants to work around analyzer issue
-
   final Map<String, dynamic> student;
+  final ParentDataProvider dataProvider;
 
-  const AnnouncementsSection({super.key, required this.student});
+  const AnnouncementsSection({super.key, required this.student, required this.dataProvider});
 
   @override
   State<AnnouncementsSection> createState() => _AnnouncementsSectionState();
 }
 
 class _AnnouncementsSectionState extends State<AnnouncementsSection> {
-  final ParentService _parentService = ParentService();
-  bool _isLoading = true;
-  List<Map<String, dynamic>> _announcements = [];
-
   @override
   void initState() {
     super.initState();
-    _loadAnnouncements();
-  }
-
-  Future<void> _loadAnnouncements() async {
-    try {
-      final announcements = await _parentService.getAnnouncements();
-      if (mounted) {
-        setState(() {
-          _announcements = announcements;
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
+    widget.dataProvider.loadChildData(widget.student['id']);
   }
 
   bool _isRTL() {
@@ -63,46 +40,48 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
   Widget build(BuildContext context) {
     final isRTL = _isRTL();
 
-    if (_isLoading) {
-      return Center(
-        child: Directionality(
-          textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
-          child: const CupertinoActivityIndicator(radius: 16),
-        ),
-      );
-    }
-
-    if (_announcements.isEmpty) {
-      return Directionality(
-        textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(CupertinoIcons.bell, size: 64, color: Colors.grey[400]),
-              const SizedBox(height: 16),
-              Text(
-                'parent.no_announcements'.tr(),
-                style: TextStyle(fontSize: 18, color: Colors.grey[600]),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
     return Directionality(
       textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
-      child: RefreshIndicator(
-        onRefresh: _loadAnnouncements,
-        child: ListView.builder(
-          padding: const EdgeInsets.all(20),
-          itemCount: _announcements.length,
-          itemBuilder: (context, index) {
-            final announcement = _announcements[index];
-            return _buildAnnouncementCard(announcement);
-          },
-        ),
+      child: AnimatedBuilder(
+        animation: widget.dataProvider,
+        builder: (context, child) {
+          final announcements = widget.dataProvider.announcements;
+          final isLoaded = widget.dataProvider.isChildDataLoaded(widget.student['id']);
+
+          if (!isLoaded && announcements.isEmpty) {
+            return const Center(
+              child: CupertinoActivityIndicator(radius: 16),
+            );
+          }
+
+          if (announcements.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(CupertinoIcons.bell, size: 64, color: Colors.grey[400]),
+                  const SizedBox(height: 16),
+                  Text(
+                    'parent.no_announcements'.tr(),
+                    style: TextStyle(fontSize: 18, color: Colors.grey[600]),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return RefreshIndicator(
+            onRefresh: () => widget.dataProvider.refresh(),
+            child: ListView.builder(
+              padding: const EdgeInsets.all(20),
+              itemCount: announcements.length,
+              itemBuilder: (context, index) {
+                final announcement = announcements[index];
+                return _buildAnnouncementCard(announcement);
+              },
+            ),
+          );
+        },
       ),
     );
   }

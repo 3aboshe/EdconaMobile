@@ -3,12 +3,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:intl/intl.dart';
 import '../../../services/teacher_service.dart';
+import '../../../services/teacher_data_provider.dart';
 import '../../../utils/date_formatter.dart';
 
 class AnnouncementsSection extends StatefulWidget {
   final Map<String, dynamic> teacher;
+  final TeacherDataProvider dataProvider;
 
-  const AnnouncementsSection({super.key, required this.teacher});
+  const AnnouncementsSection({super.key, required this.teacher, required this.dataProvider});
 
   @override
   State<AnnouncementsSection> createState() => _AnnouncementsSectionState();
@@ -16,48 +18,34 @@ class AnnouncementsSection extends StatefulWidget {
 
 class _AnnouncementsSectionState extends State<AnnouncementsSection> {
   final TeacherService _teacherService = TeacherService();
-  bool _isLoading = true;
-  List<Map<String, dynamic>> _announcements = [];
-  List<Map<String, dynamic>> _classes = [];
   String? _selectedClassId;
 
   @override
   void initState() {
     super.initState();
-    _loadData();
+    _initializeData();
   }
 
-  Future<void> _loadData() async {
-    if (!mounted) return;
-    setState(() => _isLoading = true);
-
-    try {
-      final announcements = await _teacherService.getTeacherAnnouncements(
-        widget.teacher['id'],
-      );
-      final classes = await _teacherService.getTeacherClasses(widget.teacher['id']);
-      if (!mounted) return;
-      setState(() {
-        _announcements = announcements;
-        _classes = classes;
-        if (classes.isNotEmpty && _selectedClassId == null) {
+  Future<void> _initializeData() async {
+    await widget.dataProvider.loadDashboardData();
+    if (mounted) {
+      final classes = widget.dataProvider.classes;
+      if (classes.isNotEmpty && _selectedClassId == null) {
+        setState(() {
           _selectedClassId = classes[0]['id'];
-        }
-        _isLoading = false;
-      });
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _announcements = [];
-        _classes = [];
-        _isLoading = false;
-      });
+        });
+      }
     }
   }
 
+  Future<void> _loadData() async {
+    await widget.dataProvider.loadDashboardData(forceRefresh: true);
+  }
+
   List<Map<String, dynamic>> get _filteredAnnouncements {
-    if (_selectedClassId == null) return _announcements;
-    return _announcements.where((ann) {
+    final announcements = widget.dataProvider.announcements;
+    if (_selectedClassId == null) return announcements;
+    return announcements.where((ann) {
       final classIds = ann['classIds'] as List<dynamic>?;
       if (classIds == null || classIds.isEmpty) return true;
       return classIds.contains(_selectedClassId);
@@ -117,7 +105,7 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
                           labelText: 'teacher.class'.tr(),
                           border: const OutlineInputBorder(),
                         ),
-                        items: _classes.map((classData) {
+                        items: widget.dataProvider.classes.map((classData) {
                           return DropdownMenuItem<String>(
                             value: classData['id'],
                             child: Text(classData['name']?.toString() ?? 'common.unknown'.tr()),
@@ -208,9 +196,8 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
                             'createdAt': DateTime.now().toIso8601String(),
                           };
 
-                          setState(() {
-                            _announcements.insert(0, optimisticAnnouncement);
-                          });
+                          // Optimistic update - add to provider immediately
+                          widget.dataProvider.addAnnouncement(optimisticAnnouncement);
 
                           Navigator.pop(currentContext);
 
@@ -230,48 +217,45 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
                             if (!mounted) return;
 
                             if (result['success']) {
-                              if (mounted) {
-                                setState(() {
-                                  final index = _announcements.indexWhere(
-                                    (a) => a['id'] == tempId,
-                                  );
-                                  if (index != -1) {
-                                    _announcements[index] = {
-                                      ..._announcements[index],
-                                      'id':
-                                          result['announcement']?['id'] ??
-                                          tempId,
-                                    };
-                                  }
-                                });
-                                ScaffoldMessenger.of(
-                                  currentContext,
-                                ).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      'teacher.announcement_posted'.tr(),
-                                    ),
-                                    backgroundColor: Colors.green,
-                                  ),
+                              // Update with real ID from backend
+                              if (result['announcement'] != null) {
+                                widget.dataProvider.updateAnnouncement(
+                                  tempId,
+                                  {
+                                    ...optimisticAnnouncement,
+                                    'id': result['announcement']['id'] ?? tempId,
+                                  },
                                 );
                               }
+                              ScaffoldMessenger.of(currentContext).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'teacher.announcement_posted'.tr(),
+                                  ),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
                             } else {
+                              // Revert optimistic update on error
+                              widget.dataProvider.removeAnnouncement(tempId);
                               if (mounted) {
                                 _showAnnouncementError(
-                                  tempId,
                                   titleController.text,
                                   contentController.text,
                                   priority,
+                                  selectedClassId,
                                 );
                               }
                             }
                           } catch (e) {
+                            // Revert optimistic update on error
+                            widget.dataProvider.removeAnnouncement(tempId);
                             if (mounted) {
                               _showAnnouncementError(
-                                tempId,
                                 titleController.text,
                                 contentController.text,
                                 priority,
+                                selectedClassId,
                               );
                             }
                           }
@@ -303,18 +287,11 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
   }
 
   void _showAnnouncementError(
-    String tempId,
     String title,
     String content,
     String priority,
+    String? selectedClassId,
   ) {
-    setState(() {
-      final index = _announcements.indexWhere((a) => a['id'] == tempId);
-      if (index != -1) {
-        _announcements.removeAt(index);
-      }
-    });
-
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('teacher.failed_create_announcement'.tr()),
@@ -323,7 +300,7 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
           label: 'Retry',
           textColor: Colors.white,
           onPressed: () {
-            _showCreateAnnouncementWithRetry(title, content, priority);
+            _showCreateAnnouncementWithRetry(title, content, priority, selectedClassId);
           },
         ),
         duration: const Duration(seconds: 4),
@@ -335,6 +312,7 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
     String title,
     String content,
     String priority,
+    String? selectedClassId,
   ) async {
     final tempId = 'temp_ann_${DateTime.now().millisecondsSinceEpoch}';
 
@@ -352,9 +330,8 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
       'createdAt': DateTime.now().toIso8601String(),
     };
 
-    setState(() {
-      _announcements.insert(0, optimisticAnnouncement);
-    });
+    // Optimistic update - add to provider immediately
+    widget.dataProvider.addAnnouncement(optimisticAnnouncement);
 
     try {
       final result = await _teacherService.createAnnouncement({
@@ -369,31 +346,34 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
       if (!mounted) return;
 
       if (result['success']) {
-        if (mounted) {
-          setState(() {
-            final index = _announcements.indexWhere((a) => a['id'] == tempId);
-            if (index != -1) {
-              _announcements[index] = {
-                ..._announcements[index],
-                'id': result['announcement']?['id'] ?? tempId,
-              };
-            }
-          });
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('teacher.announcement_posted'.tr()),
-              backgroundColor: Colors.green,
-            ),
+        // Update with real ID from backend
+        if (result['announcement'] != null) {
+          widget.dataProvider.updateAnnouncement(
+            tempId,
+            {
+              ...optimisticAnnouncement,
+              'id': result['announcement']['id'] ?? tempId,
+            },
           );
         }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('teacher.announcement_posted'.tr()),
+            backgroundColor: Colors.green,
+          ),
+        );
       } else {
+        // Revert optimistic update on error
+        widget.dataProvider.removeAnnouncement(tempId);
         if (mounted) {
-          _showAnnouncementError(tempId, title, content, priority);
+          _showAnnouncementError(title, content, priority, selectedClassId);
         }
       }
     } catch (e) {
+      // Revert optimistic update on error
+      widget.dataProvider.removeAnnouncement(tempId);
       if (mounted) {
-        _showAnnouncementError(tempId, title, content, priority);
+        _showAnnouncementError(title, content, priority, selectedClassId);
       }
     }
   }
@@ -429,29 +409,38 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
           ),
         ],
       ),
-      body: _isLoading
-          ? const Center(
+      body: AnimatedBuilder(
+        animation: widget.dataProvider,
+        builder: (context, child) {
+          final isLoading = widget.dataProvider.isLoading;
+
+          if (isLoading && widget.dataProvider.classes.isEmpty) {
+            return const Center(
               child: CircularProgressIndicator(color: Color(0xFF0D47A1)),
-            )
-          : RefreshIndicator(
-              onRefresh: _loadData,
-              child: Column(
-                children: [
-                  _buildClassSelector(),
-                  Expanded(
-                    child: _filteredAnnouncements.isEmpty
-                        ? _buildEmptyState()
-                        : ListView.builder(
-                            padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                            itemCount: _filteredAnnouncements.length,
-                            itemBuilder: (context, index) {
-                              return _buildAnnouncementCard(_filteredAnnouncements[index]);
-                            },
-                          ),
-                  ),
-                ],
-              ),
+            );
+          }
+
+          return RefreshIndicator(
+            onRefresh: _loadData,
+            child: Column(
+              children: [
+                _buildClassSelector(),
+                Expanded(
+                  child: _filteredAnnouncements.isEmpty
+                      ? _buildEmptyState()
+                      : ListView.builder(
+                          padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                          itemCount: _filteredAnnouncements.length,
+                          itemBuilder: (context, index) {
+                            return _buildAnnouncementCard(_filteredAnnouncements[index]);
+                          },
+                        ),
+                ),
+              ],
             ),
+          );
+        },
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showCreateAnnouncementDialog,
         backgroundColor: const Color(0xFF0D47A1),
@@ -487,7 +476,7 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
             ),
           ),
           const SizedBox(height: 12),
-          _classes.isEmpty
+          widget.dataProvider.classes.isEmpty
               ? Text(
                   'teacher.grades_page.no_classes_assigned'.tr(),
                   style: TextStyle(color: Colors.grey[600]),
@@ -501,7 +490,7 @@ class _AnnouncementsSectionState extends State<AnnouncementsSection> {
                     ),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   ),
-                  items: _classes.map((classData) {
+                  items: widget.dataProvider.classes.map((classData) {
                     return DropdownMenuItem<String>(
                       value: classData['id'],
                       child: Text(classData['name']?.toString() ?? 'common.unknown'.tr()),

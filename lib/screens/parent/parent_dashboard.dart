@@ -9,6 +9,7 @@ import 'sections/attendance_section.dart';
 import 'sections/announcements_section.dart';
 import 'sections/messages_section.dart';
 import 'dart:ui' as ui;
+import '../../services/parent_data_provider.dart';
 
 class ParentDashboard extends StatefulWidget {
   final Map<String, dynamic> selectedChild;
@@ -24,6 +25,10 @@ class ParentDashboard extends StatefulWidget {
 
 class _ParentDashboardState extends State<ParentDashboard> {
   int _selectedIndex = 0;
+  late final ParentDataProvider _dataProvider;
+
+  // Keep all sections alive for instant switching
+  late final List<Widget> _sections;
 
   // Section title keys for translation
   final List<String> _sectionTitleKeys = [
@@ -34,6 +39,31 @@ class _ParentDashboardState extends State<ParentDashboard> {
     'parent.announcements',
     'parent.messages',
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    // Create a single provider instance for this dashboard session
+    _dataProvider = ParentDataProvider();
+
+    // Initialize the data provider with child data
+    _initializeData();
+
+    // Create sections once with provider passed
+    _sections = [
+      DashboardSection(student: widget.selectedChild, dataProvider: _dataProvider),
+      PerformanceSection(student: widget.selectedChild, dataProvider: _dataProvider),
+      HomeworkSection(student: widget.selectedChild, dataProvider: _dataProvider),
+      AttendanceSection(student: widget.selectedChild, dataProvider: _dataProvider),
+      AnnouncementsSection(student: widget.selectedChild, dataProvider: _dataProvider),
+      MessagesSection(student: widget.selectedChild, dataProvider: _dataProvider),
+    ];
+  }
+
+  Future<void> _initializeData() async {
+    // Load child data in background (non-blocking)
+    _dataProvider.loadChildData(widget.selectedChild['id']);
+  }
 
   bool _isRTL() {
     final locale = context.locale;
@@ -63,7 +93,11 @@ class _ParentDashboardState extends State<ParentDashboard> {
       child: Scaffold(
         backgroundColor: const Color(0xFF0D47A1),
         appBar: _buildAppBar(isRTL),
-        body: _buildBody(),
+        // Use IndexedStack to keep all sections alive for instant switching
+        body: IndexedStack(
+          index: _selectedIndex,
+          children: _sections,
+        ),
         bottomNavigationBar: _buildBottomNav(),
       ),
     );
@@ -183,43 +217,7 @@ class _ParentDashboardState extends State<ParentDashboard> {
                 ),
               ],
       ),
-      // actions: [
-      //   Padding(
-      //     padding: const EdgeInsets.only(right: 16),
-      //     child: CircleAvatar(
-      //       radius: 18,
-      //       backgroundColor: Colors.white.withValues(alpha: 0.2),
-      //       child: Text(
-      //         widget.selectedChild['name'][0].toUpperCase(),
-      //         style: const TextStyle(
-      //           color: Colors.white,
-      //           fontSize: 16,
-      //           fontWeight: FontWeight.w600,
-      //         ),
-      //       ),
-      //     ),
-      //   ),
-      // ],
     );
-  }
-
-  Widget _buildBody() {
-    switch (_selectedIndex) {
-      case 0:
-        return DashboardSection(student: widget.selectedChild);
-      case 1:
-        return PerformanceSection(student: widget.selectedChild);
-      case 2:
-        return HomeworkSection(student: widget.selectedChild);
-      case 3:
-        return AttendanceSection(student: widget.selectedChild);
-      case 4:
-        return AnnouncementsSection(student: widget.selectedChild);
-      case 5:
-        return MessagesSection(student: widget.selectedChild);
-      default:
-        return DashboardSection(student: widget.selectedChild);
-    }
   }
 
   Widget _buildBottomNav() {
@@ -342,5 +340,11 @@ class _ParentDashboardState extends State<ParentDashboard> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _dataProvider.clear();
+    super.dispose();
   }
 }

@@ -5,13 +5,15 @@ import '../../../services/message_service.dart';
 import '../../../services/api_service.dart';
 import '../../../services/auth_service.dart';
 import '../../../services/teacher_service.dart';
+import '../../../services/teacher_data_provider.dart';
 import 'dart:ui' as ui;
 import 'package:edconamobile/models/message.dart';
 
 class MessagesSection extends StatefulWidget {
   final Map<String, dynamic> teacher;
+  final TeacherDataProvider dataProvider;
 
-  const MessagesSection({super.key, required this.teacher});
+  const MessagesSection({super.key, required this.teacher, required this.dataProvider});
 
   @override
   State<MessagesSection> createState() => _MessagesSectionState();
@@ -31,7 +33,7 @@ class _MessagesSectionState extends State<MessagesSection> {
   @override
   void initState() {
     super.initState();
-    _loadData();
+    _initializeData();
   }
 
   bool _isRTL() {
@@ -39,14 +41,37 @@ class _MessagesSectionState extends State<MessagesSection> {
     return ['ar', 'ckb', 'ku', 'bhn', 'arc', 'bad', 'bdi', 'sdh', 'kmr'].contains(locale.languageCode);
   }
 
-  Future<void> _loadData() async {
+  Future<void> _initializeData() async {
     try {
       final user = await _authService.getCurrentUser();
-      final classes = await _teacherService.getTeacherClasses(widget.teacher['id']);
+      await widget.dataProvider.loadDashboardData();
       if (!mounted) return;
       setState(() {
         _currentUser = user;
-        _classes = classes;
+        final classes = widget.dataProvider.classes;
+        if (classes.isNotEmpty && _selectedClassId == null) {
+          _selectedClassId = classes[0]['id'];
+        }
+      });
+
+      await _loadParents();
+    } catch (e) {
+      // Handle error
+    }
+  }
+
+  Future<void> _loadData() async {
+    await widget.dataProvider.loadDashboardData(forceRefresh: true);
+    await _loadParents();
+  }
+
+  Future<void> _loadParents() async {
+    try {
+      final user = await _authService.getCurrentUser();
+      if (!mounted) return;
+      setState(() {
+        _currentUser = user;
+        final classes = widget.dataProvider.classes;
         if (classes.isNotEmpty && _selectedClassId == null) {
           _selectedClassId = classes[0]['id'];
         }
@@ -167,27 +192,36 @@ class _MessagesSectionState extends State<MessagesSection> {
             ),
           ),
         ),
-        body: _isLoading
-            ? const Center(child: CircularProgressIndicator(color: Colors.white))
-            : RefreshIndicator(
-                onRefresh: _loadData,
-                child: Column(
-                  children: [
-                    _buildClassSelector(),
-                    Expanded(
-                      child: _filteredParents.isEmpty
-                          ? _buildEmptyState()
-                          : ListView.builder(
-                              padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                              itemCount: _filteredParents.length,
-                              itemBuilder: (context, index) {
-                                return _buildParentCard(_filteredParents[index]);
-                              },
-                            ),
-                    ),
-                  ],
-                ),
+        body: AnimatedBuilder(
+          animation: widget.dataProvider,
+          builder: (context, child) {
+            final isLoading = widget.dataProvider.isLoading;
+
+            if (isLoading && widget.dataProvider.classes.isEmpty) {
+              return const Center(child: CircularProgressIndicator(color: Colors.white));
+            }
+
+            return RefreshIndicator(
+              onRefresh: _loadData,
+              child: Column(
+                children: [
+                  _buildClassSelector(),
+                  Expanded(
+                    child: _filteredParents.isEmpty
+                        ? _buildEmptyState()
+                        : ListView.builder(
+                            padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                            itemCount: _filteredParents.length,
+                            itemBuilder: (context, index) {
+                              return _buildParentCard(_filteredParents[index]);
+                            },
+                          ),
+                  ),
+                ],
               ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -219,7 +253,7 @@ class _MessagesSectionState extends State<MessagesSection> {
             ),
           ),
           const SizedBox(height: 12),
-          _classes.isEmpty
+          widget.dataProvider.classes.isEmpty
               ? Text(
                   'teacher.grades_page.no_classes_assigned'.tr(),
                   style: TextStyle(color: Colors.grey[600]),
@@ -233,7 +267,7 @@ class _MessagesSectionState extends State<MessagesSection> {
                     ),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   ),
-                  items: _classes.map((classData) {
+                  items: widget.dataProvider.classes.map((classData) {
                     return DropdownMenuItem<String>(
                       value: classData['id'],
                       child: Text(classData['name']?.toString() ?? 'common.unknown'.tr()),
@@ -460,7 +494,6 @@ class _ChatScreenState extends State<ChatScreen> {
 
   List<Message> _messages = [];
   bool _isLoading = true;
-  bool _isSending = false;
 
   @override
   void initState() {
@@ -511,17 +544,39 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Future<void> _sendMessage() async {
     final messageContent = _messageController.text.trim();
-    if (messageContent.isEmpty || _isSending) return;
+    if (messageContent.isEmpty) return;
 
-    setState(() => _isSending = true);
+    // Create optimistic message
+    final tempId = 'temp_msg_${DateTime.now().millisecondsSinceEpoch}';
+    final now = DateTime.now();
+    final optimisticMessage = Message(
+      id: tempId,
+      senderId: widget.currentUser['id'],
+      receiverId: widget.otherUser['id'],
+      content: messageContent,
+      type: MessageType.TEXT,
+      timestamp: now,
+      isRead: false,
+      schoolId: widget.currentUser['schoolId'] ?? 'default_school',
+      createdAt: now,
+    );
 
+    // Add to messages list immediately (optimistic update)
+    setState(() {
+      _messages.add(optimisticMessage);
+    });
+    _messageController.clear();
+    _messageFocusNode.requestFocus();
+    _scrollToBottom();
+
+    // Send to backend in background
     try {
       final messageData = {
         'senderId': widget.currentUser['id'],
         'receiverId': widget.otherUser['id'],
         'content': messageContent,
         'type': 'TEXT',
-        'schoolId': widget.currentUser['schoolId'] ?? 'default_school', // Fallback or handle properly
+        'schoolId': widget.currentUser['schoolId'] ?? 'default_school',
       };
 
       if (widget.otherUser['childId'] != null) {
@@ -530,17 +585,29 @@ class _ChatScreenState extends State<ChatScreen> {
 
       final result = await _messageService.sendMessage(messageData);
 
-      if (result != null) {
-        _messageController.clear();
-        _messageFocusNode.requestFocus();
+      if (result == null) {
+        // Backend failed - remove optimistic message
         if (mounted) {
-          setState(() => _isSending = false);
-          _loadMessages();
+          setState(() {
+            _messages.removeWhere((m) => m.id == tempId);
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                              content: Text('Failed to send message'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
         }
+      } else {
+        // Successfully sent - update with real message data if needed
+        // The optimistic message is already in the list, no need to reload
       }
     } catch (e) {
+      // Revert optimistic update on error
       if (mounted) {
-        setState(() => _isSending = false);
+        setState(() {
+          _messages.removeWhere((m) => m.id == tempId);
+        });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(e.toString()),
@@ -802,25 +869,16 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           const SizedBox(width: 8),
           Container(
-            decoration: BoxDecoration(
-              color: _isSending ? Colors.grey : const Color(0xFF0D47A1),
+            decoration: const BoxDecoration(
+              color: Color(0xFF0D47A1),
               shape: BoxShape.circle,
             ),
             child: IconButton(
-              onPressed: _isSending ? null : _sendMessage,
-              icon: _isSending
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
-                    )
-                  : const Icon(
-                      Icons.send,
-                      color: Colors.white,
-                    ),
+              onPressed: _sendMessage,
+              icon: const Icon(
+                Icons.send,
+                color: Colors.white,
+              ),
             ),
           ),
         ],

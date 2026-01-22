@@ -1,23 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
-import '../../../services/parent_service.dart';
+import '../../../services/parent_data_provider.dart';
 import '../../../utils/date_formatter.dart';
 import '../homework_detail_screen.dart';
 
-
-
 class HomeworkSection extends StatefulWidget {
-
-
-// TextDirection constants to work around analyzer issue
-
-
   final Map<String, dynamic> student;
+  final ParentDataProvider dataProvider;
 
   const HomeworkSection({
     super.key,
     required this.student,
+    required this.dataProvider,
   });
 
   @override
@@ -25,38 +20,19 @@ class HomeworkSection extends StatefulWidget {
 }
 
 class _HomeworkSectionState extends State<HomeworkSection> {
-  final ParentService _parentService = ParentService();
   bool _isLoading = true;
-  List<Map<String, dynamic>> _homework = [];
   String _selectedFilter = 'all'; // all, pending, submitted, overdue
 
   @override
   void initState() {
     super.initState();
-    _loadHomework();
-  }
-
-  Future<void> _loadHomework() async {
-    try {
-      final homework = await _parentService.getChildHomework(widget.student['id']);
-      if (mounted) {
-        setState(() {
-          _homework = homework;
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
+    widget.dataProvider.loadChildData(widget.student['id']);
   }
 
   List<Map<String, dynamic>> get _filteredHomework {
-    if (_selectedFilter == 'all') return _homework;
-    return _homework.where((hw) => hw['status']?.toLowerCase() == _selectedFilter).toList();
+    final homework = widget.dataProvider.getHomework(widget.student['id']);
+    if (_selectedFilter == 'all') return homework;
+    return homework.where((hw) => hw['status']?.toLowerCase() == _selectedFilter).toList();
   }
 
   bool _isRTL() {
@@ -68,102 +44,107 @@ class _HomeworkSectionState extends State<HomeworkSection> {
   Widget build(BuildContext context) {
     final isRTL = _isRTL();
 
-    if (_isLoading) {
-      return Center(
-        child: Directionality(
-          textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
-          child: const CupertinoActivityIndicator(radius: 16),
-        ),
-      );
-    }
-
-    final pendingCount = _homework.where((hw) => hw['status'] == 'pending').length;
-    final submittedCount = _homework.where((hw) => hw['status'] == 'submitted').length;
-    final overdueCount = _homework.where((hw) => hw['status'] == 'overdue').length;
-
     return Directionality(
       textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
-      child: RefreshIndicator(
-        onRefresh: _loadHomework,
-        child: ListView(
-          padding: const EdgeInsets.all(20),
-          children: [
-            // Stats Cards
-            Row(
+      child: AnimatedBuilder(
+        animation: widget.dataProvider,
+        builder: (context, child) {
+          final homework = widget.dataProvider.getHomework(widget.student['id']);
+          final isLoaded = widget.dataProvider.isChildDataLoaded(widget.student['id']);
+
+          if (!isLoaded && homework.isEmpty) {
+            return const Center(
+              child: CupertinoActivityIndicator(radius: 16),
+            );
+          }
+
+          final pendingCount = homework.where((hw) => hw['status'] == 'pending').length;
+          final submittedCount = homework.where((hw) => hw['status'] == 'submitted').length;
+          final overdueCount = homework.where((hw) => hw['status'] == 'overdue').length;
+
+          return RefreshIndicator(
+            onRefresh: () => widget.dataProvider.refreshChildData(widget.student['id']),
+            child: ListView(
+              padding: const EdgeInsets.all(20),
               children: [
-                Expanded(
-                  child: _buildStatCard(
-                    'parent.pending'.tr(),
-                    pendingCount.toString(),
-                    const Color(0xFFFF9500),
-                    CupertinoIcons.clock,
+                // Stats Cards
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildStatCard(
+                        'parent.pending'.tr(),
+                        pendingCount.toString(),
+                        const Color(0xFFFF9500),
+                        CupertinoIcons.clock,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _buildStatCard(
+                        'parent.submitted'.tr(),
+                        submittedCount.toString(),
+                        const Color(0xFF34C759),
+                        CupertinoIcons.checkmark_circle,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 12),
+
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildStatCard(
+                        'parent.overdue'.tr(),
+                        overdueCount.toString(),
+                        const Color(0xFFFF3B30),
+                        CupertinoIcons.exclamationmark_triangle,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _buildStatCard(
+                        'parent.total'.tr(),
+                        homework.length.toString(),
+                        const Color(0xFF007AFF),
+                        CupertinoIcons.doc_text,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 24),
+
+                // Filter Chips
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      _buildFilterChip('common.all'.tr(), 'all'),
+                      const SizedBox(width: 8),
+                      _buildFilterChip('parent.pending'.tr(), 'pending'),
+                      const SizedBox(width: 8),
+                      _buildFilterChip('parent.submitted'.tr(), 'submitted'),
+                      const SizedBox(width: 8),
+                      _buildFilterChip('parent.overdue'.tr(), 'overdue'),
+                    ],
                   ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildStatCard(
-                    'parent.submitted'.tr(),
-                    submittedCount.toString(),
-                    const Color(0xFF34C759),
-                    CupertinoIcons.checkmark_circle,
-                  ),
-                ),
+
+                const SizedBox(height: 20),
+
+                // Homework List
+                if (_filteredHomework.isEmpty)
+                  _buildEmptyState()
+                else
+                  ..._filteredHomework.map((hw) => _buildHomeworkCard(hw)).toList(),
+
+                const SizedBox(height: 40),
               ],
             ),
-
-            const SizedBox(height: 12),
-
-            Row(
-              children: [
-                Expanded(
-                  child: _buildStatCard(
-                    'parent.overdue'.tr(),
-                    overdueCount.toString(),
-                    const Color(0xFFFF3B30),
-                    CupertinoIcons.exclamationmark_triangle,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildStatCard(
-                    'parent.total'.tr(),
-                    _homework.length.toString(),
-                    const Color(0xFF007AFF),
-                    CupertinoIcons.doc_text,
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 24),
-
-            // Filter Chips
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  _buildFilterChip('common.all'.tr(), 'all'),
-                  const SizedBox(width: 8),
-                  _buildFilterChip('parent.pending'.tr(), 'pending'),
-                  const SizedBox(width: 8),
-                  _buildFilterChip('parent.submitted'.tr(), 'submitted'),
-                  const SizedBox(width: 8),
-                  _buildFilterChip('parent.overdue'.tr(), 'overdue'),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            // Homework List
-            if (_filteredHomework.isEmpty)
-              _buildEmptyState()
-            else
-              ..._filteredHomework.map((hw) => _buildHomeworkCard(hw)),
-
-            const SizedBox(height: 40),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

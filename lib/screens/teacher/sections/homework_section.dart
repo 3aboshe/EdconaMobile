@@ -5,14 +5,16 @@ import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:io';
 import '../../../services/teacher_service.dart';
+import '../../../services/teacher_data_provider.dart';
 import 'dart:ui' as ui;
 import '../../../utils/date_formatter.dart';
 import 'create_homework_screen.dart';
 
 class HomeworkSection extends StatefulWidget {
   final Map<String, dynamic> teacher;
+  final TeacherDataProvider dataProvider;
 
-  const HomeworkSection({super.key, required this.teacher});
+  const HomeworkSection({super.key, required this.teacher, required this.dataProvider});
 
   @override
   State<HomeworkSection> createState() => _HomeworkSectionState();
@@ -28,7 +30,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
   @override
   void initState() {
     super.initState();
-    _loadData();
+    _initializeData();
   }
 
   bool _isRTL() {
@@ -36,33 +38,34 @@ class _HomeworkSectionState extends State<HomeworkSection> {
     return ['ar', 'ckb', 'ku', 'bhn', 'arc', 'bad', 'bdi', 'sdh', 'kmr'].contains(locale.languageCode);
   }
 
-  Future<void> _loadData() async {
-    setState(() => _isLoading = true);
-
-    try {
-      final homework = await _teacherService.getTeacherHomework(widget.teacher['id']);
-      final classes = await _teacherService.getTeacherClasses(widget.teacher['id']);
-
-      setState(() {
-        _homework = homework;
-        _classes = classes;
-        if (classes.isNotEmpty && _selectedClassId == null) {
+  Future<void> _initializeData() async {
+    await widget.dataProvider.loadDashboardData();
+    if (mounted) {
+      final classes = widget.dataProvider.classes;
+      if (classes.isNotEmpty && _selectedClassId == null) {
+        setState(() {
           _selectedClassId = classes[0]['id'];
-        }
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _homework = [];
-        _classes = [];
-        _isLoading = false;
-      });
+        });
+      }
+    }
+  }
+
+  Future<void> _loadData() async {
+    await widget.dataProvider.loadDashboardData(forceRefresh: true);
+    if (mounted) {
+      final classes = widget.dataProvider.classes;
+      if (classes.isNotEmpty && _selectedClassId == null) {
+        setState(() {
+          _selectedClassId = classes[0]['id'];
+        });
+      }
     }
   }
 
   List<Map<String, dynamic>> get _filteredHomework {
-    if (_selectedClassId == null) return _homework;
-    return _homework.where((hw) {
+    final homework = widget.dataProvider.homework;
+    if (_selectedClassId == null) return homework;
+    return homework.where((hw) {
       final classIds = hw['classIds'] as List<dynamic>?;
       if (classIds == null || classIds.isEmpty) return true;
       return classIds.contains(_selectedClassId);
@@ -100,44 +103,53 @@ class _HomeworkSectionState extends State<HomeworkSection> {
                   MaterialPageRoute(
                     builder: (context) => CreateHomeworkScreen(
                       teacher: widget.teacher,
-                      classes: _classes,
+                      classes: widget.dataProvider.classes,
+                      dataProvider: widget.dataProvider,
                     ),
                   ),
                 );
-                if (result == true) {
-                  _loadData();
-                }
               },
               icon: const Icon(Icons.add, color: Colors.white, size: 28),
             ),
           ],
         ),
-        body: _isLoading
-            ? const Center(child: CircularProgressIndicator(color: Colors.white))
-            : RefreshIndicator(
-                onRefresh: _loadData,
-                child: Column(
-                  children: [
-                    _buildClassSelector(),
-                    Expanded(
-                      child: _filteredHomework.isEmpty
-                          ? _buildEmptyState()
-                          : ListView.builder(
-                              padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                              itemCount: _filteredHomework.length,
-                              itemBuilder: (context, index) {
-                                return _buildHomeworkCard(_filteredHomework[index]);
-                              },
-                            ),
-                    ),
-                  ],
-                ),
+        body: AnimatedBuilder(
+          animation: widget.dataProvider,
+          builder: (context, child) {
+            final isLoading = widget.dataProvider.isLoading;
+
+            if (isLoading && widget.dataProvider.classes.isEmpty) {
+              return const Center(child: CircularProgressIndicator(color: Colors.white));
+            }
+
+            return RefreshIndicator(
+              onRefresh: _loadData,
+              child: Column(
+                children: [
+                  _buildClassSelector(),
+                  Expanded(
+                    child: _filteredHomework.isEmpty
+                        ? _buildEmptyState()
+                        : ListView.builder(
+                            padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                            itemCount: _filteredHomework.length,
+                            itemBuilder: (context, index) {
+                              return _buildHomeworkCard(_filteredHomework[index]);
+                            },
+                          ),
+                  ),
+                ],
               ),
+            );
+          },
+        ),
       ),
     );
   }
 
   Widget _buildClassSelector() {
+    final classes = widget.dataProvider.classes;
+
     return Container(
       margin: const EdgeInsets.all(20),
       padding: const EdgeInsets.all(16),
@@ -164,7 +176,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
             ),
           ),
           const SizedBox(height: 12),
-          _classes.isEmpty
+          classes.isEmpty
               ? Text(
                   'teacher.grades_page.no_classes_assigned'.tr(),
                   style: TextStyle(color: Colors.grey[600]),
@@ -178,7 +190,7 @@ class _HomeworkSectionState extends State<HomeworkSection> {
                     ),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   ),
-                  items: _classes.map((classData) {
+                  items: classes.map((classData) {
                     return DropdownMenuItem<String>(
                       value: classData['id'],
                       child: Text(classData['name']?.toString() ?? 'common.unknown'.tr()),
@@ -983,13 +995,13 @@ class _HomeworkSectionState extends State<HomeworkSection> {
                       if (!mounted) return;
                       Navigator.pop(context);
                       if (result['success']) {
+                        await widget.dataProvider.loadDashboardData(forceRefresh: true);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text('teacher.homework_updated'.tr()),
                             backgroundColor: Colors.green,
                           ),
                         );
-                        _loadData();
                       }
                     } catch (e) {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -1057,20 +1069,17 @@ class _HomeworkSectionState extends State<HomeworkSection> {
   }
 
   Future<void> _deleteHomework(Map<String, dynamic> homework) async {
+    // Optimistic update
+    widget.dataProvider.removeHomework(homework['id']);
+
     try {
       final result = await _teacherService.deleteHomework(homework['id']);
 
       if (!mounted) return;
 
-      if (result['success']) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('teacher.homework_deleted'.tr()),
-            backgroundColor: Colors.green,
-          ),
-        );
-        _loadData();
-      } else {
+      if (!result['success']) {
+        // Revert optimistic update on failure
+        widget.dataProvider.loadDashboardData(forceRefresh: true);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('teacher.delete_failed'.tr()),
@@ -1080,6 +1089,8 @@ class _HomeworkSectionState extends State<HomeworkSection> {
       }
     } catch (e) {
       if (mounted) {
+        // Revert optimistic update on error
+        widget.dataProvider.loadDashboardData(forceRefresh: true);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('common.delete_error'.tr(namedArgs: {'error': e.toString()})),

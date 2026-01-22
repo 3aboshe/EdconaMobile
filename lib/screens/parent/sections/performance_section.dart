@@ -1,22 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
-import '../../../services/parent_service.dart';
+import '../../../services/parent_data_provider.dart';
 import '../../../utils/date_formatter.dart';
 
-
-
 class PerformanceSection extends StatefulWidget {
-
-
-// TextDirection constants to work around analyzer issue
-
-
   final Map<String, dynamic> student;
+  final ParentDataProvider dataProvider;
 
   const PerformanceSection({
     super.key,
     required this.student,
+    required this.dataProvider,
   });
 
   @override
@@ -24,32 +19,10 @@ class PerformanceSection extends StatefulWidget {
 }
 
 class _PerformanceSectionState extends State<PerformanceSection> {
-  final ParentService _parentService = ParentService();
-  bool _isLoading = true;
-  List<Map<String, dynamic>> _grades = [];
-
   @override
   void initState() {
     super.initState();
-    _loadGrades();
-  }
-
-  Future<void> _loadGrades() async {
-    try {
-      final grades = await _parentService.getChildGrades(widget.student['id']);
-      if (mounted) {
-        setState(() {
-          _grades = grades;
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
+    widget.dataProvider.loadChildData(widget.student['id']);
   }
 
   bool _isRTL() {
@@ -61,138 +34,142 @@ class _PerformanceSectionState extends State<PerformanceSection> {
   Widget build(BuildContext context) {
     final isRTL = _isRTL();
 
-    if (_isLoading) {
-      return Center(
-        child: Directionality(
-          textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
-          child: const CupertinoActivityIndicator(radius: 16),
-        ),
-      );
-    }
-
-    if (_grades.isEmpty) {
-      return Directionality(
-        textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                CupertinoIcons.chart_bar,
-                size: 64,
-                color: Colors.grey[400],
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'parent.no_grades'.tr(),
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.grey[600],
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    // Calculate average
-    final avgScore = _grades.map((g) => (g['score'] / g['totalScore'] * 100)).reduce((a, b) => a + b) / _grades.length;
-
     return Directionality(
       textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
-      child: RefreshIndicator(
-        onRefresh: _loadGrades,
-        child: ListView(
-          padding: const EdgeInsets.all(20),
-          children: [
-            // Overall Performance Card
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF34C759), Color(0xFF30D158)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF34C759).withValues(alpha: 0.3),
-                    blurRadius: 20,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
-              ),
+      child: AnimatedBuilder(
+        animation: widget.dataProvider,
+        builder: (context, child) {
+          final grades = widget.dataProvider.getGrades(widget.student['id']);
+          final isLoaded = widget.dataProvider.isChildDataLoaded(widget.student['id']);
+
+          if (!isLoaded && grades.isEmpty) {
+            return const Center(
+              child: CupertinoActivityIndicator(radius: 16),
+            );
+          }
+
+          if (grades.isEmpty) {
+            return Center(
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    'parent.overall_average'.tr(),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
+                  Icon(
+                    CupertinoIcons.chart_bar,
+                    size: 64,
+                    color: Colors.grey[400],
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 16),
                   Text(
-                    '${avgScore.toStringAsFixed(1)}%',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 48,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '${_grades.length} ${_grades.length == 1 ? 'parent.grade'.tr() : 'parent.grades'.tr()}',
+                    'parent.no_grades'.tr(),
                     style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.9),
-                      fontSize: 14,
+                      fontSize: 18,
+                      color: Colors.grey[600],
                     ),
                   ),
                 ],
               ),
-            ),
+            );
+          }
 
-            const SizedBox(height: 32),
+          // Calculate average
+          final avgScore = grades.isNotEmpty
+              ? grades.map((g) => ((g['marksObtained'] ?? 0) / (g['maxMarks'] ?? 1) * 100)).reduce((a, b) => a + b) / grades.length
+              : 0.0;
 
-            // Section Header
-            Row(
+          return RefreshIndicator(
+            onRefresh: () => widget.dataProvider.refreshChildData(widget.student['id']),
+            child: ListView(
+              padding: const EdgeInsets.all(20),
               children: [
-                const Icon(
-                  CupertinoIcons.list_bullet,
-                  color: Colors.white,
-                  size: 20,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'parent.all_grades'.tr(),
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                // Overall Performance Card
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF34C759), Color(0xFF30D158)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF34C759).withValues(alpha: 0.3),
+                        blurRadius: 20,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        'parent.overall_average'.tr(),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        '${avgScore.toStringAsFixed(1)}%',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 48,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        '${grades.length} ${grades.length == 1 ? 'parent.grade'.tr() : 'parent.grades'.tr()}',
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.9),
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
+
+                const SizedBox(height: 32),
+
+                // Section Header
+                Row(
+                  children: [
+                    const Icon(
+                      CupertinoIcons.list_bullet,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'parent.all_grades'.tr(),
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 16),
+
+                // Grades List
+                ...grades.map((grade) => _buildGradeCard(grade)),
+
+                const SizedBox(height: 40),
               ],
             ),
-
-            const SizedBox(height: 16),
-
-            // Grades List
-            ..._grades.map((grade) => _buildGradeCard(grade)),
-
-            const SizedBox(height: 40),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
 
   Widget _buildGradeCard(Map<String, dynamic> grade) {
-    final percentage = (grade['score'] / grade['totalScore'] * 100);
-    final gradeColor = _getGradeColor(grade['grade']);
-    
+    final percentage = ((grade['marksObtained'] ?? 0) / (grade['maxMarks'] ?? 1) * 100);
+    final gradeColor = _getGradeColor(percentage);
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
@@ -223,7 +200,7 @@ class _PerformanceSectionState extends State<PerformanceSection> {
                   ),
                   child: Center(
                     child: Text(
-                      grade['grade'],
+                      '${grade['marksObtained'] ?? 0}',
                       style: TextStyle(
                         color: gradeColor,
                         fontSize: 24,
@@ -262,7 +239,7 @@ class _PerformanceSectionState extends State<PerformanceSection> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      '${grade['score']}/${grade['totalScore']}',
+                      '${grade['marksObtained'] ?? 0}/${grade['maxMarks'] ?? 0}',
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -333,23 +310,11 @@ class _PerformanceSectionState extends State<PerformanceSection> {
     );
   }
 
-  Color _getGradeColor(String grade) {
-    switch (grade.toUpperCase()) {
-      case 'A':
-      case 'A+':
-        return const Color(0xFF34C759);
-      case 'B':
-      case 'B+':
-        return const Color(0xFF007AFF);
-      case 'C':
-      case 'C+':
-        return const Color(0xFFFF9500);
-      case 'D':
-      case 'F':
-        return const Color(0xFFFF3B30);
-      default:
-        return Colors.grey;
-    }
+  Color _getGradeColor(double percentage) {
+    if (percentage >= 80) return const Color(0xFF34C759);
+    if (percentage >= 60) return const Color(0xFF007AFF);
+    if (percentage >= 40) return const Color(0xFFFF9500);
+    return const Color(0xFFFF3B30);
   }
 
   String _formatDate(dynamic dateValue) {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:easy_localization/easy_localization.dart';
-import '../../services/teacher_service.dart';
+import '../../services/teacher_data_provider.dart';
 import 'sections/grades_section.dart';
 import 'sections/homework_section.dart';
 import 'sections/attendance_section.dart';
@@ -24,21 +24,45 @@ class TeacherDashboard extends StatefulWidget {
 }
 
 class _TeacherDashboardState extends State<TeacherDashboard> {
-  final TeacherService _teacherService = TeacherService();
+  late final TeacherDataProvider _dataProvider;
+  int _selectedIndex = 0;
+
+  // Map section index to section key
+  final Map<int, String> _sectionKeyMap = {
+    0: 'grades',
+    1: 'homework',
+    2: 'attendance',
+    3: 'announcements',
+    4: 'messages',
+    5: 'leaderboard',
+  };
+
+  // Keep all sections alive for instant switching
+  late final List<Widget> _sections;
 
   @override
   void initState() {
     super.initState();
-    _loadDashboardStats();
+    // Create a single provider instance for this dashboard session
+    _dataProvider = TeacherDataProvider();
+
+    // Initialize the data provider
+    _initializeData();
+
+    // Create sections once with provider passed
+    _sections = [
+      GradesSection(teacher: widget.teacher, dataProvider: _dataProvider),
+      HomeworkSection(teacher: widget.teacher, dataProvider: _dataProvider),
+      AttendanceSection(teacher: widget.teacher, dataProvider: _dataProvider),
+      AnnouncementsSection(teacher: widget.teacher, dataProvider: _dataProvider),
+      MessagesSection(teacher: widget.teacher, dataProvider: _dataProvider),
+      LeaderboardSection(teacher: widget.teacher, dataProvider: _dataProvider),
+    ];
   }
 
-  Future<void> _loadDashboardStats() async {
-    try {
-      // Get teacher's classes
-      await _teacherService.getTeacherClasses(widget.teacher['id']);
-    } catch (e) {
-      // Silently handle errors
-    }
+  Future<void> _initializeData() async {
+    // Load dashboard data in background (non-blocking)
+    _dataProvider.loadDashboardData();
   }
 
   bool _isRTL() {
@@ -202,8 +226,10 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
   }
 
   Widget _buildBody() {
+    // Use IndexedStack to keep the selected section alive
+    // But also show the welcome card and section cards
     return RefreshIndicator(
-      onRefresh: () async => await _loadDashboardStats(),
+      onRefresh: () async => await _dataProvider.refresh(),
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         child: Column(
@@ -220,70 +246,78 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
   }
 
   Widget _buildWelcomeCard() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF007AFF), Color(0xFF0051D5)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF007AFF).withValues(alpha: 0.3),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(
-                  CupertinoIcons.book_fill,
-                  color: Colors.white,
-                  size: 28,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.teacher['subject'] ?? '',
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.9),
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'teacher.welcome_message'.tr(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
+    return AnimatedBuilder(
+      animation: _dataProvider,
+      builder: (context, child) {
+        final classes = _dataProvider.classes;
+        final summary = _dataProvider.summary;
+
+        return Container(
+          margin: const EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [Color(0xFF007AFF), Color(0xFF0051D5)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF007AFF).withValues(alpha: 0.3),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
               ),
             ],
           ),
-        ],
-      ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      CupertinoIcons.book_fill,
+                      color: Colors.white,
+                      size: 28,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.teacher['subject'] ?? '',
+                          style: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.9),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'teacher.welcome_message'.tr(),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -363,6 +397,11 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
   }
 
   Widget _buildSectionCard(Map<String, dynamic> section) {
+    final index = _sectionKeyMap.entries.firstWhere(
+      (entry) => entry.value == section['key'],
+      orElse: () => _sectionKeyMap.entries.first,
+    ).key;
+
     return Semantics(
       label: section['title'] as String,
       hint: section['subtitle'] as String,
@@ -371,7 +410,13 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(16),
         child: InkWell(
-          onTap: () => _navigateToSection(section['key'] as String),
+          onTap: () {
+            setState(() {
+              _selectedIndex = index;
+            });
+            // Then navigate to the section screen
+            _navigateToSection(section['key'] as String);
+          },
           borderRadius: BorderRadius.circular(16),
           child: Ink(
             padding: const EdgeInsets.all(20),
@@ -446,30 +491,36 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
     Widget page;
     switch (sectionKey) {
       case 'grades':
-        page = GradesSection(teacher: widget.teacher);
+        page = GradesSection(teacher: widget.teacher, dataProvider: _dataProvider);
         break;
       case 'homework':
-        page = HomeworkSection(teacher: widget.teacher);
+        page = HomeworkSection(teacher: widget.teacher, dataProvider: _dataProvider);
         break;
       case 'attendance':
-        page = AttendanceSection(teacher: widget.teacher);
+        page = AttendanceSection(teacher: widget.teacher, dataProvider: _dataProvider);
         break;
       case 'announcements':
-        page = AnnouncementsSection(teacher: widget.teacher);
+        page = AnnouncementsSection(teacher: widget.teacher, dataProvider: _dataProvider);
         break;
       case 'messages':
-        page = MessagesSection(teacher: widget.teacher);
+        page = MessagesSection(teacher: widget.teacher, dataProvider: _dataProvider);
         break;
       case 'leaderboard':
-        page = LeaderboardSection(teacher: widget.teacher);
+        page = LeaderboardSection(teacher: widget.teacher, dataProvider: _dataProvider);
         break;
       default:
-        page = GradesSection(teacher: widget.teacher);
+        page = GradesSection(teacher: widget.teacher, dataProvider: _dataProvider);
     }
 
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => page),
     );
+  }
+
+  @override
+  void dispose() {
+    _dataProvider.clear();
+    super.dispose();
   }
 }

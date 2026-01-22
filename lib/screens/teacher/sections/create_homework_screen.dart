@@ -6,16 +6,19 @@ import 'package:file_picker/file_picker.dart';
 import 'dart:io';
 import 'dart:ui' as ui;
 import '../../../services/teacher_service.dart';
+import '../../../services/teacher_data_provider.dart';
 import '../../../utils/date_formatter.dart';
 
 class CreateHomeworkScreen extends StatefulWidget {
   final Map<String, dynamic> teacher;
   final List<Map<String, dynamic>> classes;
+  final TeacherDataProvider dataProvider;
 
   const CreateHomeworkScreen({
     super.key,
     required this.teacher,
     required this.classes,
+    required this.dataProvider,
   });
 
   @override
@@ -31,7 +34,6 @@ class _CreateHomeworkScreenState extends State<CreateHomeworkScreen> {
   String? _selectedClassId;
   DateTime _dueDate = DateTime.now().add(const Duration(days: 7));
   List<File> _selectedFiles = [];
-  bool _isCreating = false;
 
   bool _isRTL() {
     final locale = context.locale;
@@ -90,8 +92,37 @@ class _CreateHomeworkScreenState extends State<CreateHomeworkScreen> {
       return;
     }
 
-    setState(() => _isCreating = true);
+    // Optimistic update - add homework to provider immediately
+    final tempId = 'temp_hw_${DateTime.now().millisecondsSinceEpoch}';
+    final optimisticHomework = {
+      'id': tempId,
+      'title': _titleController.text.trim(),
+      'subject': _subjectController.text.trim(),
+      'description': _descriptionController.text.trim(),
+      'dueDate': DateFormat('yyyy-MM-dd').format(_dueDate),
+      'assignedDate': DateFormat('yyyy-MM-dd').format(DateTime.now()),
+      'teacherId': widget.teacher['id']?.toString() ?? '',
+      'classIds': [_selectedClassId!],
+      'teacherName': widget.teacher['name'],
+      'teacherSubject': widget.teacher['subject'],
+      'createdAt': DateTime.now().toIso8601String(),
+    };
 
+    // Add to provider optimistically
+    widget.dataProvider.addHomework(optimisticHomework);
+
+    // Show success and navigate back immediately
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('teacher.homework_created'.tr()),
+          backgroundColor: Colors.green,
+        ),
+      );
+      Navigator.pop(context, true);
+    }
+
+    // Send to backend in background
     try {
       final result = await _teacherService.createHomework({
         'title': _titleController.text.trim(),
@@ -103,23 +134,13 @@ class _CreateHomeworkScreenState extends State<CreateHomeworkScreen> {
         'classIds': [_selectedClassId!],
       }, files: _selectedFiles.isNotEmpty ? _selectedFiles : null);
 
-      if (!mounted) return;
-
-      if (result['success']) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('teacher.homework_created'.tr()),
-            backgroundColor: Colors.green,
-          ),
-        );
-        Navigator.pop(context, true); // Return true to indicate success
-      } else {
-        setState(() => _isCreating = false);
-        _showError(result['message'] ?? 'Failed to create homework');
+      // If backend creation failed, revert the optimistic update
+      if (!result['success']) {
+        widget.dataProvider.removeHomework(tempId);
       }
     } catch (e) {
-      setState(() => _isCreating = false);
-      _showError('common.error_details'.tr(namedArgs: {'error': e.toString()}));
+      // Revert optimistic update on error
+      widget.dataProvider.removeHomework(tempId);
     }
   }
 
@@ -347,39 +368,29 @@ class _CreateHomeworkScreenState extends State<CreateHomeworkScreen> {
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: _isCreating ? null : _createHomework,
+                  onPressed: _createHomework,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF0D47A1),
-                    disabledBackgroundColor: Colors.grey[400],
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
                     elevation: 0,
                   ),
-                  child: _isCreating
-                      ? const SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
-                        )
-                      : Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(CupertinoIcons.checkmark_circle, color: Colors.white),
-                            const SizedBox(width: 8),
-                            Text(
-                              'teacher.homework_page.create'.tr(),
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(CupertinoIcons.checkmark_circle, color: Colors.white),
+                      const SizedBox(width: 8),
+                      Text(
+                        'teacher.homework_page.create'.tr(),
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
                         ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 20),

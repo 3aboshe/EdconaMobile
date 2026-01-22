@@ -1,22 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
-import '../../../services/parent_service.dart';
+import '../../../services/parent_data_provider.dart';
 import '../../../utils/date_formatter.dart';
 
-
-
 class AttendanceSection extends StatefulWidget {
-
-
-// TextDirection constants to work around analyzer issue
-
-
   final Map<String, dynamic> student;
+  final ParentDataProvider dataProvider;
 
   const AttendanceSection({
     super.key,
     required this.student,
+    required this.dataProvider,
   });
 
   @override
@@ -24,47 +19,19 @@ class AttendanceSection extends StatefulWidget {
 }
 
 class _AttendanceSectionState extends State<AttendanceSection> {
-  final ParentService _parentService = ParentService();
   bool _isLoading = true;
-  List<Map<String, dynamic>> _attendance = [];
   String _selectedFilter = 'all'; // all, present, absent, late
 
   @override
   void initState() {
     super.initState();
-    _loadAttendance();
-  }
-
-  Future<void> _loadAttendance() async {
-    try {
-      final attendance = await _parentService.getChildAttendance(widget.student['id']);
-      if (mounted) {
-        // Sort by closest date to today first
-        final today = DateTime.now();
-        attendance.sort((a, b) {
-          final dateA = DateTime.tryParse(a['date'] ?? '') ?? DateTime(1970);
-          final dateB = DateTime.tryParse(b['date'] ?? '') ?? DateTime(1970);
-          final diffA = (dateA.difference(today).inDays).abs();
-          final diffB = (dateB.difference(today).inDays).abs();
-          return diffA.compareTo(diffB);
-        });
-        setState(() {
-          _attendance = attendance;
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
+    widget.dataProvider.loadChildData(widget.student['id']);
   }
 
   List<Map<String, dynamic>> get _filteredAttendance {
-    if (_selectedFilter == 'all') return _attendance;
-    return _attendance.where((att) => att['status']?.toLowerCase() == _selectedFilter).toList();
+    final attendance = widget.dataProvider.getAttendance(widget.student['id']);
+    if (_selectedFilter == 'all') return attendance;
+    return attendance.where((att) => att['status']?.toLowerCase() == _selectedFilter).toList();
   }
 
   bool _isRTL() {
@@ -76,106 +43,111 @@ class _AttendanceSectionState extends State<AttendanceSection> {
   Widget build(BuildContext context) {
     final isRTL = _isRTL();
 
-    if (_isLoading) {
-      return Center(
-        child: Directionality(
-          textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
-          child: const CupertinoActivityIndicator(radius: 16),
-        ),
-      );
-    }
-
-    final presentCount = _attendance.where((att) => att['status'] == 'PRESENT').length;
-    final absentCount = _attendance.where((att) => att['status'] == 'ABSENT').length;
-    final lateCount = _attendance.where((att) => att['status'] == 'LATE').length;
-    final totalDays = _attendance.length;
-    final attendancePercentage = totalDays > 0
-        ? ((presentCount + lateCount) / totalDays * 100).toStringAsFixed(1)
-        : '0.0';
-
     return Directionality(
       textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
-      child: RefreshIndicator(
-        onRefresh: _loadAttendance,
-        child: ListView(
-          padding: const EdgeInsets.all(20),
-          children: [
-            // Stats Cards
-            Row(
+      child: AnimatedBuilder(
+        animation: widget.dataProvider,
+        builder: (context, child) {
+          final attendance = widget.dataProvider.getAttendance(widget.student['id']);
+          final isLoaded = widget.dataProvider.isChildDataLoaded(widget.student['id']);
+
+          if (!isLoaded && attendance.isEmpty) {
+            return const Center(
+              child: CupertinoActivityIndicator(radius: 16),
+            );
+          }
+
+          final presentCount = attendance.where((att) => att['status'] == 'PRESENT').length;
+          final absentCount = attendance.where((att) => att['status'] == 'ABSENT').length;
+          final lateCount = attendance.where((att) => att['status'] == 'LATE').length;
+          final totalDays = attendance.length;
+          final attendancePercentage = totalDays > 0
+              ? ((presentCount + lateCount) / totalDays * 100).toStringAsFixed(1)
+              : '0.0';
+
+          return RefreshIndicator(
+            onRefresh: () => widget.dataProvider.refreshChildData(widget.student['id']),
+            child: ListView(
+              padding: const EdgeInsets.all(20),
               children: [
-                Expanded(
-                  child: _buildStatCard(
-                    'parent.attendance_rate'.tr(),
-                    '$attendancePercentage%',
-                    const Color(0xFF007AFF),
-                    CupertinoIcons.chart_bar,
+                // Stats Cards
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildStatCard(
+                        'parent.attendance_rate'.tr(),
+                        '$attendancePercentage%',
+                        const Color(0xFF007AFF),
+                        CupertinoIcons.chart_bar,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _buildStatCard(
+                        'parent.present'.tr(),
+                        presentCount.toString(),
+                        const Color(0xFF34C759),
+                        CupertinoIcons.checkmark_circle,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 12),
+
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildStatCard(
+                        'parent.absent'.tr(),
+                        absentCount.toString(),
+                        const Color(0xFFFF3B30),
+                        CupertinoIcons.xmark_circle,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _buildStatCard(
+                        'parent.late'.tr(),
+                        lateCount.toString(),
+                        const Color(0xFFFF9500),
+                        CupertinoIcons.clock,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 24),
+
+                // Filter Chips
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      _buildFilterChip('common.all'.tr(), 'all'),
+                      const SizedBox(width: 8),
+                      _buildFilterChip('parent.present'.tr(), 'present'),
+                      const SizedBox(width: 8),
+                      _buildFilterChip('parent.absent'.tr(), 'absent'),
+                      const SizedBox(width: 8),
+                      _buildFilterChip('parent.late'.tr(), 'late'),
+                    ],
                   ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildStatCard(
-                    'parent.present'.tr(),
-                    presentCount.toString(),
-                    const Color(0xFF34C759),
-                    CupertinoIcons.checkmark_circle,
-                  ),
-                ),
+
+                const SizedBox(height: 20),
+
+                // Attendance List
+                if (_filteredAttendance.isEmpty)
+                  _buildEmptyState()
+                else
+                  ..._filteredAttendance.map((att) => _buildAttendanceCard(att)).toList(),
+
+                const SizedBox(height: 40),
               ],
             ),
-
-            const SizedBox(height: 12),
-
-            Row(
-              children: [
-                Expanded(
-                  child: _buildStatCard(
-                    'parent.absent'.tr(),
-                    absentCount.toString(),
-                    const Color(0xFFFF3B30),
-                    CupertinoIcons.xmark_circle,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildStatCard(
-                    'parent.late'.tr(),
-                    lateCount.toString(),
-                    const Color(0xFFFF9500),
-                    CupertinoIcons.clock,
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 24),
-
-            // Filter Chips
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  _buildFilterChip('common.all'.tr(), 'all'),
-                  const SizedBox(width: 8),
-                  _buildFilterChip('parent.present'.tr(), 'present'),
-                  const SizedBox(width: 8),
-                  _buildFilterChip('parent.absent'.tr(), 'absent'),
-                  const SizedBox(width: 8),
-                  _buildFilterChip('parent.late'.tr(), 'late'),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            // Attendance List
-            if (_filteredAttendance.isEmpty)
-              _buildEmptyState()
-            else
-              ..._filteredAttendance.map((att) => _buildAttendanceCard(att)),
-
-            const SizedBox(height: 40),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

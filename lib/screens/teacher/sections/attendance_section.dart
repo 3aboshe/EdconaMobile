@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../../services/teacher_service.dart';
+import '../../../services/teacher_data_provider.dart';
 
 class AttendanceSection extends StatefulWidget {
   final Map<String, dynamic> teacher;
+  final TeacherDataProvider dataProvider;
 
-  const AttendanceSection({super.key, required this.teacher});
+  const AttendanceSection({super.key, required this.teacher, required this.dataProvider});
 
   @override
   State<AttendanceSection> createState() => _AttendanceSectionState();
@@ -25,31 +27,32 @@ class _AttendanceSectionState extends State<AttendanceSection> {
   @override
   void initState() {
     super.initState();
-    _loadClasses();
+    _initializeData();
+  }
+
+  Future<void> _initializeData() async {
+    await widget.dataProvider.loadDashboardData();
+    if (mounted) {
+      final classes = widget.dataProvider.classes;
+      if (classes.isNotEmpty) {
+        setState(() {
+          _selectedClassId = classes[0]['id'];
+        });
+        await widget.dataProvider.loadClassData(classes[0]['id']);
+      }
+    }
   }
 
   Future<void> _loadClasses() async {
-    if (!mounted) return;
-    setState(() => _isLoading = true);
-
-    try {
-      final classes = await _teacherService.getTeacherClasses(widget.teacher['id']);
-      if (!mounted) return;
-      setState(() {
-        _classes = classes;
-        if (classes.isNotEmpty) {
+    await widget.dataProvider.loadDashboardData(forceRefresh: true);
+    if (mounted) {
+      final classes = widget.dataProvider.classes;
+      if (classes.isNotEmpty) {
+        setState(() {
           _selectedClassId = classes[0]['id'];
-          _loadStudentsAndAttendance();
-        } else {
-          _isLoading = false;
-        }
-      });
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _isLoading = false;
-        _classes = [];
-      });
+        });
+        await widget.dataProvider.loadClassData(classes[0]['id']);
+      }
     }
   }
 
@@ -57,19 +60,20 @@ class _AttendanceSectionState extends State<AttendanceSection> {
     if (_selectedClassId == null) return;
 
     try {
-      final students = await _teacherService.getStudentsByClass(_selectedClassId!);
+      await widget.dataProvider.loadClassData(_selectedClassId!);
+      final students = widget.dataProvider.getStudents(_selectedClassId!);
       final dateStr = DateFormat('yyyy-MM-dd').format(_selectedDate);
       final existingAttendance = await _teacherService.getAttendanceByDate(dateStr, classId: _selectedClassId);
-      
+
       if (!mounted) return;
-      
+
       // Reset attendance status and load from existing records
       final Map<String, String> attendanceMap = {};
       for (var student in students) {
         final studentId = student['id']?.toString() ?? '';
         // Default to absent (1)
         attendanceMap[studentId] = '1';
-        
+
         // Find existing attendance for this student on this date
         for (var record in existingAttendance) {
           if (record['studentId'] == studentId && record['classId'] == _selectedClassId) {
@@ -85,7 +89,7 @@ class _AttendanceSectionState extends State<AttendanceSection> {
           }
         }
       }
-      
+
       setState(() {
         _students = students;
         _attendanceStatus = attendanceMap;
@@ -104,7 +108,8 @@ class _AttendanceSectionState extends State<AttendanceSection> {
     if (_selectedClassId == null) return;
 
     try {
-      final students = await _teacherService.getStudentsByClass(_selectedClassId!);
+      await widget.dataProvider.loadClassData(_selectedClassId!);
+      final students = widget.dataProvider.getStudents(_selectedClassId!);
       if (!mounted) return;
       setState(() {
         _students = students;
@@ -157,25 +162,34 @@ class _AttendanceSectionState extends State<AttendanceSection> {
           ),
         ],
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF0D47A1)))
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  _buildDateSelector(),
-                  const SizedBox(height: 24),
-                  _buildClassSelector(),
-                  const SizedBox(height: 24),
-                  _buildAttendanceList(),
-                ],
-              ),
+      body: AnimatedBuilder(
+        animation: widget.dataProvider,
+        builder: (context, child) {
+          final isLoading = widget.dataProvider.isLoading;
+
+          if (isLoading && widget.dataProvider.classes.isEmpty) {
+            return const Center(child: CircularProgressIndicator(color: Color(0xFF0D47A1)));
+          }
+
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                _buildDateSelector(),
+                const SizedBox(height: 24),
+                _buildClassSelector(),
+                const SizedBox(height: 24),
+                _buildAttendanceList(),
+              ],
             ),
+          );
+        },
+      ),
       floatingActionButton: _students.isNotEmpty
           ? FloatingActionButton(
               onPressed: _isSaving ? null : _saveAttendance,
               backgroundColor: _isSaving ? Colors.grey : const Color(0xFF34C759),
-              child: _isSaving 
+              child: _isSaving
                   ? const SizedBox(
                       width: 24,
                       height: 24,
@@ -282,7 +296,7 @@ class _AttendanceSectionState extends State<AttendanceSection> {
             ),
           ),
           const SizedBox(height: 16),
-          _classes.isEmpty
+          widget.dataProvider.classes.isEmpty
               ? Center(
                   child: Column(
                     children: [
@@ -313,7 +327,7 @@ class _AttendanceSectionState extends State<AttendanceSection> {
                       ),
                       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                     ),
-                    items: _classes.map((classData) {
+                    items: widget.dataProvider.classes.map((classData) {
                       return DropdownMenuItem<String>(
                         value: classData['id'],
                         child: Text(classData['name'] ?? 'common.unknown_class'.tr()),

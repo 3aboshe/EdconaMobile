@@ -40,6 +40,8 @@ void main() async {
   try {
     await Firebase.initializeApp();
     await PushNotificationService.initialize();
+    // Set up token refresh listener - handles APNs token arriving after initial check
+    PushNotificationService.listenToTokenRefresh();
   } catch (e) {
     debugPrint('⚠️ Firebase init failed: $e');
   }
@@ -169,6 +171,8 @@ class _AppInitializerState extends State<AppInitializer> {
 
         // Check if user is already logged in and navigate accordingly
         if (isLoggedIn) {
+          // Update language for notification service
+          PushNotificationService.updateLanguage(selectedLanguageCode);
           PushNotificationService.updateToken(language: selectedLanguageCode); // Update FCM token after login
           final user = await authService.getCurrentUser();
           if (user != null) {

@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../../services/teacher_service.dart';
+import '../../../services/teacher_data_provider.dart';
 import 'dart:ui' as ui;
 
 class LeaderboardSection extends StatefulWidget {
   final Map<String, dynamic> teacher;
+  final TeacherDataProvider dataProvider;
 
-  const LeaderboardSection({super.key, required this.teacher});
+  const LeaderboardSection({super.key, required this.teacher, required this.dataProvider});
 
   @override
   State<LeaderboardSection> createState() => _LeaderboardSectionState();
@@ -23,7 +25,7 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
   @override
   void initState() {
     super.initState();
-    _loadClasses();
+    _initializeData();
   }
 
   bool _isRTL() {
@@ -31,30 +33,28 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
     return ['ar', 'ckb', 'ku', 'bhn', 'arc', 'bad', 'bdi', 'sdh', 'kmr'].contains(locale.languageCode);
   }
 
-
+  Future<void> _initializeData() async {
+    await widget.dataProvider.loadDashboardData();
+    if (mounted) {
+      final classes = widget.dataProvider.classes;
+      if (classes.isNotEmpty) {
+        setState(() {
+          _selectedClassId = classes[0]['id'];
+        });
+        await widget.dataProvider.loadClassData(classes[0]['id']);
+      }
+    }
+  }
 
   Future<void> _loadClasses() async {
-    setState(() => _isLoading = true);
-
-    try {
-      final classes = await _teacherService.getTeacherClasses(widget.teacher['id']);
-      if (mounted) {
+    await widget.dataProvider.loadDashboardData(forceRefresh: true);
+    if (mounted) {
+      final classes = widget.dataProvider.classes;
+      if (classes.isNotEmpty) {
         setState(() {
-          _classes = classes;
-          if (classes.isNotEmpty) {
-            _selectedClassId = classes[0]['id'];
-            _loadLeaderboard();
-          } else {
-            _isLoading = false;
-          }
+          _selectedClassId = classes[0]['id'];
         });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _classes = [];
-          _isLoading = false;
-        });
+        await widget.dataProvider.loadClassData(classes[0]['id']);
       }
     }
   }
@@ -64,7 +64,8 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
     setState(() => _isLoading = true);
 
     try {
-      final students = await _teacherService.getClassLeaderboard(_selectedClassId!);
+      await widget.dataProvider.loadClassData(_selectedClassId!);
+      final students = widget.dataProvider.getStudents(_selectedClassId!);
       if (mounted) {
         setState(() {
           _students = students;
@@ -105,25 +106,34 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
             ),
           ),
         ),
-        body: _isLoading
-            ? const Center(child: CircularProgressIndicator(color: Colors.white))
-            : RefreshIndicator(
-                onRefresh: _loadLeaderboard,
-                child: CustomScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  slivers: [
-                    SliverToBoxAdapter(
-                      child: _buildHeader(),
-                    ),
-                    SliverToBoxAdapter(
-                      child: _buildClassSelector(),
-                    ),
-                    SliverToBoxAdapter(
-                      child: _buildLeaderboardContent(),
-                    ),
-                  ],
-                ),
+        body: AnimatedBuilder(
+          animation: widget.dataProvider,
+          builder: (context, child) {
+            final isLoading = widget.dataProvider.isLoading;
+
+            if (isLoading && widget.dataProvider.classes.isEmpty) {
+              return const Center(child: CircularProgressIndicator(color: Colors.white));
+            }
+
+            return RefreshIndicator(
+              onRefresh: _loadLeaderboard,
+              child: CustomScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: _buildHeader(),
+                  ),
+                  SliverToBoxAdapter(
+                    child: _buildClassSelector(),
+                  ),
+                  SliverToBoxAdapter(
+                    child: _buildLeaderboardContent(),
+                  ),
+                ],
               ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -186,7 +196,7 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
             ),
           ),
           const SizedBox(height: 16),
-          _classes.isEmpty
+          widget.dataProvider.classes.isEmpty
               ? Center(
                   child: Column(
                     children: [
@@ -215,7 +225,7 @@ class _LeaderboardSectionState extends State<LeaderboardSection> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  items: _classes.map((classData) {
+                  items: widget.dataProvider.classes.map((classData) {
                     return DropdownMenuItem<String>(
                       value: classData['id'],
                       child: Text(classData['name'] ?? 'common.unknown_class'.tr()),

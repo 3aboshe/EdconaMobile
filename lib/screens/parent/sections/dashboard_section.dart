@@ -1,21 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
-import '../../../services/parent_service.dart';
-
-
+import '../../../services/parent_data_provider.dart';
 
 class DashboardSection extends StatefulWidget {
-
-
-// TextDirection constants to work around analyzer issue
-
-
   final Map<String, dynamic> student;
+  final ParentDataProvider dataProvider;
 
   const DashboardSection({
     super.key,
     required this.student,
+    required this.dataProvider,
   });
 
   @override
@@ -23,43 +18,11 @@ class DashboardSection extends StatefulWidget {
 }
 
 class _DashboardSectionState extends State<DashboardSection> {
-  final ParentService _parentService = ParentService();
-  bool _isLoading = true;
-
-  List<Map<String, dynamic>> _grades = [];
-  List<Map<String, dynamic>> _homework = [];
-  List<Map<String, dynamic>> _attendance = [];
-  List<Map<String, dynamic>> _announcements = [];
-
   @override
   void initState() {
     super.initState();
-    _loadDashboardData();
-  }
-
-  Future<void> _loadDashboardData() async {
-    try {
-      final grades = await _parentService.getChildGrades(widget.student['id']);
-      final homework = await _parentService.getChildHomework(widget.student['id']);
-      final attendance = await _parentService.getChildAttendance(widget.student['id']);
-      final announcements = await _parentService.getAnnouncements();
-
-      if (mounted) {
-        setState(() {
-          _grades = grades;
-          _homework = homework;
-          _attendance = attendance;
-          _announcements = announcements;
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
+    // Load child data from provider (uses cache if available)
+    widget.dataProvider.loadChildData(widget.student['id']);
   }
 
   bool _isRTL() {
@@ -71,59 +34,70 @@ class _DashboardSectionState extends State<DashboardSection> {
   Widget build(BuildContext context) {
     final isRTL = _isRTL();
 
-    if (_isLoading) {
-      return Center(
-        child: Directionality(
-          textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
-          child: const CupertinoActivityIndicator(radius: 16),
-        ),
-      );
-    }
-
-    // Calculate stats
-    final totalHomework = _homework.length;
-    final pendingHomework = _homework.where((hw) => hw['status'] == 'pending').length;
-    final avgGrade = _grades.isNotEmpty
-        ? (_grades.map((g) => (g['score'] / g['totalScore'] * 100)).reduce((a, b) => a + b) / _grades.length)
-        : 0.0;
-    final attendanceRate = _attendance.isNotEmpty
-        ? ((_attendance.where((a) => a['status'] == 'PRESENT' || a['status'] == 'LATE').length) / _attendance.length * 100)
-        : 0.0;
-
     return Directionality(
       textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
-      child: RefreshIndicator(
-        onRefresh: _loadDashboardData,
-        child: ListView(
-          padding: const EdgeInsets.all(20),
-          children: [
-            // Quick Stats
-            _buildQuickStats(avgGrade, attendanceRate, totalHomework, pendingHomework),
+      child: AnimatedBuilder(
+        animation: widget.dataProvider,
+        builder: (context, child) {
+          final isLoaded = widget.dataProvider.isChildDataLoaded(widget.student['id']);
+          final grades = widget.dataProvider.getGrades(widget.student['id']);
+          final homework = widget.dataProvider.getHomework(widget.student['id']);
+          final attendance = widget.dataProvider.getAttendance(widget.student['id']);
+          final announcements = widget.dataProvider.announcements;
 
-            const SizedBox(height: 24),
+          if (!isLoaded && grades.isEmpty && homework.isEmpty && attendance.isEmpty) {
+            return Center(
+              child: Directionality(
+                textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
+                child: const CupertinoActivityIndicator(radius: 16),
+              ),
+            );
+          }
 
-            // Recent Grades
-            _buildSectionHeader('parent.recent_grades'.tr(), CupertinoIcons.chart_bar),
-            const SizedBox(height: 12),
-            _buildRecentGrades(),
+          // Calculate stats
+          final totalHomework = homework.length;
+          final pendingHomework = homework.where((hw) => hw['status'] == 'pending').length;
+          final avgGrade = grades.isNotEmpty
+              ? (grades.map((g) => (g['marksObtained'] ?? 0) / (g['maxMarks'] ?? 1) * 100).reduce((a, b) => a + b) / grades.length
+              : 0.0;
+          final attendanceRate = attendance.isNotEmpty
+              ? ((attendance.where((a) => a['status'] == 'PRESENT' || a['status'] == 'LATE').length) / attendance.length * 100)
+              : 0.0;
 
-            const SizedBox(height: 24),
+          return RefreshIndicator(
+            onRefresh: () => widget.dataProvider.refreshChildData(widget.student['id']),
+            child: ListView(
+              padding: const EdgeInsets.all(20),
+              children: [
+                // Quick Stats
+                _buildQuickStats(avgGrade, attendanceRate, totalHomework, pendingHomework),
 
-            // Pending Homework
-            _buildSectionHeader('parent.pending_homework'.tr(), CupertinoIcons.doc_text),
-            const SizedBox(height: 12),
-            _buildPendingHomework(),
+                const SizedBox(height: 24),
 
-            const SizedBox(height: 24),
+                // Recent Grades
+                _buildSectionHeader('parent.recent_grades'.tr(), CupertinoIcons.chart_bar),
+                const SizedBox(height: 12),
+                _buildRecentGrades(grades),
 
-            // Latest Announcements
-            _buildSectionHeader('parent.latest_announcements'.tr(), CupertinoIcons.bell),
-            const SizedBox(height: 12),
-            _buildLatestAnnouncements(),
+                const SizedBox(height: 24),
 
-            const SizedBox(height: 40),
-          ],
-        ),
+                // Pending Homework
+                _buildSectionHeader('parent.pending_homework'.tr(), CupertinoIcons.doc_text),
+                const SizedBox(height: 12),
+                _buildPendingHomework(homework),
+
+                const SizedBox(height: 24),
+
+                // Latest Announcements
+                _buildSectionHeader('parent.latest_announcements'.tr(), CupertinoIcons.bell),
+                const SizedBox(height: 12),
+                _buildLatestAnnouncements(announcements),
+
+                const SizedBox(height: 40),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
@@ -216,13 +190,13 @@ class _DashboardSectionState extends State<DashboardSection> {
     );
   }
 
-  Widget _buildRecentGrades() {
-    if (_grades.isEmpty) {
+  Widget _buildRecentGrades(List<Map<String, dynamic>> grades) {
+    if (grades.isEmpty) {
       return _buildEmptyState('parent.no_grades'.tr(), CupertinoIcons.chart_bar);
     }
 
-    final recentGrades = _grades.take(3).toList();
-    
+    final recentGrades = grades.take(3).toList();
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -240,7 +214,7 @@ class _DashboardSectionState extends State<DashboardSection> {
           final index = entry.key;
           final grade = entry.value;
           final isLast = index == recentGrades.length - 1;
-          
+
           return Column(
             children: [
               Padding(
@@ -251,14 +225,14 @@ class _DashboardSectionState extends State<DashboardSection> {
                       width: 48,
                       height: 48,
                       decoration: BoxDecoration(
-                        color: _getGradeColor(grade['grade']).withValues(alpha: 0.1),
+                        color: _getGradeColor(grade).withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Center(
                         child: Text(
-                          grade['grade'],
+                          '${grade['marksObtained'] ?? 0}',
                           style: TextStyle(
-                            color: _getGradeColor(grade['grade']),
+                            color: _getGradeColor(grade),
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
@@ -290,7 +264,7 @@ class _DashboardSectionState extends State<DashboardSection> {
                       ),
                     ),
                     Text(
-                      '${grade['score']}/${grade['totalScore']}',
+                      '${grade['marksObtained'] ?? 0}/${grade['maxMarks'] ?? 0}',
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -309,9 +283,9 @@ class _DashboardSectionState extends State<DashboardSection> {
     );
   }
 
-  Widget _buildPendingHomework() {
-    final pendingHomework = _homework.where((hw) => hw['status'] == 'pending').take(3).toList();
-    
+  Widget _buildPendingHomework(List<Map<String, dynamic>> homework) {
+    final pendingHomework = homework.take(3).toList();
+
     if (pendingHomework.isEmpty) {
       return _buildEmptyState('parent.no_homework'.tr(), CupertinoIcons.checkmark_circle);
     }
@@ -333,7 +307,7 @@ class _DashboardSectionState extends State<DashboardSection> {
           final index = entry.key;
           final hw = entry.value;
           final isLast = index == pendingHomework.length - 1;
-          
+
           return Column(
             children: [
               Padding(
@@ -394,13 +368,13 @@ class _DashboardSectionState extends State<DashboardSection> {
     );
   }
 
-  Widget _buildLatestAnnouncements() {
-    if (_announcements.isEmpty) {
+  Widget _buildLatestAnnouncements(List<Map<String, dynamic>> announcements) {
+    if (announcements.isEmpty) {
       return _buildEmptyState('parent.no_announcements'.tr(), CupertinoIcons.bell);
     }
 
-    final latestAnnouncements = _announcements.take(2).toList();
-    
+    final latestAnnouncements = announcements.take(2).toList();
+
     return Column(
       children: latestAnnouncements.map((announcement) {
         return Container(
@@ -497,22 +471,11 @@ class _DashboardSectionState extends State<DashboardSection> {
     );
   }
 
-  Color _getGradeColor(String grade) {
-    switch (grade.toUpperCase()) {
-      case 'A':
-      case 'A+':
-        return const Color(0xFF34C759);
-      case 'B':
-      case 'B+':
-        return const Color(0xFF007AFF);
-      case 'C':
-      case 'C+':
-        return const Color(0xFFFF9500);
-      case 'D':
-      case 'F':
-        return const Color(0xFFFF3B30);
-      default:
-        return Colors.grey;
-    }
+  Color _getGradeColor(Map<String, dynamic> grade) {
+    final percentage = (grade['marksObtained'] ?? 0) / (grade['maxMarks'] ?? 1) * 100;
+    if (percentage >= 80) return const Color(0xFF34C759);
+    if (percentage >= 60) return const Color(0xFF007AFF);
+    if (percentage >= 40) return const Color(0xFFFF9500);
+    return const Color(0xFFFF3B30);
   }
 }

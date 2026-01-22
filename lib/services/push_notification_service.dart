@@ -15,6 +15,9 @@ class PushNotificationService {
   static final FlutterLocalNotificationsPlugin _localNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
+  // Store language for token refresh callback
+  static String? _currentLanguage;
+
   static const AndroidNotificationChannel _channel = AndroidNotificationChannel(
     'edcona_notifications', // Same as in AndroidManifest.xml
     'EdCona Notifications',
@@ -137,30 +140,80 @@ class PushNotificationService {
   }
 
   static Future<void> updateToken({String? language}) async {
+    // Store language for token refresh callback
+    _currentLanguage = language;
+
     try {
       // For iOS, we need to ensure APNs token is available before getting FCM token
       if (Platform.isIOS) {
         String? apnsToken = await _fcm.getAPNSToken();
+
+        // Wait up to 30 seconds for APNs token with exponential backoff
         if (apnsToken == null) {
-          if (kDebugMode) print('Wait for APNs token...');
-          await Future.delayed(const Duration(seconds: 1));
-          apnsToken = await _fcm.getAPNSToken();
+          if (kDebugMode) print('⏳ Waiting for APNs token...');
+          int attempts = 0;
+          const maxAttempts = 10;
+
+          while (apnsToken == null && attempts < maxAttempts) {
+            await Future.delayed(Duration(seconds: 3));
+            apnsToken = await _fcm.getAPNSToken();
+            attempts++;
+
+            if (kDebugMode) {
+              print('   Attempt $attempts/$maxAttempts: APNs Token ${apnsToken != null ? "✅ received" : "⏳ still waiting..."}');
+            }
+
+            if (apnsToken != null) break;
+          }
+
+          if (apnsToken == null) {
+            if (kDebugMode) {
+              print('❌ APNs Token not received after $maxAttempts attempts');
+              print('   Possible causes:');
+              print('   - Device is offline (check internet connection)');
+              print('   - APNs certificate mismatch (development vs production)');
+              print('   - App notification permission denied');
+              print('   - Check Xcode console for detailed error logs');
+            }
+            return; // Exit gracefully - token may arrive later via onTokenRefresh
+          }
         }
-        if (kDebugMode) print('APNs Token: $apnsToken');
+
+        if (kDebugMode) print('✅ APNs Token received: ${apnsToken.substring(0, 8)}...');
       }
 
       String? token = await _fcm.getToken();
       if (token != null) {
-        if (kDebugMode) print('FCM Token: $token');
+        if (kDebugMode) print('✅ FCM Token: ${token.substring(0, 20)}...');
         await ApiService.dio.post('/api/auth/fcm-token', data: {
           'token': token,
           'language': language ?? 'en',
         });
+        if (kDebugMode) print('✅ Token registered with backend');
       } else {
-        if (kDebugMode) print('Failed to get FCM token');
+        if (kDebugMode) print('❌ Failed to get FCM token');
       }
     } catch (e) {
-      if (kDebugMode) print('Error updating FCM token: $e');
+      if (kDebugMode) print('❌ Error updating FCM token: $e');
     }
+  }
+
+  /// Set up token refresh listener for iOS APNs token arrival
+  static void listenToTokenRefresh() {
+    FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
+      if (kDebugMode) print('🔄 FCM Token refreshed: ${newToken.substring(0, 20)}...');
+      // Send new token to backend with stored language
+      ApiService.dio.post('/api/auth/fcm-token', data: {
+        'token': newToken,
+        'language': _currentLanguage ?? 'en',
+      }).catchError((e) {
+        if (kDebugMode) print('❌ Error sending refreshed token: $e');
+      });
+    });
+  }
+
+  /// Update the stored language for token refresh callback
+  static void updateLanguage(String language) {
+    _currentLanguage = language;
   }
 }
