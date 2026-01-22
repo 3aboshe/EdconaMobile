@@ -37,10 +37,10 @@ void main() async {
     debugPrint('⚠️ AuthService init failed: $e - continuing anyway');
   }
 
+  // Initialize Firebase and Push Notifications
   try {
     await Firebase.initializeApp();
     await PushNotificationService.initialize();
-    // Set up token refresh listener - handles APNs token arriving after initial check
     PushNotificationService.listenToTokenRefresh();
   } catch (e) {
     debugPrint('⚠️ Firebase init failed: $e');
@@ -173,7 +173,7 @@ class _AppInitializerState extends State<AppInitializer> {
         if (isLoggedIn) {
           // Update language for notification service
           PushNotificationService.updateLanguage(selectedLanguageCode);
-          PushNotificationService.updateToken(language: selectedLanguageCode); // Update FCM token after login
+          PushNotificationService.updateToken(language: selectedLanguageCode);
           final user = await authService.getCurrentUser();
           if (user != null) {
             if (user['role'] == 'SUPER_ADMIN') {

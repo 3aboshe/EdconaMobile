@@ -58,7 +58,7 @@ class _DashboardSectionState extends State<DashboardSection> {
           final totalHomework = homework.length;
           final pendingHomework = homework.where((hw) => hw['status'] == 'pending').length;
           final avgGrade = grades.isNotEmpty
-              ? (grades.map((g) => (g['marksObtained'] ?? 0) / (g['maxMarks'] ?? 1) * 100).reduce((a, b) => a + b) / grades.length
+              ? (grades.map((g) => (g['marksObtained'] ?? 0) / (g['maxMarks'] ?? 1) * 100).reduce((a, b) => a + b) / grades.length)
               : 0.0;
           final attendanceRate = attendance.isNotEmpty
               ? ((attendance.where((a) => a['status'] == 'PRESENT' || a['status'] == 'LATE').length) / attendance.length * 100)
