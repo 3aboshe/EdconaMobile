@@ -110,7 +110,7 @@ class ParentDataProvider extends ChangeNotifier {
     // Use Future.wait for parallel execution
     final results = await Future.wait([
       _parentService.getChildren(parentId),
-      _parentService.getAnnouncements(),
+      _parentService.getAnnouncements(parentId),
     ]);
 
     _children = results[0] as List<Map<String, dynamic>>;

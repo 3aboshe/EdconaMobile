@@ -180,10 +180,11 @@ class ParentService {
     return [];
   }
 
-  // Get child's announcements - Use real API data
-  Future<List<Map<String, dynamic>>> getAnnouncements() async {
+  // Get child's announcements - Use real API data (filtered by parent's children's classes)
+  Future<List<Map<String, dynamic>>> getAnnouncements(String parentId) async {
     try {
-      final response = await ApiService.dio.get('/api/announcements');
+      // Pass parentId to filter announcements to parent's children's classes
+      final response = await ApiService.dio.get('/api/announcements', queryParameters: {'parentId': parentId});
 
       if (response.statusCode == 200) {
         final announcements = List<Map<String, dynamic>>.from(response.data);
