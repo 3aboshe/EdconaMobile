@@ -32,17 +32,21 @@ class _ChildSelectionScreenState extends State<ChildSelectionScreen> {
       final user = await _authService.getCurrentUser();
       if (user != null) {
         final children = await _parentService.getChildren(user['id']);
+        if (mounted) {
+          setState(() {
+            _currentUser = user;
+            _children = children;
+            _isLoading = false;
+          });
+        }
+      }
+    } catch (e) {
+      if (mounted) {
         setState(() {
-          _currentUser = user;
-          _children = children;
+          _errorMessage = e.toString();
           _isLoading = false;
         });
       }
-    } catch (e) {
-      setState(() {
-        _errorMessage = e.toString();
-        _isLoading = false;
-      });
     }
   }
 
