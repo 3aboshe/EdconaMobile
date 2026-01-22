@@ -45,6 +45,12 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
     super.initState();
     // Create a single provider instance for this dashboard session
     _dataProvider = TeacherDataProvider();
+    
+    // Set the teacher ID from the passed teacher object
+    final teacherId = widget.teacher['id']?.toString();
+    if (teacherId != null) {
+      _dataProvider.setTeacherId(teacherId);
+    }
 
     // Initialize the data provider
     _initializeData();

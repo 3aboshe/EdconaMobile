@@ -13,6 +13,9 @@ import 'api_service.dart';
 /// 4. Using parallel loading with Future.wait for better performance
 class TeacherDataProvider extends ChangeNotifier {
   final TeacherService _teacherService = TeacherService();
+  
+  // Optional teacher ID passed in (preferred over SharedPreferences)
+  String? _teacherId;
 
   // Cached data - classes list
   List<Map<String, dynamic>> _classes = [];
@@ -34,6 +37,11 @@ class TeacherDataProvider extends ChangeNotifier {
 
   // Completer for waiting on initial load
   Completer<void>? _loadCompleter;
+  
+  // Set the teacher ID directly (preferred method)
+  void setTeacherId(String teacherId) {
+    _teacherId = teacherId;
+  }
 
   // Getters
   List<Map<String, dynamic>> get classes => _classes;
@@ -306,8 +314,14 @@ class TeacherDataProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Get current teacher ID from SharedPreferences
+  /// Get current teacher ID - prefer passed ID, fallback to SharedPreferences
   Future<String?> _getCurrentTeacherId() async {
+    // If teacher ID was set directly, use it
+    if (_teacherId != null) {
+      return _teacherId;
+    }
+    
+    // Fallback to SharedPreferences
     try {
       final prefs = await SharedPreferences.getInstance();
       final userId = prefs.getString('user_id');
