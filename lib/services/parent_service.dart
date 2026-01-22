@@ -53,7 +53,16 @@ class ParentService {
       final response = await ApiService.dio.get('/api/grades/student/$childId');
 
       if (response.statusCode == 200) {
-        final grades = List<Map<String, dynamic>>.from(response.data);
+        // Handle both array and paginated object response
+        final dynamic data = response.data;
+        final List<dynamic> grades;
+        if (data is List) {
+          grades = data;
+        } else if (data is Map && data['data'] != null) {
+          grades = data['data'] as List<dynamic>;
+        } else {
+          return [];
+        }
         return grades
             .map(
               (grade) => {
