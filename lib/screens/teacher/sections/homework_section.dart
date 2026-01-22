@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
@@ -30,7 +31,10 @@ class _HomeworkSectionState extends State<HomeworkSection> {
   @override
   void initState() {
     super.initState();
-    _initializeData();
+    // Defer data loading to after build completes to avoid setState during build
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      _initializeData();
+    });
   }
 
   bool _isRTL() {

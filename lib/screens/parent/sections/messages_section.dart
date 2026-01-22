@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import '../../../services/message_service.dart';
 import '../../../services/api_service.dart';
@@ -28,8 +29,11 @@ class _MessagesSectionState extends State<MessagesSection> {
   @override
   void initState() {
     super.initState();
-    widget.dataProvider.loadChildData(widget.student['id']);
-    _loadData();
+    // Defer data loading to after build completes to avoid setState during build
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      widget.dataProvider.loadChildData(widget.student['id']);
+      _loadData();
+    });
   }
 
   Future<void> _loadData() async {

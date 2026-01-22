@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'child_selection_screen.dart';
 import 'sections/dashboard_section.dart';
@@ -46,8 +47,10 @@ class _ParentDashboardState extends State<ParentDashboard> {
     // Create a single provider instance for this dashboard session
     _dataProvider = ParentDataProvider();
 
-    // Initialize the data provider with child data
-    _initializeData();
+    // Initialize the data provider with child data (deferred to avoid setState during build)
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      _initializeData();
+    });
 
     // Create sections once with provider passed
     _sections = [

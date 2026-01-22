@@ -64,12 +64,12 @@ class ParentService {
           return [];
         }
         // Return grades with original field names (marksObtained, maxMarks)
-        // and also include aliases for backwards compatibility
+        // Convert to integers to avoid showing decimal points
         return grades
             .map(
               (grade) {
-                final marksObtained = (grade['marksObtained'] ?? 0).toDouble();
-                final maxMarks = (grade['maxMarks'] ?? 1).toDouble();
+                final marksObtained = ((grade['marksObtained'] ?? 0) as num).round();
+                final maxMarks = ((grade['maxMarks'] ?? 1) as num).round();
                 final percentage = maxMarks > 0 ? (marksObtained / maxMarks * 100) : 0.0;
                 return {
                   'id': grade['id'],

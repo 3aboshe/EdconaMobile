@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import '../../../services/parent_data_provider.dart';
 
@@ -21,8 +22,10 @@ class _DashboardSectionState extends State<DashboardSection> {
   @override
   void initState() {
     super.initState();
-    // Load child data from provider (uses cache if available)
-    widget.dataProvider.loadChildData(widget.student['id']);
+    // Defer data loading to after build completes to avoid setState during build
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      widget.dataProvider.loadChildData(widget.student['id']);
+    });
   }
 
   bool _isRTL() {
