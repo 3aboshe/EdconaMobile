@@ -7,6 +7,7 @@ import 'screens/admin/admin_dashboard.dart';
 import 'screens/super_admin/super_admin_dashboard.dart';
 import 'services/language_service.dart';
 import 'services/auth_service.dart';
+import 'services/api_service.dart';
 import 'utils/locale_delegates.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'services/push_notification_service.dart';
@@ -33,6 +34,7 @@ void main() async {
 
   try {
     AuthService.initialize();
+    ApiService.initialize();
   } catch (e) {
     debugPrint('⚠️ AuthService init failed: $e - continuing anyway');
   }
@@ -71,6 +73,7 @@ class EdConaApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: ApiService.navigatorKey,
       title: 'common.app_name'.tr(),
       debugShowCheckedModeBanner: false,
       localizationsDelegates: [

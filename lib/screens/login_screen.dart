@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import '../services/auth_service.dart';
 import '../services/language_service.dart';
+import '../services/push_notification_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -141,6 +142,9 @@ class _LoginScreenState extends State<LoginScreen>
     });
 
     if (result['success']) {
+      // Register FCM token for push notifications
+      await PushNotificationService.updateToken(language: _selectedLanguageCode);
+
       // Navigate based on user role
       if (mounted) {
         final userRole = result['user']['role'];

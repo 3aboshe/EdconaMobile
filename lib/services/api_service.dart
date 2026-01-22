@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart' show kIsWeb, kDebugMode;
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/config.dart';
 
@@ -8,6 +9,9 @@ class ApiService {
   static final Dio _dio = Dio();
   static const String _baseUrl = AppConfig.baseUrl;
   static const Duration _timeout = Duration(seconds: 30);
+
+  // Global navigator key for handling session expiry
+  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   static void initialize() {
     _dio.options = BaseOptions(
@@ -55,14 +59,30 @@ class ApiService {
             print('Response: ${error.response?.data}');
           }
         }
-        
-        // Handle 401 unauthorized - token expired
+
+        // Handle 401 unauthorized - token expired or session invalid
         if (error.response?.statusCode == 401) {
+          // Clear all stored data
           final prefs = await SharedPreferences.getInstance();
           await prefs.clear();
-          // Note: We'll need to navigate to login from context
-          // This is a limitation, but we can handle it in the UI layer
+
+          // Navigate to login screen using navigator key
+          if (navigatorKey.currentState != null) {
+            // Remove all routes and show login
+            navigatorKey.currentState!.pushNamedAndRemoveUntil(
+              '/login',
+              (route) => false,
+            );
+          }
+
+          // Don't propagate the error to the UI
+          return handler.reject(DioException(
+            requestOptions: error.requestOptions,
+            error: 'Session expired. Please log in again.',
+            type: DioExceptionType.unknown,
+          ));
         }
+
         handler.next(error);
       },
     ));

@@ -34,5 +34,109 @@
 </head>
 <body>
   <script src="flutter_bootstrap.js" async></script>
+
+  <!-- Firebase SDK for Web Push Notifications -->
+  <script type="module">
+    // Import Firebase SDK
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+    import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js';
+
+    // Firebase configuration - Replace with your actual Firebase config
+    // You can find this in Firebase Console → Project Settings → General → Your apps
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID",
+      measurementId: "YOUR_MEASUREMENT_ID"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const messaging = getMessaging(app);
+
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/firebase-messaging-sw.js')
+        .then((registration) => {
+          console.log('Service Worker registered with scope:', registration.scope);
+        })
+        .catch((error) => {
+          console.error('Service Worker registration failed:', error);
+        });
+    }
+
+    // Request notification permission and get token
+    async function requestPermissionAndGetToken() {
+      try {
+        const permission = await Notification.requestPermission();
+        if (permission === 'granted') {
+          console.log('Notification permission granted.');
+          const currentToken = await getToken(messaging, {
+            vapidKey: 'BEM-xJsw2lEaoC5Bh33sErIWTiJApEoYkJuCh5Nffspt5YVtZw0oAuTWJChNxe9FnVYT53xvHe9IWl4t2WtQzM'
+          });
+          if (currentToken) {
+            console.log('FCM Token for Web:', currentToken);
+            // Send this token to your backend to save it for the user
+            // You can use fetch or XMLHttpRequest to send it to your server
+            sendTokenToServer(currentToken);
+          } else {
+            console.log('No registration token available.');
+          }
+        } else {
+          console.log('Notification permission denied.');
+        }
+      } catch (error) {
+        console.error('Error getting token:', error);
+      }
+    }
+
+    // Send token to your backend server
+    function sendTokenToServer(token) {
+      // Replace with your actual API endpoint
+      fetch('/api/auth/fcm-token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // Add authentication header if needed
+          // 'Authorization': 'Bearer YOUR_TOKEN'
+        },
+        body: JSON.stringify({
+          token: token,
+          platform: 'web',
+          language: navigator.language || 'en'
+        })
+      })
+      .then(response => {
+        if (response.ok) {
+          console.log('Token successfully sent to server');
+        } else {
+          console.error('Failed to send token to server');
+        }
+      })
+      .catch(error => {
+        console.error('Error sending token to server:', error);
+      });
+    }
+
+    // Listen for foreground messages
+    onMessage(messaging, (payload) => {
+      console.log('Foreground message received:', payload);
+      // Show a custom notification or handle the message
+      const { title, body } = payload.notification;
+      if (title && body) {
+        new Notification(title, { body, icon: '/icons/Icon-192.png' });
+      }
+    });
+
+    // Auto-request permission when page loads (optional)
+    // You may want to trigger this from a user action instead
+    // requestPermissionAndGetToken();
+
+    // Expose function to window so Flutter can call it
+    window.requestNotificationPermission = requestPermissionAndGetToken;
+  </script>
 </body>
 </html>
